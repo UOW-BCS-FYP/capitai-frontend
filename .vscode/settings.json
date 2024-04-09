@@ -1,0 +1,8 @@
+{
+    "i18n-ally.localesPaths": [
+        "src/utils/languages",
+        "src/_mockApis/language"
+    ],
+    // indent with 2 spaces
+    "editor.tabSize": 2,
+}
