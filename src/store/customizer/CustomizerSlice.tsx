@@ -30,7 +30,7 @@ const initialState: StateType = {
   isMobileSidebar: false,
   isHorizontal: false,
   isLanguage: 'en',
-  isCardShadow: true,
+  isCardShadow: false,
   borderRadius: 7,
 };
 

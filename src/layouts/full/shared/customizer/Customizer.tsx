@@ -157,7 +157,7 @@ const Customizer: FC = () => {
             {/* ------------------------------------------- */}
             {/* ------------ RTL theme setting -------------*/}
             {/* ------------------------------------------- */}
-            <Typography variant="h6" gutterBottom>
+            {/* <Typography variant="h6" gutterBottom>
               Theme Direction
             </Typography>
             <Stack direction={'row'} gap={2} my={2}>
@@ -175,11 +175,11 @@ const Customizer: FC = () => {
               </StyledBox>
             </Stack>
 
-            <Box pt={3} />
+            <Box pt={3} /> */}
             {/* ------------------------------------------- */}
             {/* ------------ Theme Color setting ------------- */}
             {/* ------------------------------------------- */}
-            <Typography variant="h6" gutterBottom>
+            {/* <Typography variant="h6" gutterBottom>
               Theme Colors
             </Typography>
             <Grid container spacing={2}>
@@ -207,7 +207,7 @@ const Customizer: FC = () => {
                 </Grid>
               ))}
             </Grid>
-            <Box pt={4} />
+            <Box pt={4} /> */}
             {/* ------------------------------------------- */}
             {/* ------------ Layout Horizontal / Vertical ------------- */}
             {/* ------------------------------------------- */}
@@ -230,7 +230,7 @@ const Customizer: FC = () => {
             {/* ------------------------------------------- */}
             {/* ------------ Layout Boxed / Full ------------- */}
             {/* ------------------------------------------- */}
-            <Typography variant="h6" gutterBottom>
+            {/* <Typography variant="h6" gutterBottom>
               Container Option
             </Typography>
             <Stack direction={'row'} gap={2} my={2}>
@@ -247,7 +247,7 @@ const Customizer: FC = () => {
                 Full
               </StyledBox>
             </Stack>
-            <Box pt={4} />
+            <Box pt={4} /> */}
             {/* ------------------------------------------- */}
             {/* ------------ Sidebar Color setting ------------- */}
             {/* ------------------------------------------- */}
@@ -255,7 +255,7 @@ const Customizer: FC = () => {
             {/* ------------------------------------------- */}
             {/* ------------ Theme Color setting ------------- */}
             {/* ------------------------------------------- */}
-            {customizer.isHorizontal ? (
+            {/* {customizer.isHorizontal ? (
               ''
             ) : (
               <>
@@ -274,7 +274,7 @@ const Customizer: FC = () => {
                 </Stack>
               </>
             )}
-            <Box pt={4} />
+            <Box pt={4} /> */}
             <Typography variant="h6" gutterBottom>
               Card With
             </Typography>
@@ -292,7 +292,7 @@ const Customizer: FC = () => {
             {/* ------------------------------------------- */}
             {/* ------------ Theme Color setting ------------- */}
             {/* ------------------------------------------- */}
-            <Typography variant="h6" gutterBottom>
+            {/* <Typography variant="h6" gutterBottom>
               Theme Border Radius
             </Typography>
 
@@ -304,7 +304,7 @@ const Customizer: FC = () => {
               max={24}
               onChange={(event: any) => dispatch(setBorderRadius(event.target.value))}
               valueLabelDisplay="auto"
-            />
+            /> */}
           </Box>
         </Scrollbar>
       </Drawer>
