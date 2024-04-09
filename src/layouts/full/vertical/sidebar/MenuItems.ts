@@ -66,9 +66,66 @@ import {
 } from '@tabler/icons-react';
 
 const Menuitems: MenuitemsType[] = [
+  // {
+  //   navlabel: true,
+  //   subheader: 'Navigation',
+  // },
   {
     navlabel: true,
-    subheader: 'Home',
+    subheader: 'Menu',
+  },
+  {
+    id: uniqueId(),
+    title: 'Dashboard',
+    icon: IconAperture,
+    href: '/dashboard',
+  },
+  {
+    id: uniqueId(),
+    title: 'Smart Budgeting',
+    icon: IconCurrencyDollar,
+    href: '/smart-budgeting'
+  },
+  {
+    id: uniqueId(),
+    title: 'Goal Tracker',
+    icon: IconAward,
+    href: '/goal-tracker'
+  },
+  // {
+  //   navlabel: true,
+  //   subheader: 'Financial Services',
+  // },
+  {
+    id: uniqueId(),
+    title: 'Personal Consultant',
+    icon: IconUserCircle,
+    href: '/financial-consultant',
+    chip: 'AI',
+    chipColor: 'secondary',
+  },
+  {
+    id: uniqueId(),
+    title: 'Investment Strategist',
+    icon: IconChartDots,
+    href: '/investment-strategist',
+    chip: 'AI',
+    chipColor: 'secondary',
+  },
+  // {
+  //   navlabel: true,
+  //   subheader: 'Financial Reports',
+  // },
+  {
+    id: uniqueId(),
+    title: 'Financial Statement',
+    icon: IconNotes,
+    href: '/financial-statement',
+  },
+
+  {
+    navlabel: true,
+    subheader: 'Dashboards',
   },
 
   {

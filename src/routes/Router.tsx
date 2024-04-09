@@ -114,12 +114,26 @@ const Maintenance = Loadable(lazy(() => import('../views/authentication/Maintena
 // landingpage
 const Landingpage = Loadable(lazy(() => import('../views/pages/landingpage/Landingpage')));
 
+const SmartBudgeting = Loadable(lazy(() => import('../views/smart-budgeting/SmartBudgeting')));
+const GoalTracker = Loadable(lazy(() => import('../views/goal-tracker/GoalTracker')));
+const FinancialConsultant = Loadable(lazy(() => import('../views/financial-consultant/FinancialConsultant')));
+const InvestmentStrategist = Loadable(lazy(() => import('../views/investment-strategist/InvestmentStrategist')));
+const FinancialStatement = Loadable(lazy(() => import('../views/financial-statement/FinancialStatement')));
+
 const Router = [
   {
     path: '/',
     element: <FullLayout />,
     children: [
-      { path: '/', element: <Navigate to="/dashboards/modern" /> },
+      { path: '/', element: <Navigate to="/dashboard" /> },
+      { path: '/dashboard', exact: true, element: <ModernDash /> }, // default dashboard
+      { path: '/smart-budgeting', element: <SmartBudgeting />},
+      { path: '/goal-tracker', element: <GoalTracker />},
+      { path: '/financial-consultant', element: <FinancialConsultant /> },
+      { path: '/investment-strategist', element: <InvestmentStrategist /> },
+      { path: '/financial-statement', element: <FinancialStatement /> },
+
+      // theme's pages
       { path: '/dashboards/modern', exact: true, element: <ModernDash /> },
       { path: '/dashboards/ecommerce', exact: true, element: <EcommerceDash /> },
       { path: '/apps/contacts', element: <Contacts /> },
