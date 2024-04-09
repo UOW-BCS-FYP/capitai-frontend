@@ -13,7 +13,7 @@ import { ReactComponent as LogoLight } from 'src/assets/images/logos/light-logo.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { ReactComponent as LogoLightRTL } from 'src/assets/images/logos/light-logo-rtl.svg';
-import { styled } from '@mui/material';
+import { Typography, styled } from '@mui/material';
 import { AppState } from 'src/store/Store';
 
 const Logo: FC = () => {
@@ -34,11 +34,14 @@ const Logo: FC = () => {
           alignItems: 'center',
         }}
       >
-        {customizer.activeMode === 'dark' ? (
+        {/* {customizer.activeMode === 'dark' ? (
           <LogoLight />
         ) : (
           <LogoDark />
-        )}
+        )} */}
+        <Typography variant="h3" fontWeight="700" style={{ color: customizer.activeMode === 'dark' ? '#fff' : '#000' }}>
+          Capit AI
+        </Typography>
       </LinkStyled>
     );
   }
@@ -51,11 +54,14 @@ const Logo: FC = () => {
         alignItems: 'center',
       }}
     >
-      {customizer.activeMode === 'dark' ? (
+      {/* {customizer.activeMode === 'dark' ? (
         <LogoDarkRTL />
       ) : (
         <LogoLightRTL />
-      )}
+      )} */}
+      <Typography variant="h3" fontWeight="700" style={{ color: customizer.activeMode === 'dark' ? '#fff' : '#000' }}>
+        Capit AI
+      </Typography>
     </LinkStyled>
   );
 };
