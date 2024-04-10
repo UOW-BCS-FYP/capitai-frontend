@@ -48,7 +48,7 @@ const featuresData: FeaturesType[] = [
   {
     icon: <IconAdjustments width={40} height={40} strokeWidth={1.5} />,
     title: '45+ UI Components',
-    subtext: 'Almost 45+ UI Components being given with Modernize Admin Pack.',
+    subtext: 'Almost 45+ UI Components being given with Capit-AI Admin Pack.',
   },
   {
     icon: <IconTag width={40} height={40} strokeWidth={1.5} />,

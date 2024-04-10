@@ -81,7 +81,7 @@ const rows:rowsType[] = [
     status: 'pending',
     avatar: img6,
     name: 'Isabel Vasquez',
-    project: 'Modernize admin',
+    project: 'Capit-AI admin',
     percent: 32,
     users: [{ img: img2 }, { img: img4 }],
   },

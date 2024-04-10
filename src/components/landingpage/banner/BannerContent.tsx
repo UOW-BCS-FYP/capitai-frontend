@@ -67,7 +67,7 @@ const BannerContent = () => {
           }}
         >
           <Typography variant="h5" fontWeight={300}>
-            Modernize comes with light & dark color skins, well designed dashboards, applications
+            Capit-AI comes with light & dark color skins, well designed dashboards, applications
             and pages.
           </Typography>
         </motion.div>
