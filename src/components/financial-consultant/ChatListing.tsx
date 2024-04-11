@@ -24,7 +24,7 @@ import { ChatsType } from 'src/types/financial-consultant';
 import { last } from 'lodash';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { IconChevronDown, IconSearch } from '@tabler/icons-react';
-import user1 from 'src/assets/images/profile/user-1.jpg';
+// import user1 from 'src/assets/images/profile/user-1.jpg';
 
 const ChatListing = () => {
   const dispatch = useDispatch();
@@ -50,7 +50,7 @@ const ChatListing = () => {
 
     const lastMessage = conversation.messages[conversation.messages.length - 1];
     if (lastMessage) {
-      const sender = lastMessage.senderId === conversation.id ? 'You: ' : '';
+      const sender = lastMessage.senderId === conversation.id ? '' : 'You: ';
       const message = lastMessage.type === 'image' ? 'Sent a photo' : lastMessage.msg;
       displayText = `${sender}${message}`;
     }

@@ -15,7 +15,10 @@ import {
   useMediaQuery,
   Theme
 } from '@mui/material';
-import { IconDotsVertical, IconMenu2, IconPhone, IconVideo } from '@tabler/icons-react';
+import {
+  IconDotsVertical, IconMenu2,
+  // IconPhone, IconVideo
+} from '@tabler/icons-react';
 import { useSelector } from 'src/store/Store';
 
 import { ChatsType } from 'src/types/financial-consultant';
@@ -29,7 +32,7 @@ interface ChatContentProps {
 }
 
   const ChatContent: React.FC<ChatContentProps> = ({ toggleChatSidebar }) => {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'));
 
   const chatDetails: ChatsType = useSelector(
@@ -77,16 +80,16 @@ interface ChatContentProps {
                 </ListItemAvatar>
                 <ListItemText
                   primary={<Typography variant="h5">{chatDetails.name}</Typography>}
-                  secondary={chatDetails.status}
+                  secondary={chatDetails.excerpt}
                 />
               </ListItem>
               <Stack direction={'row'}>
-                <IconButton aria-label="delete">
+                {/* <IconButton aria-label="delete">
                   <IconPhone stroke={1.5} />
                 </IconButton>
                 <IconButton aria-label="delete">
                   <IconVideo stroke={1.5} />
-                </IconButton>
+                </IconButton> */}
                 <IconButton aria-label="delete" onClick={() => setOpen(!open)}>
                   <IconDotsVertical stroke={1.5} />
                 </IconButton>

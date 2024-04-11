@@ -1,19 +1,19 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import React from 'react';
+import React, { FormEvent } from 'react';
 import { useSelector, useDispatch } from 'src/store/Store';
 import { IconButton, InputBase, Box, Popover } from '@mui/material';
-import Picker from 'emoji-picker-react';
+import Picker, { IEmojiData } from 'emoji-picker-react';
 import { IconMoodSmile, IconPaperclip, IconPhoto, IconSend } from '@tabler/icons-react';
 import { sendMsg } from 'src/store/financial-consultant/ConsultSlice';
 
 const ChatMsgSent = () => {
-  const [msg, setMsg] = React.useState<any>('');
+  const [msg, setMsg] = React.useState<string>('');
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  const [chosenEmoji, setChosenEmoji] = React.useState<any>();
+  const [chosenEmoji, setChosenEmoji] = React.useState<IEmojiData>();
 
-  const onEmojiClick = (_event: any, emojiObject: any) => {
+  const onEmojiClick = (_event: React.MouseEvent<Element, MouseEvent>, emojiObject: IEmojiData) => {
     setChosenEmoji(emojiObject);
     setMsg(emojiObject.emoji);
   };
@@ -33,7 +33,7 @@ const ChatMsgSent = () => {
 
   const newMsg = { id, msg };
 
-  const onChatMsgSubmit = (e: any) => {
+  const onChatMsgSubmit = (e: FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
     dispatch(sendMsg(newMsg));

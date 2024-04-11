@@ -13,8 +13,8 @@ const FinanicalConsultant = () => {
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
-    <PageContainer title="Personal Financial Consultant" description="this is Personal Financial Consultant page">
-      <Breadcrumb title="Personal Financial Consultant" subtitle="Your AI powered financial advisor" />
+    <PageContainer title="Personal Financial Advisor" description="this is Personal Financial Advisor page">
+      <Breadcrumb title="Personal Financial Advisor" subtitle="Your AI powered financial consultant and investment advisor" />
       <AppCard>
         {/* ------------------------------------------- */}
         {/* Left part */}
