@@ -24,12 +24,11 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const navigate = useNavigate();
 
   const registerSchema = Yup.object().shape({
-    UserName: Yup.string().required('UserName is required'),
+    UserName: Yup.string().required('Username is required'),
     email: Yup.string().email('Email is invalid').required('Email is required'),
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
       .required('Password is required'),
-
     acceptTerms: Yup.bool().oneOf([true], 'Accept Terms & Conditions is required'),
   });
 
@@ -143,31 +142,12 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                 }
                 fullWidth
               />
-              <FormHelperText error={Boolean(touched.password && errors.password)}>
-                {touched.password && errors.password}
-              </FormHelperText>
-              {/* <Box display="flex" alignItems="center">
-                <CustomTextField
-                  type="checkbox"
-                  id="acceptTerms"
-                  {...getFieldProps('acceptTerms')}
-                  error={Boolean(touched.acceptTerms && errors.acceptTerms)}
-                />
-                <CustomFormLabel htmlFor="acceptTerms" sx={{ ml: 1 }}>
-                  I accept the{' '}
-                  <Typography
-                    color="primary"
-                    underline="hover"
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    Terms & Conditions
-                  </Typography>
-                </CustomFormLabel>
-              </Box> */}
               <Stack justifyContent="space-between" direction="row" alignItems="center" my={2}>
                 <FormGroup>
                   <FormControlLabel
-                    control={<CustomCheckbox id="acceptTerms" {...getFieldProps('acceptTerms')} />}
+                    control={
+                      <CustomCheckbox id="acceptTerms" {...getFieldProps('acceptTerms')} />
+                    }
                     label={
                       <Typography
                         color="textSecondary"
@@ -178,7 +158,6 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                         I accept the{' '}
                         <Typography
                           color="primary"
-                          underline="hover"
                           sx={{ cursor: 'pointer' }}
                         >
                           Terms & Conditions
@@ -186,6 +165,9 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                       </Typography>
                     }
                   />
+                  <FormHelperText error={Boolean(touched.acceptTerms && errors.acceptTerms)}>
+                    {touched.acceptTerms && errors.acceptTerms}
+                  </FormHelperText>
                 </FormGroup>
                 <Typography
                   component={Link}

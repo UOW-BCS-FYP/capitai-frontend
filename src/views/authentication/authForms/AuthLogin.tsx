@@ -41,8 +41,8 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
 
   const formik = useFormik({
     initialValues: {
-      email: 'demo@demo.com',
-      password: 'demo123',
+      email: 'demo@capit-ai.com',
+      password: '123456',
       submit: null,
     },
 
@@ -150,7 +150,9 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             <Stack justifyContent="space-between" direction="row" alignItems="center" my={2}>
               <FormGroup>
                 <FormControlLabel
-                  control={<CustomCheckbox defaultChecked />}
+                  control={
+                    <CustomCheckbox defaultChecked />
+                  }
                   label="Remeber this Device"
                 />
               </FormGroup>
