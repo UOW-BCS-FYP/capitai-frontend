@@ -57,11 +57,10 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           setSubmitting(true);
         }
         console.log(values);
-      } catch (err: any) {
-        console.log(err);
+      } catch (err) {
         if (mounted.current) {
           setStatus({ success: false });
-          setErrors({ submit: err.message });
+          setErrors({ submit: (err as Error)?.message });
           setSubmitting(false);
         }
       }
@@ -102,7 +101,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         </Box>
       )}
       <FormikProvider value={formik}>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
           <Stack>
             <Box>
               <CustomFormLabel htmlFor="email">Email Address</CustomFormLabel>

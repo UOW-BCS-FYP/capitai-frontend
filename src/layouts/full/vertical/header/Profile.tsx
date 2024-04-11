@@ -17,21 +17,21 @@ import * as dropdownData from './data';
 import { IconMail } from '@tabler/icons-react';
 
 import ProfileImg from 'src/assets/images/profile/user-1.jpg';
-import unlimitedImg from 'src/assets/images/backgrounds/unlimited-bg.png';
+// import unlimitedImg from 'src/assets/images/backgrounds/unlimited-bg.png';
 import useAuth from 'src/guards/authGuard/UseAuth';
 import useMounted from 'src/guards/authGuard/UseMounted';
 
 const Profile = () => {
-  const [anchorEl2, setAnchorEl2] = useState(null);
+  const [anchorEl2, setAnchorEl2] = useState<EventTarget & HTMLButtonElement>();
   const mounted = useMounted();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
-  const handleClick2 = (event: any) => {
+  const handleClick2 = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl2(event.currentTarget);
   };
   const handleClose2 = () => {
-    setAnchorEl2(null);
+    setAnchorEl2(undefined);
   };
 
   const handleLogout = async () => {
@@ -93,11 +93,11 @@ const Profile = () => {
           <Avatar src={ProfileImg} alt={ProfileImg} sx={{ width: 95, height: 95 }} />
           <Box>
             <Typography variant="subtitle2" color="textPrimary" fontWeight={600}>
-              Mathew Anderson
+              { user?.username }
             </Typography>
-            <Typography variant="subtitle2" color="textSecondary">
+            {/* <Typography variant="subtitle2" color="textSecondary">
             Designer
-            </Typography>
+            </Typography> */}
             <Typography
               variant="subtitle2"
               color="textSecondary"
@@ -106,7 +106,7 @@ const Profile = () => {
               gap={1}
             >
               <IconMail width={15} height={15} />
-              info@capit-ai.com
+              { user?.email }
             </Typography>
           </Box>
         </Stack>

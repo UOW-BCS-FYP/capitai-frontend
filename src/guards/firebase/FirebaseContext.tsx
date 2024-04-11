@@ -1,19 +1,45 @@
 import { createContext, useEffect, useReducer } from 'react';
 import { firebase } from './Firebase';
 
+export interface UserProps {
+  id: string;
+  avatar: string | null;
+  email: string | null;
+  emailVerified?: boolean;
+  username?: string | null;
+  phoneNumber?: string | null;
+}
+
 export interface InitialStateType {
   isAuthenticated?: boolean;
   isInitialized?: boolean;
-  user?: any | null | undefined;
+  user?: UserProps | null | undefined;
+  platform?: string;
+  signup: (username: string, email: string, password: string) => Promise<firebase.auth.UserCredential>;
+  signin: (email: string, password: string) => Promise<firebase.auth.UserCredential>;
+  logout: () => Promise<void>;
+  onceGetUsers: () => Promise<firebase.database.DataSnapshot>;
+  CreateUser: (uid: string, username: string, email: string) => Promise<void>;
+  loginWithGoogle: () => Promise<firebase.auth.UserCredential>;
+  loginWithFaceBook: () => Promise<firebase.auth.UserCredential>;
+  loginWithTwitter: () => Promise<firebase.auth.UserCredential>;
 }
 
 const initialState: InitialStateType = {
   isAuthenticated: false,
   isInitialized: false,
   user: null,
+  signup: () => Promise.resolve({} as firebase.auth.UserCredential),
+  signin: () => Promise.resolve({} as firebase.auth.UserCredential),
+  logout: () => Promise.resolve(),
+  CreateUser: () => Promise.resolve(),
+  onceGetUsers: () => Promise.resolve({} as firebase.database.DataSnapshot),
+  loginWithGoogle: () => Promise.resolve({} as firebase.auth.UserCredential),
+  loginWithFaceBook: () => Promise.resolve({} as firebase.auth.UserCredential),
+  loginWithTwitter: () => Promise.resolve({} as firebase.auth.UserCredential),
 };
 
-const reducer = (state: InitialStateType, action: any) => {
+const reducer = (state: InitialStateType, action: { type: string, payload: { isAuthenticated: boolean, user?: UserProps | null } }) => {
   if (action.type === 'AUTH_STATE_CHANGED') {
     const { isAuthenticated, user } = action.payload;
 
@@ -28,21 +54,9 @@ const reducer = (state: InitialStateType, action: any) => {
   return state;
 };
 
-const AuthContext = createContext<any | null>({
+const AuthContext = createContext<InitialStateType>({
   ...initialState,
-  platform: 'Firebase',
-  signup: (email, password) => {
-    return firebase.auth().createUserWithEmailAndPassword(email, password);
-  },
-  signin: (email, password) => {
-    return firebase.auth().signInWithEmailAndPassword(email, password);
-  },
-  logout: () => Promise.resolve(),
-  onceGetUsers: () => {
-    console.log('onceGetUsers')
-    return firebase.database().ref('users').once('value');
-  },
-  CreateUser: () => Promise.resolve(),
+  platform: 'Firebase'
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactElement }) => {
@@ -53,6 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       firebase.auth().onAuthStateChanged((user) => {
+        console.log(user);
         if (user) {
           // Here you should extract the complete user profile to make it available in your entire app.
           // The auth state only provides basic information.
@@ -64,6 +79,9 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
                 id: user.uid,
                 avatar: user.photoURL,
                 email: user.email,
+                emailVerified: user.emailVerified,
+                username: user.displayName,
+                phoneNumber: user.phoneNumber,
               },
             },
           });
@@ -102,23 +120,36 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
   };
 
   // Sign Up
-  const signup = (email: string, password: string) => {
-    console.log('signup', email, password);
-    firebase.auth().createUserWithEmailAndPassword(email, password);
+  const signup = (username: string, email: string, password: string) => {
+    console.log('signup', username, email, password);
+    return firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then((result) => {
+        result.user?.updateProfile({
+          displayName: username,
+        });
+        return result;
+      })
   }
 
   // Sign In  
-  const signin = (email: string, password: string) =>
-    firebase.auth().signInWithEmailAndPassword(email, password);
+  const signin = (email: string, password: string) => {
+    return firebase.auth().signInWithEmailAndPassword(email, password);
+  }
 
   // Sign out
   const logout = () => firebase.auth().signOut();
-  const CreateUser = (id: string, username: string, email: string) =>
-    firebase.database().ref(`users/${id}`).set({
+  const CreateUser = (uid: string, username: string, email: string) =>
+    firebase.database().ref(`users/${uid}`).set({
       username,
       email,
+    }).then(() => {
+      console.log('User created');
+    }).catch((error) => {
+      console.error('Error creating user:', error);
     });
-  const onceGetUsers = () => firebase.database().ref('users').once('value');
+  const onceGetUsers = () => {
+    return firebase.database().ref('users').once('value');
+  }
 
   return (
     <AuthContext.Provider
