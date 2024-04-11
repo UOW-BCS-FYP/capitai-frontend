@@ -24,7 +24,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const navigate = useNavigate();
 
   const registerSchema = Yup.object().shape({
-    UserName: Yup.string().required('Username is required'),
+    username: Yup.string().required('Username is required'),
     email: Yup.string().email('Email is invalid').required('Email is required'),
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
@@ -34,7 +34,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
 
   const formik = useFormik({
     initialValues: {
-      UserName: '',
+      username: '',
       email: '',
       password: '',
       policy: true,
@@ -47,16 +47,17 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
     onSubmit: async (values, { setErrors, setStatus, setSubmitting }) => {
       try {
         console.log(values)
-        await signup(values.email, values.password);
-        navigate('/auth/login1');
+        await signup(values.username, values.email, values.password)
+        
+        navigate('/auth/login');
         if (mounted.current) {
           setStatus({ success: true });
           setSubmitting(true);
         }
-      } catch (err: any) {
+      } catch (err) {
         if (mounted.current) {
           setStatus({ success: false });
-          setErrors({ submit: err.message });
+          setErrors({ submit: (err as Error)?.message });
           setSubmitting(false);
         }
       }
@@ -97,16 +98,16 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
           </Box>
         )}
         <FormikProvider value={formik}>
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit} placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
             <Stack mb={3}>
               <CustomFormLabel htmlFor="name">Name</CustomFormLabel>
               <CustomTextField
                 id="name"
                 variant="outlined"
                 fullWidth
-                {...getFieldProps('UserName')}
-                error={Boolean(touched.UserName && errors.UserName)}
-                helperText={touched.UserName && errors.UserName}
+                {...getFieldProps('username')}
+                error={Boolean(touched.username && errors.username)}
+                helperText={touched.username && errors.username}
               />
               <CustomFormLabel htmlFor="email">Email Adddress</CustomFormLabel>
               <CustomTextField
