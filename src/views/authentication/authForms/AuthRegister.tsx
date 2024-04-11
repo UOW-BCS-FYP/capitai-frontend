@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import React from 'react';
-import { Box, Typography, Button, Divider, Alert } from '@mui/material';
+import { Box, Typography, Button, Divider, Alert, FormControlLabel, FormGroup, FormHelperText } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 
 import CustomTextField from '../../../components/forms/theme-elements/CustomTextField';
@@ -13,6 +13,7 @@ import { Form, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 import useAuth from 'src/guards/authGuard/UseAuth';
 import useMounted from 'src/guards/authGuard/UseMounted';
+import CustomCheckbox from 'src/components/forms/theme-elements/CustomCheckbox';
 
 const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const mounted = useMounted();
@@ -20,12 +21,11 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
   const navigate = useNavigate();
 
   const registerSchema = Yup.object().shape({
-    UserName: Yup.string().required('UserName is required'),
+    UserName: Yup.string().required('Username is required'),
     email: Yup.string().email('Email is invalid').required('Email is required'),
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
       .required('Password is required'),
-
     acceptTerms: Yup.bool().oneOf([true], 'Accept Terms & Conditions is required'),
   });
 
@@ -123,24 +123,45 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                 error={Boolean(touched.password && errors.password)}
                 helperText={touched.password && errors.password}
               />
-              <Box display="flex" alignItems="center">
-                <CustomTextField
-                  type="checkbox"
-                  id="acceptTerms"
-                  {...getFieldProps('acceptTerms')}
-                  error={Boolean(touched.acceptTerms && errors.acceptTerms)}
-                />
-                <CustomFormLabel htmlFor="acceptTerms" sx={{ ml: 1 }}>
-                  I accept the{' '}
-                  <Typography
-                    color="primary"
-                    underline="hover"
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    Terms & Conditions
-                  </Typography>
-                </CustomFormLabel>
-              </Box>
+              <Stack justifyContent="space-between" direction="row" alignItems="center" my={2}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <CustomCheckbox id="acceptTerms" {...getFieldProps('acceptTerms')} />
+                    }
+                    label={
+                      <Typography
+                        color="textSecondary"
+                        variant="body2"
+                        fontWeight="400"
+                        position="relative"
+                      >
+                        I accept the{' '}
+                        <Typography
+                          color="primary"
+                          sx={{ cursor: 'pointer' }}
+                        >
+                          Terms & Conditions
+                        </Typography>
+                      </Typography>
+                    }
+                  />
+                  <FormHelperText error={Boolean(touched.acceptTerms && errors.acceptTerms)}>
+                    {touched.acceptTerms && errors.acceptTerms}
+                  </FormHelperText>
+                </FormGroup>
+                <Typography
+                  component={Link}
+                  to="/auth/reset-password"
+                  fontWeight="500"
+                  sx={{
+                    textDecoration: 'none',
+                    color: 'primary.main',
+                  }}
+                >
+                  Forgot Password ?
+                </Typography>
+              </Stack>
             </Stack>
             <Button
               color="primary"
