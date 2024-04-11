@@ -10,6 +10,9 @@ import {
   Stack,
   Divider,
   Alert,
+  IconButton,
+  InputAdornment,
+  FormHelperText,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -22,6 +25,8 @@ import { Form, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 import useAuth from 'src/guards/authGuard/UseAuth';
 import useMounted from 'src/guards/authGuard/UseMounted';
+import CustomOutlinedInput from 'src/components/forms/theme-elements/CustomOutlinedInput';
+import { VisibilityOff, Visibility } from '@mui/icons-material';
 
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const mounted = useMounted();
@@ -63,6 +68,8 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     },
   });
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
+
+  const [showPassword, setShowPassword] = React.useState(false);
 
   return (
     <>
@@ -110,7 +117,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
             </Box>
             <Box>
               <CustomFormLabel htmlFor="password">Password</CustomFormLabel>
-              <CustomTextField
+              {/* <CustomTextField
                 id="password"
                 type="password"
                 variant="outlined"
@@ -118,7 +125,27 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
                 {...getFieldProps('password')}
                 error={Boolean(touched.password && errors.password)}
                 helperText={touched.password && errors.password}
+              /> */}
+              <CustomOutlinedInput id="password" type={showPassword ? 'text' : 'password'}
+                {...getFieldProps('password')}
+                error={Boolean(touched.password && errors.password)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={(e) => e.preventDefault()}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                fullWidth
               />
+              <FormHelperText error={Boolean(touched.password && errors.password)}>
+                {touched.password && errors.password}
+              </FormHelperText>
             </Box>
             <Stack justifyContent="space-between" direction="row" alignItems="center" my={2}>
               <FormGroup>

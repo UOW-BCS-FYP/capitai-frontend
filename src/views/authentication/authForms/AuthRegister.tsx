@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import React from 'react';
-import { Box, Typography, Button, Divider, Alert } from '@mui/material';
+import { Box, Typography, Button, Divider, Alert, IconButton, InputAdornment, FormHelperText, FormControlLabel, FormGroup } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 
 import CustomTextField from '../../../components/forms/theme-elements/CustomTextField';
@@ -13,8 +13,12 @@ import { Form, useFormik, FormikProvider } from 'formik';
 import * as Yup from 'yup';
 import useAuth from 'src/guards/authGuard/UseAuth';
 import useMounted from 'src/guards/authGuard/UseMounted';
+import { VisibilityOff, Visibility } from '@mui/icons-material';
+import CustomOutlinedInput from 'src/components/forms/theme-elements/CustomOutlinedInput';
+import CustomCheckbox from 'src/components/forms/theme-elements/CustomCheckbox';
 
 const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
+  const [showPassword, setShowPassword] = React.useState(false);
   const mounted = useMounted();
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -115,15 +119,34 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                 helperText={touched.email && errors.email}
               />
               <CustomFormLabel htmlFor="password">Password</CustomFormLabel>
-              <CustomTextField
+              {/* <CustomTextField
                 id="password"
                 variant="outlined"
                 fullWidth
                 {...getFieldProps('password')}
                 error={Boolean(touched.password && errors.password)}
                 helperText={touched.password && errors.password}
+              /> */}
+              <CustomOutlinedInput id="password" type={showPassword ? 'text' : 'password'}
+                {...getFieldProps('password')}
+                error={Boolean(touched.password && errors.password)}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                fullWidth
               />
-              <Box display="flex" alignItems="center">
+              <FormHelperText error={Boolean(touched.password && errors.password)}>
+                {touched.password && errors.password}
+              </FormHelperText>
+              {/* <Box display="flex" alignItems="center">
                 <CustomTextField
                   type="checkbox"
                   id="acceptTerms"
@@ -140,7 +163,42 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
                     Terms & Conditions
                   </Typography>
                 </CustomFormLabel>
-              </Box>
+              </Box> */}
+              <Stack justifyContent="space-between" direction="row" alignItems="center" my={2}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={<CustomCheckbox id="acceptTerms" {...getFieldProps('acceptTerms')} />}
+                    label={
+                      <Typography
+                        color="textSecondary"
+                        variant="body2"
+                        fontWeight="400"
+                        position="relative"
+                      >
+                        I accept the{' '}
+                        <Typography
+                          color="primary"
+                          underline="hover"
+                          sx={{ cursor: 'pointer' }}
+                        >
+                          Terms & Conditions
+                        </Typography>
+                      </Typography>
+                    }
+                  />
+                </FormGroup>
+                <Typography
+                  component={Link}
+                  to="/auth/reset-password"
+                  fontWeight="500"
+                  sx={{
+                    textDecoration: 'none',
+                    color: 'primary.main',
+                  }}
+                >
+                  Forgot Password ?
+                </Typography>
+              </Stack>
             </Stack>
             <Button
               color="primary"
