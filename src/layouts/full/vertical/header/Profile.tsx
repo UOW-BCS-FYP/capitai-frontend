@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Box,
   Menu,
@@ -18,14 +18,32 @@ import { IconMail } from '@tabler/icons-react';
 
 import ProfileImg from 'src/assets/images/profile/user-1.jpg';
 import unlimitedImg from 'src/assets/images/backgrounds/unlimited-bg.png';
+import useAuth from 'src/guards/authGuard/UseAuth';
+import useMounted from 'src/guards/authGuard/UseMounted';
 
 const Profile = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
+  const mounted = useMounted();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
   const handleClick2 = (event: any) => {
     setAnchorEl2(event.currentTarget);
   };
   const handleClose2 = () => {
     setAnchorEl2(null);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+      if (mounted.current) {
+        handleClose2();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -160,7 +178,7 @@ const Profile = () => {
               <img src={unlimitedImg} alt="unlimited" className="signup-bg"></img>
             </Box>
           </Box>
-          <Button to="/auth/login" variant="outlined" color="primary" component={Link} fullWidth>
+          <Button variant="outlined" color="primary" onClick={handleLogout} fullWidth>
             Logout
           </Button>
         </Box>
