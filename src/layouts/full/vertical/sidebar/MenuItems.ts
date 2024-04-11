@@ -62,7 +62,8 @@ import {
   IconBoxAlignBottom,
   IconBoxAlignLeft,
   IconBorderStyle2,
-  IconAppWindow
+  IconAppWindow,
+  IconMessages
 } from '@tabler/icons-react';
 
 const Menuitems: MenuitemsType[] = [
@@ -98,20 +99,20 @@ const Menuitems: MenuitemsType[] = [
   // },
   {
     id: uniqueId(),
-    title: 'Personal Consultant',
-    icon: IconUserCircle,
-    href: '/financial-consultant',
-    chip: 'AI',
-    chipColor: 'secondary',
+    title: 'Financial Advisor',
+    icon: IconMessages,
+    href: '/financial-consultant'
+    // chip: 'AI',
+    // chipColor: 'secondary',
   },
-  {
-    id: uniqueId(),
-    title: 'Investment Strategist',
-    icon: IconChartDots,
-    href: '/investment-strategist',
-    chip: 'AI',
-    chipColor: 'secondary',
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: 'Investment Strategist',
+  //   icon: IconChartDots,
+  //   href: '/investment-strategist',
+  //   chip: 'AI',
+  //   chipColor: 'secondary',
+  // },
   // {
   //   navlabel: true,
   //   subheader: 'Financial Reports',
