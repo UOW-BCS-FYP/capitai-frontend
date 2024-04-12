@@ -7,6 +7,8 @@ import Loadable from '../layouts/full/shared/loadable/Loadable';
 /* ***Layouts**** */
 const FullLayout = Loadable(lazy(() => import('../layouts/full/FullLayout')));
 const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')));
+import AuthGuard from 'src/guards/authGuard/AuthGuard';
+import GuestGuard from 'src/guards/authGuard/GuestGaurd';
 
 /* ****Pages***** */
 const ModernDash = Loadable(lazy(() => import('../views/dashboard/Modern')));
@@ -124,7 +126,12 @@ const FinancialStatement = Loadable(lazy(() => import('../views/financial-statem
 const Router = [
   {
     path: '/',
-    element: <FullLayout />,
+    // element: <FullLayout />,
+    element: (
+      <AuthGuard>
+        <FullLayout />
+      </AuthGuard>
+    ),
     children: [
       { path: '/', element: <Navigate to="/dashboard" /> },
       { path: '/dashboard', exact: true, element: <ModernDash /> }, // default dashboard
@@ -206,14 +213,24 @@ const Router = [
     ],
   },
   {
-    path: '/',
-    element: <BlankLayout />,
+    path: '/auth',
+    element: (
+      <GuestGuard>
+        <BlankLayout />
+      </GuestGuard>
+    ),
     children: [
-      { path: '/auth/404', element: <Error /> },
       { path: '/auth/login', element: <Login /> },
       { path: '/auth/login2', element: <Login2 /> },
       { path: '/auth/register', element: <Register /> },
       { path: '/auth/register2', element: <Register2 /> },
+    ],
+  },
+  {
+    path: '/',
+    element: <BlankLayout />,
+    children: [
+      { path: '/auth/404', element: <Error /> },
       { path: '/auth/forgot-password', element: <ForgotPassword /> },
       { path: '/auth/forgot-password2', element: <ForgotPassword2 /> },
       { path: '/auth/two-steps', element: <TwoSteps /> },

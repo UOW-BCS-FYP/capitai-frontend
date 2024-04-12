@@ -4,8 +4,8 @@ import img3 from 'src/assets/images/profile/user-3.jpg';
 import img4 from 'src/assets/images/profile/user-4.jpg';
 
 import icon1 from 'src/assets/images/svgs/icon-account.svg'
-import icon2 from 'src/assets/images/svgs/icon-inbox.svg'
-import icon3 from 'src/assets/images/svgs/icon-tasks.svg'
+// import icon2 from 'src/assets/images/svgs/icon-inbox.svg'
+// import icon3 from 'src/assets/images/svgs/icon-tasks.svg'
 
 import ddIcon1 from 'src/assets/images/svgs/icon-dd-chat.svg'
 import ddIcon2 from 'src/assets/images/svgs/icon-dd-cart.svg'
@@ -115,27 +115,27 @@ interface ProfileType {
   href: string;
   title: string;
   subtitle: string;
-  icon: any;
+  icon: string;
 }
 const profile: ProfileType[] = [
   {
-    href: '/user-profile',
+    href: '/pages/account-settings',
     title: 'My Profile',
     subtitle: 'Account Settings',
     icon: icon1,
   },
-  {
-    href: '/apps/email',
-    title: 'My Inbox',
-    subtitle: 'Messages & Emails',
-    icon: icon2,
-  },
-  {
-    href: '/apps/notes',
-    title: 'My Tasks',
-    subtitle: 'To-do and Daily Tasks',
-    icon: icon3,
-  },
+  // {
+  //   href: '/apps/email',
+  //   title: 'My Inbox',
+  //   subtitle: 'Messages & Emails',
+  //   icon: icon2,
+  // },
+  // {
+  //   href: '/apps/notes',
+  //   title: 'My Tasks',
+  //   subtitle: 'To-do and Daily Tasks',
+  //   icon: icon3,
+  // },
 ];
 
 // apps dropdown

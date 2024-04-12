@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Box,
   Menu,
@@ -17,15 +17,33 @@ import * as dropdownData from './data';
 import { IconMail } from '@tabler/icons-react';
 
 import ProfileImg from 'src/assets/images/profile/user-1.jpg';
-import unlimitedImg from 'src/assets/images/backgrounds/unlimited-bg.png';
+// import unlimitedImg from 'src/assets/images/backgrounds/unlimited-bg.png';
+import useAuth from 'src/guards/authGuard/UseAuth';
+import useMounted from 'src/guards/authGuard/UseMounted';
 
 const Profile = () => {
-  const [anchorEl2, setAnchorEl2] = useState(null);
-  const handleClick2 = (event: any) => {
+  const [anchorEl2, setAnchorEl2] = useState<EventTarget & HTMLButtonElement>();
+  const mounted = useMounted();
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleClick2 = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl2(event.currentTarget);
   };
   const handleClose2 = () => {
-    setAnchorEl2(null);
+    setAnchorEl2(undefined);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+      if (mounted.current) {
+        handleClose2();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -75,11 +93,11 @@ const Profile = () => {
           <Avatar src={ProfileImg} alt={ProfileImg} sx={{ width: 95, height: 95 }} />
           <Box>
             <Typography variant="subtitle2" color="textPrimary" fontWeight={600}>
-              Mathew Anderson
+              { user?.username }
             </Typography>
-            <Typography variant="subtitle2" color="textSecondary">
+            {/* <Typography variant="subtitle2" color="textSecondary">
             Designer
-            </Typography>
+            </Typography> */}
             <Typography
               variant="subtitle2"
               color="textSecondary"
@@ -88,7 +106,7 @@ const Profile = () => {
               gap={1}
             >
               <IconMail width={15} height={15} />
-              info@modernize.com
+              { user?.email }
             </Typography>
           </Box>
         </Stack>
@@ -146,7 +164,7 @@ const Profile = () => {
           </Box>
         ))}
         <Box mt={2}>
-          <Box bgcolor="primary.light" p={3} mb={3} overflow="hidden" position="relative">
+          {/* <Box bgcolor="primary.light" p={3} mb={3} overflow="hidden" position="relative">
             <Box display="flex" justifyContent="space-between">
               <Box>
                 <Typography variant="h5" mb={2}>
@@ -159,8 +177,8 @@ const Profile = () => {
               </Box>
               <img src={unlimitedImg} alt="unlimited" className="signup-bg"></img>
             </Box>
-          </Box>
-          <Button to="/auth/login" variant="outlined" color="primary" component={Link} fullWidth>
+          </Box>*/}
+          <Button variant="outlined" color="primary" onClick={handleLogout} fullWidth>
             Logout
           </Button>
         </Box>

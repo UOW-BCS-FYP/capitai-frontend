@@ -11,5 +11,6 @@ import './userprofile/UsersData';
 import './smartBudgeting/expectedIncomeData'
 import './smartBudgeting/budgetCategoryData'
 import './smartBudgeting/I_SRecordData'
+import './financial-consultant/ConsultantData';
 
 mock.onAny().passThrough();
