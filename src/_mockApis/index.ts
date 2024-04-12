@@ -8,5 +8,8 @@ import './eCommerce/ProductsData';
 import './email/EmailData';
 import './userprofile/PostData';
 import './userprofile/UsersData';
+import './smartBudgeting/expectedIncomeData'
+import './smartBudgeting/budgetCategoryData'
+import './smartBudgeting/I_SRecordData'
 
 mock.onAny().passThrough();

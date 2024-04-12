@@ -114,7 +114,8 @@ const Maintenance = Loadable(lazy(() => import('../views/authentication/Maintena
 // landingpage
 const Landingpage = Loadable(lazy(() => import('../views/pages/landingpage/Landingpage')));
 
-const SmartBudgeting = Loadable(lazy(() => import('../views/smart-budgeting/SmartBudgeting')));
+const BudgetPlan = Loadable(lazy(() => import('../views/smart-budgeting/BudgetPlan')));
+const I_S = Loadable(lazy(() => import('../views/smart-budgeting/I_S')));
 const GoalTracker = Loadable(lazy(() => import('../views/goal-tracker/GoalTracker')));
 const FinancialConsultant = Loadable(lazy(() => import('../views/financial-consultant/FinancialConsultant')));
 const InvestmentStrategist = Loadable(lazy(() => import('../views/investment-strategist/InvestmentStrategist')));
@@ -127,7 +128,8 @@ const Router = [
     children: [
       { path: '/', element: <Navigate to="/dashboard" /> },
       { path: '/dashboard', exact: true, element: <ModernDash /> }, // default dashboard
-      { path: '/smart-budgeting', element: <SmartBudgeting />},
+        { path: '/smart-budgeting', element: <BudgetPlan /> },
+        { path: '/smart-budgeting/i_s', element: <I_S /> },
       { path: '/goal-tracker', element: <GoalTracker />},
       { path: '/financial-consultant', element: <FinancialConsultant /> },
       { path: '/investment-strategist', element: <InvestmentStrategist /> },
