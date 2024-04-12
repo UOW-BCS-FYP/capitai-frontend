@@ -101,7 +101,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         </Box>
       )}
       <FormikProvider value={formik}>
-        <Form onSubmit={handleSubmit} placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+        <Form onSubmit={handleSubmit}>
           <Stack>
             <Box>
               <CustomFormLabel htmlFor="email">Email Address</CustomFormLabel>
