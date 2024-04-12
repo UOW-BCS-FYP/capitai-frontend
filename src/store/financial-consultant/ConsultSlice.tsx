@@ -61,6 +61,7 @@ export const { SearchChat, getChats, sendMsg, SelectChat } = ConsultantSlice.act
 export const fetchChats = () => async (dispatch: AppDispatch) => {
   try {
     const response = await axios.get(`${API_URL}`);
+    console.log(response.data);
     dispatch(getChats(response.data));
   } catch (err: any) {
     throw new Error(err);
