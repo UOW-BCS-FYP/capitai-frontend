@@ -98,7 +98,7 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
           </Box>
         )}
         <FormikProvider value={formik}>
-          <Form onSubmit={handleSubmit} placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}>
+          <Form onSubmit={handleSubmit}>
             <Stack mb={3}>
               <CustomFormLabel htmlFor="name">Name</CustomFormLabel>
               <CustomTextField
