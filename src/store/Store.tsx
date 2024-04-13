@@ -12,6 +12,7 @@ import ExpectedIncomeReducer from './apps/smartBudgeting/ExpectedIncomeSlice'
 import BudgetCategoryReducer from './apps/smartBudgeting/BudgetCategorySlice'
 import I_SRecordRecuder from './apps/smartBudgeting/I_SRecordSlice'
 import GoalTrackerReducer from './goal-tracker/GoalTrackerSlice';
+import FinancialStatementReducer from './financial-statement/FinancialStatementSlice';
 
 import { combineReducers } from 'redux';
 import {
@@ -35,6 +36,7 @@ export const store = configureStore({
     budgetCategoryReducer: BudgetCategoryReducer,
     I_SRecordRecuder: I_SRecordRecuder,
     goalTrackerReducer: GoalTrackerReducer,
+    statementReducer: FinancialStatementReducer,
   },
 });
 
@@ -52,6 +54,7 @@ const rootReducer = combineReducers({
   budgetCategoryReducer: BudgetCategoryReducer,
   I_SRecordRecuder: I_SRecordRecuder,
   goalTrackerReducer: GoalTrackerReducer,
+  statementReducer: FinancialStatementReducer,
 });
 
 export type AppState = ReturnType<typeof rootReducer>;
