@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axios';
 import { FinancialGoalType } from "src/types/goal-tracker";
 import { AppDispatch } from "../Store";
@@ -9,16 +9,20 @@ interface StateType {
   goals: FinancialGoalType[];
   goalContent: number;
   goalSearch: string;
+  statusFetchGoals: string;
+  errorFetchGoals: string | undefined;
 }
 
 const initialState = {
   goals: [],
   goalContent: -1,
   goalSearch: '',
+  statusFetchGoals: 'idle',
+  errorFetchGoals: ''
 };
 
 export const GoalTrackerSlice = createSlice({
-  name: 'goal',
+  name: 'goal-tracker',
   initialState,
   reducers: {
     getGoals: (state, action) => {
@@ -32,18 +36,31 @@ export const GoalTrackerSlice = createSlice({
       state.goalContent = action.payload;
     }
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchGoals.pending, (state) => {
+        state.statusFetchGoals = 'loading';
+      })
+      .addCase(fetchGoals.fulfilled, (state, action) => {
+        state.statusFetchGoals = 'succeeded';
+        state.goals = action.payload;
+      })
+      .addCase(fetchGoals.rejected, (state, action) => {
+        state.statusFetchGoals = 'failed';
+        state.errorFetchGoals = action.error.message ?? 'failed to fetch goals';
+      })
+  }
 });
 
-export const fetchGoals = () => async (dispatch: AppDispatch) => {
+export const fetchGoals = createAsyncThunk('goal-tracker/fetchGoals', async () => {
   try {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const response = await axios.get(API_URL);
-    console.log(response.data)
-    dispatch(getGoals(response.data));
+    return response.data;
   } catch (err) {
-    console.log(err)
     throw new Error();
   }
-}
+})
 
 export const addGoal = (goal: FinancialGoalType) => async () => {
   try {

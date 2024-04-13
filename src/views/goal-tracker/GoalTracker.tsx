@@ -68,10 +68,10 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = 'asc' | 'desc';
 
-function getComparator<Key extends keyof any>(
+function getComparator<Key extends keyof FinancialGoalType>(
   order: Order,
   orderBy: Key,
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
+): (a: { [key in Key]: number | string | boolean }, b: { [key in Key]: number | string | boolean }) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -93,7 +93,7 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 
 interface HeadCell {
   disablePadding: boolean;
-  id: any;
+  id: keyof FinancialGoalType;
   label: string;
   numeric: boolean;
 }
@@ -139,7 +139,7 @@ const headCells: HeadCell[] = [
 
 interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof []) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof FinancialGoalType) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
@@ -148,7 +148,7 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
-  const createSortHandler = (property: keyof []) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof FinancialGoalType) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
 
@@ -254,14 +254,19 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 const EnhanceTable = () => {
   const dispatch = useDispatch();
   const goals: FinancialGoalType[] = useSelector((state) => state.goalTrackerReducer.goals);
-  
+  const statusFetchGoals = useSelector((state) => state.goalTrackerReducer.statusFetchGoals);
+  const errorFetchGoals = useSelector((state) => state.goalTrackerReducer.errorFetchGoals);
+
   useEffect(() => {
     console.log('fetching goals')
-    dispatch(fetchGoals());
-  }, [dispatch]);
+    if (statusFetchGoals === 'idle') {
+      dispatch(fetchGoals())
+    }
+  }, [statusFetchGoals, dispatch]);
+
 
   const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<string>('title');
+  const [orderBy, setOrderBy] = React.useState<keyof FinancialGoalType>('title');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
@@ -269,6 +274,10 @@ const EnhanceTable = () => {
 
   const [rows, setRows] = React.useState<FinancialGoalType[]>(goals);
   const [search, setSearch] = React.useState('');
+
+  // if (statusFetchGoals === 'idle' || statusFetchGoals === 'loading') {
+  //   return (<Typography variant="subtitle2">Loading...</Typography>)
+  // }
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const filteredRows: FinancialGoalType[] = goals.filter((row) => {
@@ -280,10 +289,10 @@ const EnhanceTable = () => {
   
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof []) => {
+  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof FinancialGoalType) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property as string);
+    setOrderBy(property as keyof FinancialGoalType);
   };
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -359,6 +368,8 @@ const EnhanceTable = () => {
           <BlankCard>
             <Box mb={2} sx={{ mb: 2 }}>
               <EnhancedTableToolbar numSelected={selected.length} search={search} handleSearch={(e) => handleSearch(e)} />
+              {statusFetchGoals === 'loading' && <Typography variant="subtitle2">Loading...</Typography>}
+              {statusFetchGoals === 'failed' && <Typography variant="subtitle2">{errorFetchGoals}</Typography>}
               <TableContainer>
                 <Table
                   sx={{ minWidth: 750 }}
@@ -374,7 +385,7 @@ const EnhanceTable = () => {
                     rowCount={rows.length}
                   />
                   <TableBody>
-                    {stableSort(rows, getComparator(order, orderBy))
+                    {goals
                       .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row: FinancialGoalType, index) => {
                         const isItemSelected = isSelected(row.id);
