@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import { useTheme } from '@mui/material/styles';
 import { Box, Container, Divider, Grid, Typography } from '@mui/material';
-import BlankCard from 'src/components/shared/BlankCard';
 import SBSTab from 'src/components/apps/smartBudgeting/SBSTab';
 import { Props } from 'react-apexcharts';
 import ExpectedIncomeBar from 'src/components/apps/smartBudgeting/ExpectedIncomeBar'
@@ -11,9 +10,23 @@ import { useSelector, useDispatch } from 'src/store/Store';
 import AppCard from '../../components/shared/AppCard';
 import ExpectedIncomeTableList from '../../components/apps/smartBudgeting/ExpectedIncomeTableList';
 import BudgetingCategoryTableList from '../../components/apps/smartBudgeting/BudgetingCategoryTableList';
+import { fetchBudgetCtgy } from '../../store/apps/smartBudgeting/BudgetCategorySlice';
 
 const BudgetPlan = () => {
-    // chart color
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(fetchExpInc());
+        dispatch(fetchBudgetCtgy());
+    }, [dispatch]);
+
+    const budgetCategories = useSelector((state) =>
+        state.budgetCategoryReducer.budgetCategories
+    );
+
+    const expectedIncomes = useSelector((state) =>
+        state.expectedIncomeReducer.expectedIncomes
+    );
+
     const theme = useTheme();
     const primary = theme.palette.primary.main;
     const primarylight = theme.palette.primary.light;
@@ -47,18 +60,9 @@ const BudgetPlan = () => {
             theme: 'dark',
             fillSeriesColor: false,
         },
+        labels: budgetCategories.map(obj => obj.title)
     };
-    const seriesdoughnutchart = [45, 15, 27, 18, 35];
-
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(fetchExpInc());
-    }, [dispatch]);
-
-    const expectedIncomes = useSelector((state) =>
-        state.expectedIncomeReducer.expectedIncomes
-    );
-
+    const seriesdoughnutchart = budgetCategories.map(obj => obj.amount);
     return (
       <Box
           flexDirection="column"

@@ -15,35 +15,6 @@ const I_S = () => {
     const secondarylight = theme.palette.secondary.light;
     const warning = theme.palette.warning.main;
 
-    const optionsdoughnutchart: Props = {
-        chart: {
-            id: 'donut-chart',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            foreColor: '#adb0bb',
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        plotOptions: {
-            pie: {
-                donut: {
-                    size: '70px',
-                },
-            },
-        },
-        legend: {
-            show: true,
-            position: 'bottom',
-            width: '50px',
-        },
-        colors: [primary, primarylight, secondary, secondarylight, warning],
-        tooltip: {
-            theme: 'dark',
-            fillSeriesColor: false,
-        },
-    };
-    const seriesdoughnutchart = [45, 15, 27, 18, 35];
-
     return (
         <Box
             flexDirection="column"
