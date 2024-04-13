@@ -1,5 +1,5 @@
 import { FinancialGoalType } from "src/types/goal-tracker";
-import mock from "../mock";
+import mock from "../../../mock";
 
 const FinancialGoalData: FinancialGoalType[] = [
   {

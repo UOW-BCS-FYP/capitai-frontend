@@ -1,4 +1,4 @@
-import mock from '../mock';
+import mock from '../../../mock';
 import bg1 from 'src/assets/images/blog/blog-img1.jpg';
 import fakeChart from 'src/assets/images/financial-consultant/fake-chart.jpg'
 import user1 from 'src/assets/images/profile/user-1.jpg';
