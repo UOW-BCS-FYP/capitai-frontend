@@ -20,12 +20,6 @@ const RecentTransactions = () => {
       <>
         <Timeline
           className="theme-timeline"
-          nonce={undefined}
-          onResize={undefined}
-          onResizeCapture={undefined}
-          placeholder={undefined}
-          onPointerEnterCapture={() => {}}
-          onPointerLeaveCapture={() => {}}
           sx={{
             p: 0,
             mb: '-40px',

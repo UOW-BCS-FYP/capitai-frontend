@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axios';
 import { FinancialGoalType } from "src/types/goal-tracker";
-import { AppDispatch } from "../Store";
+// import { AppDispatch } from "../Store";
 
 const API_URL = '/api/goal-tracker';
 

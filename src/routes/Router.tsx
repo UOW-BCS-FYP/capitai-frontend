@@ -70,7 +70,7 @@ const QuillEditor = Loadable(lazy(() => import('../views/forms/quill-editor/Quil
 
 // pages
 const RollbaseCASL = Loadable(lazy(() => import('../views/pages/rollbaseCASL/RollbaseCASL')));
-const Treeview = Loadable(lazy(() => import('../views/pages/treeview/Treeview')));
+// const Treeview = Loadable(lazy(() => import('../views/pages/treeview/Treeview')));
 const Faq = Loadable(lazy(() => import('../views/pages/faq/Faq')));
 const Pricing = Loadable(lazy(() => import('../views/pages/pricing/Pricing')));
 const AccountSetting = Loadable(
@@ -174,7 +174,7 @@ const Router = [
       { path: '/ui-components/transfer-list', element: <MuiTransferList /> },
       { path: '/ui-components/typography', element: <MuiTypography /> },
       { path: '/pages/casl', element: <RollbaseCASL /> },
-      { path: '/pages/treeview', element: <Treeview /> },
+      // { path: '/pages/treeview', element: <Treeview /> },
       { path: '/pages/pricing', element: <Pricing /> },
       { path: '/pages/faq', element: <Faq /> },
       { path: '/pages/account-settings', element: <AccountSetting /> },

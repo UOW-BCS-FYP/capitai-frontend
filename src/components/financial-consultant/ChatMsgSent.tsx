@@ -3,7 +3,7 @@
 import React, { FormEvent } from 'react';
 import { useSelector, useDispatch } from 'src/store/Store';
 import { IconButton, InputBase, Box, Popover } from '@mui/material';
-import Picker, { IEmojiData } from 'emoji-picker-react';
+import Picker, { EmojiClickData } from 'emoji-picker-react';
 import { IconMoodSmile, IconPaperclip, IconPhoto, IconSend } from '@tabler/icons-react';
 import { sendMsg } from 'src/store/financial-consultant/ConsultSlice';
 
@@ -11,9 +11,9 @@ const ChatMsgSent = () => {
   const [msg, setMsg] = React.useState<string>('');
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  const [chosenEmoji, setChosenEmoji] = React.useState<IEmojiData>();
+  const [chosenEmoji, setChosenEmoji] = React.useState<EmojiClickData>();
 
-  const onEmojiClick = (_event: React.MouseEvent<Element, MouseEvent>, emojiObject: IEmojiData) => {
+  const onEmojiClick = (emojiObject: EmojiClickData) => {
     setChosenEmoji(emojiObject);
     setMsg(emojiObject.emoji);
   };
@@ -71,7 +71,7 @@ const ChatMsgSent = () => {
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <Picker onEmojiClick={onEmojiClick} native />
+          <Picker onEmojiClick={onEmojiClick} />
           <Box p={2}>Selected: {chosenEmoji ? chosenEmoji.emoji : ''}</Box>
         </Popover>
         <InputBase

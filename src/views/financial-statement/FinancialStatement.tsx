@@ -21,10 +21,10 @@ import {
   Tooltip,
   FormControlLabel,
   Typography,
-  Avatar,
-  AvatarGroup,
-  Badge,
-  Stack,
+  // Avatar,
+  // AvatarGroup,
+  // Badge,
+  // Stack,
   InputAdornment,
   TextField,
   Grid
@@ -35,12 +35,12 @@ import CustomSwitch from 'src/components/forms/theme-elements/CustomSwitch';
 import Breadcrumb from 'src/layouts/full/shared/breadcrumb/Breadcrumb';
 import PageContainer from 'src/components/container/PageContainer';
 import { IconTrash, IconFilter, IconSearch } from '@tabler/icons-react';
-import { EnhancedTableData, EnTableType } from 'src/components/tables/tableData';
+// import { EnhancedTableData, EnTableType } from 'src/components/tables/tableData';
 import BlankCard from '../../components/shared/BlankCard';
 import { useDispatch, useSelector } from '../../store/Store';
-import MonthlyEarnings from 'src/components/dashboards/modern/MonthlyEarnings';
-import YearlyBreakup from 'src/components/dashboards/modern/YearlyBreakup';
-import PageImpressions from 'src/components/widgets/charts/PageImpressions';
+// import MonthlyEarnings from 'src/components/dashboards/modern/MonthlyEarnings';
+// import YearlyBreakup from 'src/components/dashboards/modern/YearlyBreakup';
+// import PageImpressions from 'src/components/widgets/charts/PageImpressions';
 import { PersonalFinanceStatementType } from 'src/types/financial-statement';
 import { fetchStatements } from 'src/store/financial-statement/FinancialStatementSlice';
 
@@ -55,42 +55,42 @@ const BCrumb = [
   },
 ];
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
+// function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+//   if (b[orderBy] < a[orderBy]) {
+//     return -1;
+//   }
+//   if (b[orderBy] > a[orderBy]) {
+//     return 1;
+//   }
 
-  return 0;
-}
+//   return 0;
+// }
 // const rows: EnTableType[] = EnhancedTableData;
 
 type Order = 'asc' | 'desc';
 
-function getComparator<Key extends keyof PersonalFinanceStatementType>(
-  order: Order,
-  orderBy: Key,
-): (a: { [key in Key]: number | string | boolean }, b: { [key in Key]: number | string | boolean }) => number {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
+// function getComparator<Key extends keyof PersonalFinanceStatementType>(
+//   order: Order,
+//   orderBy: Key,
+// ): (a: { [key in Key]: number | string | boolean }, b: { [key in Key]: number | string | boolean }) => number {
+//   return order === 'desc'
+//     ? (a, b) => descendingComparator(a, b, orderBy)
+//     : (a, b) => -descendingComparator(a, b, orderBy);
+// }
 
-function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
+// function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
+//   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) {
+//       return order;
+//     }
 
-    return a[1] - b[1];
-  });
+//     return a[1] - b[1];
+//   });
 
-  return stabilizedThis.map((el) => el[0]);
-}
+//   return stabilizedThis.map((el) => el[0]);
+// }
 
 interface HeadCell {
   disablePadding: boolean;
@@ -334,7 +334,7 @@ const EnhanceTable = () => {
   // }
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const filteredRows: PersonalFinanceStatementType[] = statement.filter((row) => {
+    const filteredRows: PersonalFinanceStatementType[] = statements.filter((row) => {
       return row.month.toLowerCase().includes(event.target.value);
     });
     setSearch(event.target.value);
@@ -421,7 +421,7 @@ const EnhanceTable = () => {
         <Grid item xs={12} lg={12}>
           <BlankCard>
             <Box mb={2} sx={{ mb: 2 }}>
-              <EnhancedTableToolbar numSelected={selected.length} search={search} handleSearch={(e) => handleSearch(e)} />
+              <EnhancedTableToolbar numSelected={selected.length} search={search} handleSearch={(e: any) => handleSearch(e)} />
               {statusFetchStatements === 'loading' && <Typography variant="subtitle2">Loading...</Typography>}
               {statusFetchStatements === 'failed' && <Typography variant="subtitle2">{errorFetchStatements}</Typography>}
               <TableContainer>

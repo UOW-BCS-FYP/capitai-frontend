@@ -2,8 +2,6 @@ import { FC, useState } from 'react';
 import {
   Fab,
   Drawer,
-  Grid,
-  Slider,
   Divider,
   styled,
   IconButton,
@@ -13,35 +11,30 @@ import {
 } from '@mui/material';
 import { useSelector, useDispatch } from 'src/store/Store';
 import Box, { BoxProps } from '@mui/material/Box';
-import { IconX, IconSettings, IconCheck } from '@tabler/icons-react';
+import { IconX, IconSettings } from '@tabler/icons-react';
 import {
-  setTheme,
-  setDir,
   setDarkMode,
-  toggleLayout,
-  toggleSidebar,
   toggleHorizontal,
-  setBorderRadius,
   setCardShadow,
 } from 'src/store/customizer/CustomizerSlice';
 import { AppState } from 'src/store/Store';
 import Scrollbar from 'src/components/custom-scroll/Scrollbar';
 import WbSunnyTwoToneIcon from '@mui/icons-material/WbSunnyTwoTone';
 import DarkModeTwoToneIcon from '@mui/icons-material/DarkModeTwoTone';
-import SwipeLeftAltTwoToneIcon from '@mui/icons-material/SwipeLeftAltTwoTone';
-import SwipeRightAltTwoToneIcon from '@mui/icons-material/SwipeRightAltTwoTone';
-import AspectRatioTwoToneIcon from '@mui/icons-material/AspectRatioTwoTone';
+// import SwipeLeftAltTwoToneIcon from '@mui/icons-material/SwipeLeftAltTwoTone';
+// import SwipeRightAltTwoToneIcon from '@mui/icons-material/SwipeRightAltTwoTone';
+// import AspectRatioTwoToneIcon from '@mui/icons-material/AspectRatioTwoTone';
 import CallToActionTwoToneIcon from '@mui/icons-material/CallToActionTwoTone';
-import ViewSidebarTwoToneIcon from '@mui/icons-material/ViewSidebarTwoTone';
-import WebAssetTwoToneIcon from '@mui/icons-material/WebAssetTwoTone';
+// import ViewSidebarTwoToneIcon from '@mui/icons-material/ViewSidebarTwoTone';
+// import WebAssetTwoToneIcon from '@mui/icons-material/WebAssetTwoTone';
 import { ViewComfyTwoTone, PaddingTwoTone, BorderOuter } from '@mui/icons-material';
 
 const SidebarWidth = '320px';
-interface colors {
-  id: number;
-  bgColor: string;
-  disp?: string;
-}
+// interface colors {
+//   id: number;
+//   bgColor: string;
+//   disp?: string;
+// }
 const Customizer: FC = () => {
   const [showDrawer, setShowDrawer] = useState(false);
   const customizer = useSelector((state: AppState) => state.customizer);
@@ -61,38 +54,38 @@ const Customizer: FC = () => {
     },
   }));
 
-  const thColors: colors[] = [
-    {
-      id: 1,
-      bgColor: '#5D87FF',
-      disp: 'BLUE_THEME',
-    },
-    {
-      id: 2,
-      bgColor: '#0074BA',
-      disp: 'AQUA_THEME',
-    },
-    {
-      id: 3,
-      bgColor: '#763EBD',
-      disp: 'PURPLE_THEME',
-    },
-    {
-      id: 4,
-      bgColor: '#0A7EA4',
-      disp: 'GREEN_THEME',
-    },
-    {
-      id: 5,
-      bgColor: '#01C0C8',
-      disp: 'CYAN_THEME',
-    },
-    {
-      id: 6,
-      bgColor: '#FA896B',
-      disp: 'ORANGE_THEME',
-    },
-  ];
+  // const thColors: colors[] = [
+  //   {
+  //     id: 1,
+  //     bgColor: '#5D87FF',
+  //     disp: 'BLUE_THEME',
+  //   },
+  //   {
+  //     id: 2,
+  //     bgColor: '#0074BA',
+  //     disp: 'AQUA_THEME',
+  //   },
+  //   {
+  //     id: 3,
+  //     bgColor: '#763EBD',
+  //     disp: 'PURPLE_THEME',
+  //   },
+  //   {
+  //     id: 4,
+  //     bgColor: '#0A7EA4',
+  //     disp: 'GREEN_THEME',
+  //   },
+  //   {
+  //     id: 5,
+  //     bgColor: '#01C0C8',
+  //     disp: 'CYAN_THEME',
+  //   },
+  //   {
+  //     id: 6,
+  //     bgColor: '#FA896B',
+  //     disp: 'ORANGE_THEME',
+  //   },
+  // ];
 
   return (
     <div>
