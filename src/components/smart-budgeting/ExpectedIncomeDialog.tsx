@@ -1,10 +1,9 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Dialog, { DialogProps } from '@mui/material/Dialog';
+import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { CardMedia, Checkbox, DialogActions, Divider, FormControlLabel, FormHelperText, Grid, IconButton, InputAdornment, OutlinedInput, Slider, TextField } from '@mui/material';
+import { Checkbox, DialogActions, FormControlLabel, Grid, TextField } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 

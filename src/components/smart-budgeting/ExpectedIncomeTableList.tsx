@@ -2,7 +2,6 @@
 // @ts-ignore
 import * as React from 'react';
 import { alpha, useTheme } from '@mui/material/styles';
-import { format } from 'date-fns';
 import {
     Box,
     Table,
@@ -18,20 +17,21 @@ import {
     Tooltip,
     FormControlLabel,
     Typography,
-    Avatar,
     TextField,
     InputAdornment,
     Paper,
-    Stack,
     Fab,
+    Stack,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
-import CustomCheckbox from '../../forms/theme-elements/CustomCheckbox';
-import CustomSwitch from '../../forms/theme-elements/CustomSwitch';
+import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
+import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
-import { fetchBudgetCtgy } from '../../../store/apps/smartBudgeting/BudgetCategorySlice';
-import { budgetCategoryType } from '../../../_mockApis/smartBudgeting/budgetCategoryData';
+import { fetchExpInc } from 'src/store/smart-budgeting/ExpectedIncomeSlice';
+import { ExpectedIncomeType } from 'src/_mockApis/api/v1/smart-budgeting/expectedIncomeData';
+import { useState } from 'react';
+import ExpectedIncomeDialog from './ExpectedIncomeDialog';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -74,7 +74,7 @@ interface HeadCell {
     id: string;
     label: string;
     numeric: boolean;
-    paddingType: "normal" | "checkbox" | "none" | undefined;
+    paddingType: "normal" |"checkbox"|"none"|undefined;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -166,10 +166,11 @@ interface EnhancedTableToolbarProps {
     numSelected: number;
     handleSearch: React.ChangeEvent<HTMLInputElement> | any;
     search: string;
+    handleAdd: React.ChangeEvent<HTMLInputElement> | any;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { numSelected, handleSearch, search } = props;
+    const { numSelected, handleSearch, search, handleAdd } = props;
 
     return (
         <Toolbar
@@ -188,7 +189,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 <Box>
                     <Stack>
                         <Tooltip title="Add" placement="bottom">
-                            <Fab size="small" color="info">
+                            <Fab size="small" color="info" onClick={handleAdd}>
                                 <IconPlus size="16" />
                             </Fab>
                         </Tooltip>
@@ -209,7 +210,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                                 </InputAdornment>
                             ),
                         }}
-                        placeholder="Search Budget Category"
+                        placeholder="Search Expected Income"
                         size="small"
                         onChange={handleSearch}
                         value={search}
@@ -234,32 +235,33 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     );
 };
 
-const BudgetingCategoryTableList = () => {
+const ExpectedIncomeTableList = () => {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<any>('calories');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [openDialog, setOpenDialog] = useState(false);
 
     const dispatch = useDispatch();
 
-    //Fetch budget categories
+    //Fetch Expected incomes
     React.useEffect(() => {
-        dispatch(fetchBudgetCtgy());
+        dispatch(fetchExpInc());
     }, [dispatch]);
 
-    const getBudgetCtgy: budgetCategoryType[] = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
+    const getExpInc: ExpectedIncomeType[] = useSelector((state) => state.expectedIncomeReducer.expectedIncomes);
 
-    const [rows, setRows] = React.useState<any>(getBudgetCtgy);
+    const [rows, setRows] = React.useState<any>(getExpInc);
     const [search, setSearch] = React.useState('');
 
     React.useEffect(() => {
-        setRows(getBudgetCtgy);
-    }, [getBudgetCtgy]);
+        setRows(getExpInc);
+    }, [getExpInc]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const filteredRows: budgetCategoryType[] = getBudgetCtgy.filter((row) => {
+        const filteredRows: ExpectedIncomeType[] = getExpInc.filter((row) => {
             return row.title.toLowerCase().includes(event.target.value);
         });
         setSearch(event.target.value);
@@ -322,6 +324,10 @@ const BudgetingCategoryTableList = () => {
         setDense(event.target.checked);
     };
 
+    const handleDialogClose = () => {
+        setOpenDialog(false);
+    };
+
     const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -337,6 +343,7 @@ const BudgetingCategoryTableList = () => {
                     numSelected={selected.length}
                     search={search}
                     handleSearch={(event: any) => handleSearch(event)}
+                    handleAdd={() => setOpenDialog(true)}                    
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
                     <TableContainer>
@@ -455,8 +462,12 @@ const BudgetingCategoryTableList = () => {
                     />
                 </Box>
             </Box>
+            <ExpectedIncomeDialog
+                open={openDialog}
+                onClose={handleDialogClose}
+            />
         </Box>
     );
 };
 
-export default BudgetingCategoryTableList;
+export default ExpectedIncomeTableList;

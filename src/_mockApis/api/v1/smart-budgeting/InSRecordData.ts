@@ -1,6 +1,6 @@
-import mock from '../mock';
+import mock from '../../../mock';
 
-export type I_SRecordType = {
+export type InSRecordType = {
     id: number;
     title: string;
     amount: number;
@@ -10,7 +10,7 @@ export type I_SRecordType = {
     category: string;
 }
 
-const I_SRecordData: I_SRecordType[] = [
+const InSRecordData: InSRecordType[] = [
     {
         id: 1,
         title: 'rent payment',
@@ -75,7 +75,9 @@ const I_SRecordData: I_SRecordType[] = [
         category: 'business',
     },
 ];
-mock.onGet('/api/data/sbs/I_SRecord').reply(() => {
-    return [200, I_SRecordData];
+
+mock.onGet('/api/v1/smart-budgeting/income-spending-record').reply(() => {
+    return [200, InSRecordData];
 });
-export default I_SRecordData;
+
+export default InSRecordData;

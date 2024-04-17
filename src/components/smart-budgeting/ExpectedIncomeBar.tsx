@@ -4,7 +4,7 @@ import React from 'react';
 import { styled } from '@mui/material/styles';
 import { Box, Grid, Typography } from '@mui/material';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import { expectedIncomeType } from '../../../_mockApis/smartBudgeting/expectedIncomeData';
+import { ExpectedIncomeType } from '../../_mockApis/api/v1/smart-budgeting/expectedIncomeData';
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     height: 10,
@@ -18,16 +18,16 @@ const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     },
 }));
 
-const ExpectedIncomeBar = (props: { expInc?: Partial<expectedIncomeType> }) => {
+const ExpectedIncomeBar = (props: { expInc?: Partial<ExpectedIncomeType> }) => {
     return (
         <Box marginTop='5px' marginBottom='15px' marginLeft='33px'>
             <Typography align='left' variant='h4'>{props.expInc?.title}</Typography>
             <Typography align='left'>Expected amount: ${props.expInc?.amount}</Typography>
             <Grid container alignItems="center" spacing='30px'>
-                <Grid item xs='10' >
+                <Grid item xs={10} >
                     <BorderLinearProgress variant="determinate" value={50} />
                 </Grid>
-                <Grid item xs='1'>
+                <Grid item xs={1}>
                     <Typography>50%</Typography>
                 </Grid>
             </Grid>

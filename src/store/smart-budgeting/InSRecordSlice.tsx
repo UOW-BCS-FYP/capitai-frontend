@@ -1,24 +1,24 @@
-import axios from '../../../utils/axios';
+import axios from '../../utils/axios';
 import { createSlice } from '@reduxjs/toolkit';
+import { InSRecordType } from 'src/_mockApis/api/v1/smart-budgeting/InSRecordData';
 import { AppDispatch } from 'src/store/Store';
-import type { PayloadAction } from '@reduxjs/toolkit';
 
-const API_URL = '/api/data/sbs/I_SRecord';
+const API_URL = '/api/v1/smart-budgeting/income-spending-record';
 
 interface StateType {
-    I_SRecords: any[];
+    InSRecords: InSRecordType[];
 }
 
-const initialState = {
-    I_SRecords: []
+const initialState: StateType = {
+    InSRecords: []
 };
 
-export const I_SRecordSlice = createSlice({
+export const InSRecordSlice = createSlice({
     name: 'I_SRecord',
     initialState,
     reducers: {
-        getI_S: (state, action) => {
-            state.I_SRecords = action.payload;
+        getInS: (state, action) => {
+            state.InSRecords = action.payload;
         },
         //SearchExpInc: (state, action) => {
         //    state.noteSearch = action.payload;
@@ -61,16 +61,16 @@ export const I_SRecordSlice = createSlice({
 //export const { SearchNotes, getNotes, SelectNote, DeleteNote, UpdateNote, addNote } =
 //    ExpectedIncomeSlice.actions;
 
-export const { getI_S } =
-    I_SRecordSlice.actions;
+export const { getInS } =
+    InSRecordSlice.actions;
 
-export const fetchI_S = () => async (dispatch: AppDispatch) => {
+export const fetchInS = () => async (dispatch: AppDispatch) => {
     try {
         const response = await axios.get(`${API_URL}`);
-        dispatch(getI_S(response.data));
+        dispatch(getInS(response.data));
     } catch (err: any) {
         throw new Error(err);
     }
 };
 
-export default I_SRecordSlice.reducer;
+export default InSRecordSlice.reducer;

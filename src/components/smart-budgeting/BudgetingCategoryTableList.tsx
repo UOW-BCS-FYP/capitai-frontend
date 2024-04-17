@@ -2,7 +2,6 @@
 // @ts-ignore
 import * as React from 'react';
 import { alpha, useTheme } from '@mui/material/styles';
-import { format } from 'date-fns';
 import {
     Box,
     Table,
@@ -18,20 +17,19 @@ import {
     Tooltip,
     FormControlLabel,
     Typography,
-    Avatar,
     TextField,
     InputAdornment,
     Paper,
-    Fab,
     Stack,
+    Fab,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
-import CustomCheckbox from '../../forms/theme-elements/CustomCheckbox';
-import CustomSwitch from '../../forms/theme-elements/CustomSwitch';
+import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
+import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
-import { fetchI_S } from '../../../store/apps/smartBudgeting/I_SRecordSlice';
-import { I_SRecordType } from '../../../_mockApis/smartBudgeting/I_SRecordData';
+import { fetchBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
+import { BudgetCategoryType } from '../../_mockApis/api/v1/smart-budgeting/budgetCategoryData';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -86,7 +84,7 @@ const headCells: readonly HeadCell[] = [
         paddingType: 'normal',
     },
     {
-        id: 'type',
+        id: 'status',
         numeric: false,
         disablePadding: false,
         label: 'Status',
@@ -100,25 +98,11 @@ const headCells: readonly HeadCell[] = [
         paddingType: 'normal'
     },
     {
-        id: 'issuedOn',
+        id: 'action',
         numeric: false,
         disablePadding: false,
-        label: 'Issued On',
-        paddingType: 'normal'
-    },
-    {
-        id: 'subject',
-        numeric: false,
-        disablePadding: false,
-        label: 'Received from/Issued to',
-        paddingType: 'normal',
-    },
-    {
-        id: 'category',
-        numeric: false,
-        disablePadding: false,
-        label: 'category',
-        paddingType: 'normal',
+        label: 'Action',
+        paddingType: 'checkbox'
     },
 ];
 
@@ -223,7 +207,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                                 </InputAdornment>
                             ),
                         }}
-                        placeholder="Search Expected Income"
+                        placeholder="Search Budget Category"
                         size="small"
                         onChange={handleSearch}
                         value={search}
@@ -248,7 +232,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     );
 };
 
-const I_STableList = () => {
+const BudgetingCategoryTableList = () => {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<any>('calories');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -258,22 +242,22 @@ const I_STableList = () => {
 
     const dispatch = useDispatch();
 
-    //Fetch Expected incomes
+    //Fetch budget categories
     React.useEffect(() => {
-        dispatch(fetchI_S());
+        dispatch(fetchBudgetCtgy());
     }, [dispatch]);
 
-    const getI_S: I_SRecordType[] = useSelector((state) => state.I_SRecordRecuder.I_SRecords);
+    const getBudgetCtgy: BudgetCategoryType[] = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
 
-    const [rows, setRows] = React.useState<any>(getI_S);
+    const [rows, setRows] = React.useState<any>(getBudgetCtgy);
     const [search, setSearch] = React.useState('');
 
     React.useEffect(() => {
-        setRows(getI_S);
-    }, [getI_S]);
+        setRows(getBudgetCtgy);
+    }, [getBudgetCtgy]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const filteredRows: I_SRecordType[] = getI_S.filter((row) => {
+        const filteredRows: BudgetCategoryType[] = getBudgetCtgy.filter((row) => {
             return row.title.toLowerCase().includes(event.target.value);
         });
         setSearch(event.target.value);
@@ -405,7 +389,7 @@ const I_STableList = () => {
                                                     <Box display="flex" alignItems="center">
                                                         <Box
                                                             sx={{
-                                                                backgroundColor: row.isIncome
+                                                                backgroundColor: row.isActivated
                                                                     ? (theme) => theme.palette.success.main
                                                                     : (theme) => theme.palette.error.main,
                                                                 borderRadius: '100%',
@@ -420,43 +404,16 @@ const I_STableList = () => {
                                                                 ml: 1,
                                                             }}
                                                         >
-                                                            {row.isIncome ? 'Income' : 'Spending'}
+                                                            {row.isActivated ? 'Active' : 'Inactive'}
                                                         </Typography>
                                                     </Box>
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.amount}
-                                                        </Typography>
-                                                    </Box>
+                                                    <Typography fontWeight={600} variant="h6">
+                                                        ${row.amount}
+                                                    </Typography>
                                                 </TableCell>
-
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.date.substring(0, 10)}
-                                                        </Typography>
-                                                    </Box>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.subject}
-                                                        </Typography>
-                                                    </Box>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.category}
-                                                        </Typography>
-                                                    </Box>
-                                                </TableCell>
-
                                                 <TableCell>
                                                     <Tooltip title="Edit">
                                                         <IconButton size="small">
@@ -500,4 +457,4 @@ const I_STableList = () => {
     );
 };
 
-export default I_STableList;
+export default BudgetingCategoryTableList;
