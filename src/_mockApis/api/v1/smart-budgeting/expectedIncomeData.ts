@@ -1,13 +1,13 @@
-import mock from '../mock';
+import mock from '../../../mock';
 
-export type expectedIncomeType = {
+export type ExpectedIncomeType = {
     id: number;
     title: string;
     amount: number;
     isActivated: boolean;
 }
 
-const ExpectedIncomeData: expectedIncomeType[] = [
+const ExpectedIncomeData: ExpectedIncomeType[] = [
     {
         id: 1,
         title:
@@ -30,7 +30,10 @@ const ExpectedIncomeData: expectedIncomeType[] = [
         isActivated: true
     },
 ];
-mock.onGet('/api/data/sbs/ExpectedIncomeData').reply(() => {
+
+mock.onGet('/api/v1/smart-budgeting/expected-income').reply(() => {
     return [200, ExpectedIncomeData];
 });
+
+
 export default ExpectedIncomeData;

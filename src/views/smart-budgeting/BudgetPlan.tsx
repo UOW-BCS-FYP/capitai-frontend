@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import { useTheme } from '@mui/material/styles';
-import { Box, Container, Divider, Grid, Typography } from '@mui/material';
-import BlankCard from 'src/components/shared/BlankCard';
-import SBSTab from 'src/components/apps/smartBudgeting/SBSTab';
+import { Box, Divider, Grid, Typography } from '@mui/material';
+import SBSTab from 'src/components/smart-budgeting/SBSTab';
 import { Props } from 'react-apexcharts';
-import ExpectedIncomeBar from 'src/components/apps/smartBudgeting/ExpectedIncomeBar'
-import { fetchExpInc } from '../../store/apps/smartBudgeting/ExpectedIncomeSlice';
+import ExpectedIncomeBar from 'src/components/smart-budgeting/ExpectedIncomeBar'
+import { fetchExpInc } from '../../store/smart-budgeting/ExpectedIncomeSlice';
 import { useSelector, useDispatch } from 'src/store/Store';
 import AppCard from '../../components/shared/AppCard';
-import ExpectedIncomeTableList from '../../components/apps/smartBudgeting/ExpectedIncomeTableList';
-import BudgetingCategoryTableList from '../../components/apps/smartBudgeting/BudgetingCategoryTableList';
+import ExpectedIncomeTableList from '../../components/smart-budgeting/ExpectedIncomeTableList';
+import BudgetingCategoryTableList from '../../components/smart-budgeting/BudgetingCategoryTableList';
 
 const BudgetPlan = () => {
     // chart color

@@ -9,9 +9,9 @@ import './email/EmailData';
 import './userprofile/PostData';
 import './userprofile/UsersData';
 
-import './smartBudgeting/expectedIncomeData'
-import './smartBudgeting/budgetCategoryData'
-import './smartBudgeting/I_SRecordData'
+import './api/v1/smart-budgeting/expectedIncomeData'
+import './api/v1/smart-budgeting/budgetCategoryData'
+import './api/v1/smart-budgeting/InSRecordData'
 import './api/v1/financial-consultant/ConsultantData';
 import './api/v1/goal-tracker/GoalTrackerData';
 import './api/v1/financial-statement/FinancialStatementData';

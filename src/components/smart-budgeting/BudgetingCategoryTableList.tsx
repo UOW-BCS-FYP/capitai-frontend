@@ -2,7 +2,6 @@
 // @ts-ignore
 import * as React from 'react';
 import { alpha, useTheme } from '@mui/material/styles';
-import { format } from 'date-fns';
 import {
     Box,
     Table,
@@ -18,7 +17,6 @@ import {
     Tooltip,
     FormControlLabel,
     Typography,
-    Avatar,
     TextField,
     InputAdornment,
     Paper,
@@ -27,11 +25,11 @@ import {
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
-import CustomCheckbox from '../../forms/theme-elements/CustomCheckbox';
-import CustomSwitch from '../../forms/theme-elements/CustomSwitch';
+import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
+import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
-import { fetchBudgetCtgy } from '../../../store/apps/smartBudgeting/BudgetCategorySlice';
-import { budgetCategoryType } from '../../../_mockApis/smartBudgeting/budgetCategoryData';
+import { fetchBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
+import { BudgetCategoryType } from '../../_mockApis/api/v1/smart-budgeting/budgetCategoryData';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -249,7 +247,7 @@ const BudgetingCategoryTableList = () => {
         dispatch(fetchBudgetCtgy());
     }, [dispatch]);
 
-    const getBudgetCtgy: budgetCategoryType[] = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
+    const getBudgetCtgy: BudgetCategoryType[] = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
 
     const [rows, setRows] = React.useState<any>(getBudgetCtgy);
     const [search, setSearch] = React.useState('');
@@ -259,7 +257,7 @@ const BudgetingCategoryTableList = () => {
     }, [getBudgetCtgy]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const filteredRows: budgetCategoryType[] = getBudgetCtgy.filter((row) => {
+        const filteredRows: BudgetCategoryType[] = getBudgetCtgy.filter((row) => {
             return row.title.toLowerCase().includes(event.target.value);
         });
         setSearch(event.target.value);

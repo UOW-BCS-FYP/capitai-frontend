@@ -2,7 +2,6 @@
 // @ts-ignore
 import * as React from 'react';
 import { alpha, useTheme } from '@mui/material/styles';
-import { format } from 'date-fns';
 import {
     Box,
     Table,
@@ -18,7 +17,6 @@ import {
     Tooltip,
     FormControlLabel,
     Typography,
-    Avatar,
     TextField,
     InputAdornment,
     Paper,
@@ -27,11 +25,11 @@ import {
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
-import CustomCheckbox from '../../forms/theme-elements/CustomCheckbox';
-import CustomSwitch from '../../forms/theme-elements/CustomSwitch';
+import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
+import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
-import { fetchI_S } from '../../../store/apps/smartBudgeting/I_SRecordSlice';
-import { I_SRecordType } from '../../../_mockApis/smartBudgeting/I_SRecordData';
+import { fetchInS } from 'src/store/smart-budgeting/InSRecordSlice';
+import { InSRecordType } from 'src/_mockApis/api/v1/smart-budgeting/InSRecordData';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -260,10 +258,10 @@ const I_STableList = () => {
 
     //Fetch Expected incomes
     React.useEffect(() => {
-        dispatch(fetchI_S());
+        dispatch(fetchInS());
     }, [dispatch]);
 
-    const getI_S: I_SRecordType[] = useSelector((state) => state.I_SRecordRecuder.I_SRecords);
+    const getI_S: InSRecordType[] = useSelector((state) => state.I_SRecordRecuder.InSRecords);
 
     const [rows, setRows] = React.useState<any>(getI_S);
     const [search, setSearch] = React.useState('');
@@ -273,7 +271,7 @@ const I_STableList = () => {
     }, [getI_S]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const filteredRows: I_SRecordType[] = getI_S.filter((row) => {
+        const filteredRows: InSRecordType[] = getI_S.filter((row) => {
             return row.title.toLowerCase().includes(event.target.value);
         });
         setSearch(event.target.value);

@@ -8,9 +8,9 @@ import TicketReducer from './apps/tickets/TicketSlice';
 import ContactsReducer from './apps/contacts/ContactSlice';
 import UserProfileReducer from './apps/userProfile/UserProfileSlice';
 import BlogReducer from './apps/blog/BlogSlice';
-import ExpectedIncomeReducer from './apps/smartBudgeting/ExpectedIncomeSlice'
-import BudgetCategoryReducer from './apps/smartBudgeting/BudgetCategorySlice'
-import I_SRecordRecuder from './apps/smartBudgeting/I_SRecordSlice'
+import ExpectedIncomeReducer from './smart-budgeting/ExpectedIncomeSlice'
+import BudgetCategoryReducer from './smart-budgeting/BudgetCategorySlice'
+import I_SRecordRecuder from './smart-budgeting/InSRecordSlice'
 import GoalTrackerReducer from './goal-tracker/GoalTrackerSlice';
 import FinancialStatementReducer from './financial-statement/FinancialStatementSlice';
 

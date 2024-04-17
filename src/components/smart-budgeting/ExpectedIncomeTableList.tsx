@@ -2,7 +2,6 @@
 // @ts-ignore
 import * as React from 'react';
 import { alpha, useTheme } from '@mui/material/styles';
-import { format } from 'date-fns';
 import {
     Box,
     Table,
@@ -18,7 +17,6 @@ import {
     Tooltip,
     FormControlLabel,
     Typography,
-    Avatar,
     TextField,
     InputAdornment,
     Paper,
@@ -27,11 +25,13 @@ import {
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
-import CustomCheckbox from '../../forms/theme-elements/CustomCheckbox';
-import CustomSwitch from '../../forms/theme-elements/CustomSwitch';
-import { IconArrowBackUp, IconCircle, IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
-import { fetchExpInc } from '../../../store/apps/smartBudgeting/ExpectedIncomeSlice';
-import { expectedIncomeType } from '../../../_mockApis/smartBudgeting/expectedIncomeData';
+import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
+import CustomSwitch from '../forms/theme-elements/CustomSwitch';
+import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
+import { fetchExpInc } from 'src/store/smart-budgeting/ExpectedIncomeSlice';
+import { ExpectedIncomeType } from 'src/_mockApis/api/v1/smart-budgeting/expectedIncomeData';
+import { useState } from 'react';
+import ExpectedIncomeDialog from './ExpectedIncomeDialog';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -166,10 +166,11 @@ interface EnhancedTableToolbarProps {
     numSelected: number;
     handleSearch: React.ChangeEvent<HTMLInputElement> | any;
     search: string;
+    handleAdd: React.ChangeEvent<HTMLInputElement> | any;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { numSelected, handleSearch, search } = props;
+    const { numSelected, handleSearch, search, handleAdd } = props;
 
     return (
         <Toolbar
@@ -188,7 +189,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 <Box>
                     <Stack>
                         <Tooltip title="Add" placement="bottom">
-                            <Fab size="small" color="info">
+                            <Fab size="small" color="info" onClick={handleAdd}>
                                 <IconPlus size="16" />
                             </Fab>
                         </Tooltip>
@@ -241,6 +242,7 @@ const ExpectedIncomeTableList = () => {
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [openDialog, setOpenDialog] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -249,7 +251,7 @@ const ExpectedIncomeTableList = () => {
         dispatch(fetchExpInc());
     }, [dispatch]);
 
-    const getExpInc: expectedIncomeType[] = useSelector((state) => state.expectedIncomeReducer.expectedIncomes);
+    const getExpInc: ExpectedIncomeType[] = useSelector((state) => state.expectedIncomeReducer.expectedIncomes);
 
     const [rows, setRows] = React.useState<any>(getExpInc);
     const [search, setSearch] = React.useState('');
@@ -259,7 +261,7 @@ const ExpectedIncomeTableList = () => {
     }, [getExpInc]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const filteredRows: expectedIncomeType[] = getExpInc.filter((row) => {
+        const filteredRows: ExpectedIncomeType[] = getExpInc.filter((row) => {
             return row.title.toLowerCase().includes(event.target.value);
         });
         setSearch(event.target.value);
@@ -322,6 +324,10 @@ const ExpectedIncomeTableList = () => {
         setDense(event.target.checked);
     };
 
+    const handleDialogClose = () => {
+        setOpenDialog(false);
+    };
+
     const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -337,6 +343,7 @@ const ExpectedIncomeTableList = () => {
                     numSelected={selected.length}
                     search={search}
                     handleSearch={(event: any) => handleSearch(event)}
+                    handleAdd={() => setOpenDialog(true)}                    
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
                     <TableContainer>
@@ -455,6 +462,10 @@ const ExpectedIncomeTableList = () => {
                     />
                 </Box>
             </Box>
+            <ExpectedIncomeDialog
+                open={openDialog}
+                onClose={handleDialogClose}
+            />
         </Box>
     );
 };

@@ -1,24 +1,24 @@
-import axios from '../../../utils/axios';
+import axios from '../../utils/axios';
 import { createSlice } from '@reduxjs/toolkit';
 import { AppDispatch } from 'src/store/Store';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { ExpectedIncomeType } from 'src/_mockApis/api/v1/smart-budgeting/expectedIncomeData';
 
-const API_URL = '/api/data/sbs/BudgetCategory';
+const API_URL = '/api/v1/smart-budgeting/expected-income';
 
 interface StateType {
-    budgetCategories: any[];
+    expectedIncomes: ExpectedIncomeType[];
 }
 
-const initialState = {
-    budgetCategories: []
+const initialState: StateType = {
+    expectedIncomes: []
 };
 
-export const BudgetCategorySlice = createSlice({
-    name: 'budgetCategory',
+export const ExpectedIncomeSlice = createSlice({
+    name: 'expectedIncome',
     initialState,
     reducers: {
-        getBudgetCtgy: (state, action) => {
-            state.budgetCategories = action.payload;
+        getExpInc: (state, action) => {
+            state.expectedIncomes = action.payload;
         },
         //SearchExpInc: (state, action) => {
         //    state.noteSearch = action.payload;
@@ -61,16 +61,16 @@ export const BudgetCategorySlice = createSlice({
 //export const { SearchNotes, getNotes, SelectNote, DeleteNote, UpdateNote, addNote } =
 //    ExpectedIncomeSlice.actions;
 
-export const { getBudgetCtgy } =
-    BudgetCategorySlice.actions;
+export const { getExpInc } =
+    ExpectedIncomeSlice.actions;
 
-export const fetchBudgetCtgy = () => async (dispatch: AppDispatch) => {
+export const fetchExpInc = () => async (dispatch: AppDispatch) => {
     try {
         const response = await axios.get(`${API_URL}`);
-        dispatch(getBudgetCtgy(response.data));
-    } catch (err: any) {
+        dispatch(getExpInc(response.data));
+    } catch (err:any) {
         throw new Error(err);
     }
 };
 
-export default BudgetCategorySlice.reducer;
+export default ExpectedIncomeSlice.reducer;

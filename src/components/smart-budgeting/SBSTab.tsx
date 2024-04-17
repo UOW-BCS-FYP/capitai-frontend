@@ -2,7 +2,7 @@
 // @ts-ignore
 import React from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
-import { IconHeart, IconPhoto, IconUserCircle } from '@tabler/icons-react';
+import { IconPhoto, IconUserCircle } from '@tabler/icons-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const SBSTab = () => {
@@ -29,7 +29,7 @@ const SBSTab = () => {
         {
             label: 'Income & Spending',
             icon: <IconPhoto size="20" />,
-            to: '/smart-budgeting/i_s',
+            to: '/smart-budgeting/income-n-spending',
         },
     ];
 

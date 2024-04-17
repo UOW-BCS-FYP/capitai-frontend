@@ -87,18 +87,18 @@ const Menuitems: MenuitemsType[] = [
     icon: IconCurrencyDollar,
     href: '/smart-budgeting/',
     children: [
-        {
-            id: uniqueId(),
-            title: 'Budget Plan',
-            icon: IconPoint,
-            href: '/smart-budgeting',
-        },
-        {
-            id: uniqueId(),
-            title: 'Income & Spending',
-            icon: IconPoint,
-            href: '/smart-budgeting/i_s',
-        },
+      {
+        id: uniqueId(),
+        title: 'Budget Plan',
+        icon: IconPoint,
+        href: '/smart-budgeting',
+      },
+      {
+        id: uniqueId(),
+        title: 'Income & Spending',
+        icon: IconPoint,
+        href: '/smart-budgeting/income-n-spending',
+      },
     ],
   },
   {

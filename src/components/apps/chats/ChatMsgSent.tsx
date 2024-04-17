@@ -71,7 +71,7 @@ const ChatMsgSent = () => {
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <Picker onEmojiClick={onEmojiClick} native />
+          <Picker onEmojiClick={onEmojiClick} />
           <Box p={2}>Selected: {chosenEmoji ? chosenEmoji.emoji : ''}</Box>
         </Popover>
         <InputBase
