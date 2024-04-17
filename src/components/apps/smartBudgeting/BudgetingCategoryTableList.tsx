@@ -32,8 +32,6 @@ import CustomSwitch from '../../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
 import { fetchBudgetCtgy } from '../../../store/apps/smartBudgeting/BudgetCategorySlice';
 import { budgetCategoryType } from '../../../_mockApis/smartBudgeting/budgetCategoryData';
-import BudgetingCategoryDialog from './BudgetingCategoryDialog';
-import { useState } from 'react';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -168,11 +166,10 @@ interface EnhancedTableToolbarProps {
     numSelected: number;
     handleSearch: React.ChangeEvent<HTMLInputElement> | any;
     search: string;
-    handleAdd: React.ChangeEvent<HTMLInputElement> | any;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { numSelected, handleSearch, search, handleAdd } = props;
+    const { numSelected, handleSearch, search } = props;
 
     return (
         <Toolbar
@@ -191,7 +188,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 <Box>
                     <Stack>
                         <Tooltip title="Add" placement="bottom">
-                            <Fab size="small" color="info" onClick={handleAdd}>
+                            <Fab size="small" color="info">
                                 <IconPlus size="16" />
                             </Fab>
                         </Tooltip>
@@ -244,7 +241,6 @@ const BudgetingCategoryTableList = () => {
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [openDialog, setOpenDialog] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -326,10 +322,6 @@ const BudgetingCategoryTableList = () => {
         setDense(event.target.checked);
     };
 
-    const handleDialogClose = () => {
-        setOpenDialog(false);
-    };
-
     const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -345,7 +337,6 @@ const BudgetingCategoryTableList = () => {
                     numSelected={selected.length}
                     search={search}
                     handleSearch={(event: any) => handleSearch(event)}
-                    handleAdd={() => setOpenDialog(true) } 
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
                     <TableContainer>
@@ -464,10 +455,6 @@ const BudgetingCategoryTableList = () => {
                     />
                 </Box>
             </Box>
-            <BudgetingCategoryDialog
-                open={openDialog}
-                onClose={handleDialogClose}
-            />
         </Box>
     );
 };
