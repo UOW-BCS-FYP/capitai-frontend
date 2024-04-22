@@ -4,7 +4,7 @@ import { FetchFinancialGoalsRequestType, FetchFinancialGoalsResponseType, Financ
 import { AppDispatch, AppState } from "../Store";
 // import { AppDispatch } from "../Store";
 
-const API_URL = '/api/goal-tracker';
+const API_URL = '/api/v1/goal-tracker';
 
 interface StateType {
   total: number;

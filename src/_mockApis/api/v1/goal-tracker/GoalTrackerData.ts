@@ -113,7 +113,7 @@ const FinancialGoalData: FinancialGoalType[] = [
 ];
 
 // get all financial goals
-mock.onGet("/api/goal-tracker").reply((request) => {
+mock.onGet("/api/v1/goal-tracker").reply((request) => {
   const { query, sortBy, sortOrder, page, rowsPerPage }: FetchFinancialGoalsRequestType = {
     query: "",
     sortBy: undefined,
@@ -151,7 +151,7 @@ mock.onGet("/api/goal-tracker").reply((request) => {
 });
 
 // add a new financial goal
-mock.onPost("/api/goal-tracker").reply((request) => {
+mock.onPost("/api/v1/goal-tracker").reply((request) => {
   const data = JSON.parse(request.data);
   const newGoal: FinancialGoalType = {
     id: FinancialGoalData.length + 1,
@@ -167,7 +167,7 @@ mock.onPost("/api/goal-tracker").reply((request) => {
 });
 
 // update a financial goal
-mock.onPut("/api/goal-tracker/:id").reply((request) => {
+mock.onPut("/api/v1/goal-tracker/:id").reply((request) => {
   const id = request.params.id;
   const data = JSON.parse(request.data);
   const updatedGoal = FinancialGoalData.find((goal) => goal.id === id);
@@ -177,7 +177,7 @@ mock.onPut("/api/goal-tracker/:id").reply((request) => {
 });
 
 // delete a financial goal
-mock.onDelete("/api/goal-tracker/:id").reply((request) => {
+mock.onDelete("/api/v1/goal-tracker/:id").reply((request) => {
   const id = request.params.id;
   const index = FinancialGoalData.findIndex((goal) => goal.id === id);
   if (index === -1) return [400, { message: "Goal not found" }];

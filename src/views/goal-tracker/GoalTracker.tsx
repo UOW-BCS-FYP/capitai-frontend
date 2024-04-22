@@ -298,7 +298,7 @@ const EnhanceTable = () => {
   const page = fetchFilter.page ?? 0;
   const rowsPerPage = fetchFilter.rowsPerPage ?? 5;
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows = useSelector((state) => Math.max(0, rowsPerPage - state.goalTrackerReducer.goals?.length));
+  const emptyRows = useSelector((state) => Math.max(0, Math.min(rowsPerPage, state.goalTrackerReducer.total) - state.goalTrackerReducer.goals?.length));
 
   
   useEffect(() => {
