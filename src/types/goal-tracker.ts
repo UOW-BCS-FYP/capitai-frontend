@@ -7,3 +7,19 @@ export type FinancialGoalType = {
   priority: number;
   completed: boolean;
 };
+
+
+export type SortOrder = 'asc' | 'desc';
+
+export type FetchFinancialGoalsRequestType = {
+  query?: string; // search query
+  sortBy?: keyof FinancialGoalType; // sort by
+  sortOrder?: SortOrder; // sort order
+  page?: number; // current page
+  rowsPerPage?: number; // rows per page
+};
+
+export type FetchFinancialGoalsResponseType = {
+  data: FinancialGoalType[];
+  total: number;
+};
