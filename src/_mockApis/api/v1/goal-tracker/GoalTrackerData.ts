@@ -135,15 +135,6 @@ mock.onGet("/api/v1/goal-tracker").reply((request) => {
   }
   const total = goals.length;
   goals = goals.slice(page! * rowsPerPage!, page! * rowsPerPage! + rowsPerPage!);
-  console.log({
-    // query,
-    // sortBy,
-    // sortOrder,
-    // page,
-    // rowsPerPage,
-    total,
-    goals,
-  });
   return [200, {
     data: goals,
     total,
