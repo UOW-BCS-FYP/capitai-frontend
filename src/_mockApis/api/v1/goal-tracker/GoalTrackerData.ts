@@ -1,4 +1,4 @@
-import { FinancialGoalType } from "src/types/goal-tracker";
+import { FetchFinancialGoalsRequestType, FinancialGoalType } from "src/types/goal-tracker";
 import mock from "../../../mock";
 
 const FinancialGoalData: FinancialGoalType[] = [
@@ -113,7 +113,42 @@ const FinancialGoalData: FinancialGoalType[] = [
 ];
 
 // get all financial goals
-mock.onGet("/api/goal-tracker").reply(200, FinancialGoalData);
+mock.onGet("/api/goal-tracker").reply((request) => {
+  const { query, sortBy, sortOrder, page, rowsPerPage }: FetchFinancialGoalsRequestType = {
+    query: "",
+    sortBy: undefined,
+    sortOrder: "asc",
+    page: 0,
+    rowsPerPage: 10,
+    ...request.params,
+  };
+  let goals = FinancialGoalData;
+  if (query) {
+    goals = goals.filter((goal) => goal.title.toLowerCase().includes(query.toLowerCase()));
+  }
+  if (sortBy) {
+    goals = goals.sort((a, b) => {
+      if (a[sortBy] < b[sortBy]) return sortOrder === "asc" ? -1 : 1;
+      if (a[sortBy] > b[sortBy]) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+  const total = goals.length;
+  goals = goals.slice(page! * rowsPerPage!, page! * rowsPerPage! + rowsPerPage!);
+  console.log({
+    // query,
+    // sortBy,
+    // sortOrder,
+    // page,
+    // rowsPerPage,
+    total,
+    goals,
+  });
+  return [200, {
+    data: goals,
+    total,
+  }];
+});
 
 // add a new financial goal
 mock.onPost("/api/goal-tracker").reply((request) => {
