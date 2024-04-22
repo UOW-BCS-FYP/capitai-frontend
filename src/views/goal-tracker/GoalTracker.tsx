@@ -45,7 +45,6 @@ import YearlyBreakup from 'src/components/dashboards/modern/YearlyBreakup';
 import PageImpressions from 'src/components/widgets/charts/PageImpressions';
 import { FinancialGoalType, SortOrder } from 'src/types/goal-tracker';
 import { fetchGoals } from 'src/store/goal-tracker/GoalTrackerSlice';
-import { CheckBox } from '@mui/icons-material';
 
 const BCrumb = [
   {
@@ -293,7 +292,7 @@ const EnhanceTable = () => {
   const totalCount = useSelector((state) => state.goalTrackerReducer.total);
   const records = useSelector((state) => state.goalTrackerReducer.goals);
   const fetchStatus = useSelector((state) => state.goalTrackerReducer.fetchGoalsStatus);
-  const fetchError = useSelector((state) => state.goalTrackerReducer.fetchGoalsError);
+  // const fetchError = useSelector((state) => state.goalTrackerReducer.fetchGoalsError);
   const fetchFilter = useSelector((state) => state.goalTrackerReducer.fetchGoalsFilter);
   const page = fetchFilter.page ?? 0;
   const rowsPerPage = fetchFilter.rowsPerPage ?? 5;

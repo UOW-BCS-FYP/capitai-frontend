@@ -1,4 +1,4 @@
-import { SliceCaseReducers, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axios';
 import { FetchFinancialGoalsRequestType, FetchFinancialGoalsResponseType, FinancialGoalType } from "src/types/goal-tracker";
 import { AppDispatch, AppState } from "../Store";
