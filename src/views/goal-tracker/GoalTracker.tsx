@@ -29,7 +29,8 @@ import {
   TextField,
   Grid,
   Skeleton,
-  TableCellProps
+  TableCellProps,
+  Button
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import CustomCheckbox from 'src/components/forms/theme-elements/CustomCheckbox';
@@ -44,7 +45,7 @@ import MonthlyEarnings from 'src/components/dashboards/modern/MonthlyEarnings';
 import YearlyBreakup from 'src/components/dashboards/modern/YearlyBreakup';
 import PageImpressions from 'src/components/widgets/charts/PageImpressions';
 import { FinancialGoalType, SortOrder } from 'src/types/goal-tracker';
-import { fetchGoals } from 'src/store/goal-tracker/GoalTrackerSlice';
+import { fetchGoals, rearrangeGoal, updateGoal } from 'src/store/goal-tracker/GoalTrackerSlice';
 
 const BCrumb = [
   {
@@ -121,14 +122,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     <TableHead>
       <TableRow>
         <TableCell padding="checkbox">
-          <CustomCheckbox
+          {/* <CustomCheckbox
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             tabIndex={-1}
             inputProps={{
               'aria-labelledby': 'select all desserts',
             }}
-          />
+          /> */}
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -231,27 +232,48 @@ const EnhancedTableCell = (props: TableCellProps & { loading?: boolean; children
   );
 }
 
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 const EnhancedTableRow = (props: { row: FinancialGoalType; loading: boolean; selected: boolean; onSelect: (event: React.MouseEvent<unknown>, id: number) => void }) => {
   const { row, loading, selected, onSelect } = props;
-  const labelId = `enhanced-table-checkbox-${row.id}`;
+  // const labelId = `enhanced-table-checkbox-${row.id}`;
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({id: row.id});
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   return (
     <TableRow
       hover
       onClick={(event) => onSelect(event, row.id)}
-      role="checkbox"
+      // role="checkbox"
       aria-checked={selected}
-      tabIndex={-1}
+      // tabIndex={-1}
       key={row.id}
       selected={selected}
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
     >
       <EnhancedTableCell padding="checkbox">
-        <CustomCheckbox
+        {/* <CustomCheckbox
           checked={selected}
           inputProps={{
             'aria-labelledby': labelId,
           }}
-        />
+        /> */}
+        <Button variant="contained" color="primary" size="small">
+          {row.id}
+        </Button>
       </EnhancedTableCell>
       <EnhancedTableCell loading={loading}>
         <Typography color="textSecondary" variant="subtitle2" fontWeight="400">
@@ -287,6 +309,20 @@ const EnhancedTableRow = (props: { row: FinancialGoalType; loading: boolean; sel
   );
 }
 
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 const EnhanceTable = () => {
   const dispatch = useDispatch();
   const totalCount = useSelector((state) => state.goalTrackerReducer.total);
@@ -370,6 +406,31 @@ const EnhanceTable = () => {
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  function handleDragEnd(event: any) {
+    const {active, over} = event;
+    
+    if (active.id !== over.id) {
+      const activeRecord = records.find((r) => r.id === active.id);
+      const overRecord = records.find((r) => r.id === over.id);
+
+      if (!activeRecord || !overRecord) {
+        return;
+      }
+      
+      dispatch(rearrangeGoal({
+        ...activeRecord,
+        priority: overRecord.priority
+      }))
+    }
+  }
+
   return (
     <PageContainer title="Goal Tracker" description="this is Goal Tracker page">
       {/* breadcrumb */}
@@ -406,33 +467,44 @@ const EnhanceTable = () => {
                     onRequestSort={handleRequestSort}
                     rowCount={records.length}
                   />
-                  <TableBody>
-                    {records
-                      .map((row) => {
-                        const isItemSelected = isSelected(row.id);
+                  <DndContext 
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext 
+                      items={records}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <TableBody>
+                        {records
+                          .map((row) => {
+                            const isItemSelected = isSelected(row.id);
 
-                        return (
-                          <EnhancedTableRow
-                            loading={fetchStatus === 'loading'}
-                            key={row.id}
-                            row={row}
-                            selected={isItemSelected}
-                            onSelect={handleSelect}
-                          />
-                        );
-                      })}
-                    {emptyRows > 0 && (
-                      <TableRow
-                        style={{
-                          height: (dense ? 33 : 53) * emptyRows,
-                        }}
-                      >
-                        <TableCell colSpan={7}>
-                          { fetchStatus === 'loading' && records.length === 0 && <Skeleton variant="rectangular" width="100%" height={emptyRows * 53} animation="wave"></Skeleton>}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
+                            return (
+                              <EnhancedTableRow
+                                loading={fetchStatus === 'loading'}
+                                key={row.id}
+                                row={row}
+                                selected={isItemSelected}
+                                onSelect={handleSelect}
+                              />
+                            );
+                          })}
+                        {emptyRows > 0 && (
+                          <TableRow
+                            style={{
+                              height: (dense ? 33 : 53) * emptyRows,
+                            }}
+                          >
+                            <TableCell colSpan={7}>
+                              { fetchStatus === 'loading' && records.length === 0 && <Skeleton variant="rectangular" width="100%" height={emptyRows * 53} animation="wave"></Skeleton>}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </SortableContext>
+                  </DndContext>
                 </Table>
               </TableContainer>
               <TablePagination

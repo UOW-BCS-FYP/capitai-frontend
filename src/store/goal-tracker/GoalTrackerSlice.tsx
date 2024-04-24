@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axios';
 import { FetchFinancialGoalsRequestType, FetchFinancialGoalsResponseType, FinancialGoalType } from "src/types/goal-tracker";
-import { AppDispatch, AppState } from "../Store";
+import { AppDispatch, AppState, dispatch } from "../Store";
 // import { AppDispatch } from "../Store";
 
 const API_URL = '/api/v1/goal-tracker';
@@ -110,6 +110,15 @@ export const deleteGoal = (id: number) => async () => {
   try {
     await axios.delete(`${API_URL}/${id}`);
     fetchGoals({});
+  } catch (err) {
+    throw err as Error;
+  }
+}
+
+export const rearrangeGoal = (goal: FinancialGoalType) => async () => {
+  try {
+    await axios.put(`${API_URL}/rearrange`, goal);
+    dispatch(fetchGoals({}));
   } catch (err) {
     throw err as Error;
   }

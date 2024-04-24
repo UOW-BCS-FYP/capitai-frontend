@@ -1,7 +1,7 @@
 import { FetchFinancialGoalsRequestType, FinancialGoalType } from "src/types/goal-tracker";
 import mock from "../../../mock";
 
-const FinancialGoalData: FinancialGoalType[] = [
+let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 1,
     title: "Capital Building",
@@ -128,8 +128,10 @@ mock.onGet("/api/v1/goal-tracker").reply((request) => {
   }
   if (sortBy) {
     goals = goals.sort((a, b) => {
-      if (a[sortBy] < b[sortBy]) return sortOrder === "asc" ? -1 : 1;
-      if (a[sortBy] > b[sortBy]) return sortOrder === "asc" ? 1 : -1;
+      const aVal = a[sortBy] ?? 0;
+      const bVal = b[sortBy] ?? 0;
+      if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
       return 0;
     });
   }
@@ -175,5 +177,31 @@ mock.onDelete("/api/v1/goal-tracker/:id").reply((request) => {
   FinancialGoalData.splice(index, 1);
   return [200, { id }];
 });
+
+// rearrange financial goal
+mock.onPut("/api/v1/goal-tracker/rearrange").reply((request) => {
+  const data = JSON.parse(request.data);
+  console.log(data)
+  const sortedData = FinancialGoalData.sort((a: FinancialGoalType, b: FinancialGoalType) => a.priority - b.priority);
+  const oldPriority = sortedData.find((goal) => goal.id === data?.id)?.priority; // 5
+  const newPriority = data.priority; // 4
+  if (oldPriority === undefined) return [400, { message: "Goal not found" }];
+  if (oldPriority === newPriority) return [200, { message: "No change" }];
+  const direction = oldPriority < newPriority ? 1 : -1;
+  sortedData.forEach((goal) => {
+    if (goal.id === data.id) return;
+    if (direction === 1 && goal.priority > oldPriority && goal.priority <= newPriority) {
+      goal.priority -= 1;
+    }
+    if (direction === -1 && goal.priority < oldPriority && goal.priority >= newPriority) {
+      goal.priority += 1;
+    }
+  });
+  sortedData.find((goal) => goal.id === data.id)!.priority = newPriority;
+  return [200, { id: data.id, priority: newPriority }];
+});
+
+// stat for financial goals
+// can be used to show the total number of goals, completed goals, and total amount of goals
 
 export default FinancialGoalData;
