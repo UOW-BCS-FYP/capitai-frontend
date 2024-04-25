@@ -105,7 +105,21 @@ const Menuitems: MenuitemsType[] = [
     id: uniqueId(),
     title: 'Goal Tracker',
     icon: IconAward,
-    href: '/goal-tracker'
+    href: '/goal-tracker/',
+    children: [
+      {
+        id: uniqueId(),
+        title: 'Goals',
+        icon: IconPoint,
+        href: '/goal-tracker/stat',
+      },
+      {
+        id: uniqueId(),
+        title: 'Create Goal',
+        icon: IconPoint,
+        href: '/goal-tracker/details/create',
+      }
+    ]
   },
   // {
   //   navlabel: true,

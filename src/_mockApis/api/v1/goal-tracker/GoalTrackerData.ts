@@ -112,16 +112,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   }
 ];
 
-// get all financial goals
-mock.onGet("/api/v1/goal-tracker").reply((request) => {
-  const { query, sortBy, sortOrder, page, rowsPerPage }: FetchFinancialGoalsRequestType = {
-    query: "",
-    sortBy: undefined,
-    sortOrder: "asc",
-    page: 0,
-    rowsPerPage: 10,
-    ...request.params,
-  };
+function getGoals(query: string, sortBy: keyof FinancialGoalType | undefined, sortOrder: "asc" | "desc", page: number, rowsPerPage: number) {
   let goals = FinancialGoalData;
   if (query) {
     goals = goals.filter((goal) => goal.title.toLowerCase().includes(query.toLowerCase()));
@@ -137,10 +128,23 @@ mock.onGet("/api/v1/goal-tracker").reply((request) => {
   }
   const total = goals.length;
   goals = goals.slice(page! * rowsPerPage!, page! * rowsPerPage! + rowsPerPage!);
-  return [200, {
+  return {
     data: goals,
-    total,
-  }];
+    total
+  };
+}
+
+// get all financial goals
+mock.onGet("/api/v1/goal-tracker").reply((request) => {
+  const { query, sortBy, sortOrder, page, rowsPerPage }: FetchFinancialGoalsRequestType = {
+    query: "",
+    sortBy: undefined,
+    sortOrder: "asc",
+    page: 0,
+    rowsPerPage: 10,
+    ...request.params,
+  };
+  return [200, getGoals(query!, sortBy, sortOrder!, page!, rowsPerPage!)];
 });
 
 // add a new financial goal
@@ -160,8 +164,10 @@ mock.onPost("/api/v1/goal-tracker").reply((request) => {
 });
 
 // update a financial goal
-mock.onPut("/api/v1/goal-tracker/:id").reply((request) => {
-  const id = request.params.id;
+mock.onPut(new RegExp("/api/v1/goal-tracker/*")).reply((request) => {
+  // const id = request.params.id;
+  const match = request.url?.match(/\/api\/v1\/goal-tracker\/(.*)/);
+  const id = match ? parseInt(match[1]) : 0;
   const data = JSON.parse(request.data);
   const updatedGoal = FinancialGoalData.find((goal) => goal.id === id);
   if (!updatedGoal) return [400, { message: "Goal not found" }];
@@ -180,6 +186,14 @@ mock.onDelete("/api/v1/goal-tracker/:id").reply((request) => {
 
 // rearrange financial goal
 mock.onPut("/api/v1/goal-tracker/rearrange").reply((request) => {
+  const { query, sortBy, sortOrder, page, rowsPerPage }: FetchFinancialGoalsRequestType = {
+    query: "",
+    sortBy: undefined,
+    sortOrder: "asc",
+    page: 0,
+    rowsPerPage: 10,
+    ...request.params,
+  };
   const data = JSON.parse(request.data);
   console.log(data)
   const sortedData = FinancialGoalData.sort((a: FinancialGoalType, b: FinancialGoalType) => a.priority - b.priority);
@@ -198,7 +212,7 @@ mock.onPut("/api/v1/goal-tracker/rearrange").reply((request) => {
     }
   });
   sortedData.find((goal) => goal.id === data.id)!.priority = newPriority;
-  return [200, { id: data.id, priority: newPriority }];
+  return [200, getGoals(query!, sortBy, sortOrder!, page!, rowsPerPage!)];
 });
 
 // stat for financial goals

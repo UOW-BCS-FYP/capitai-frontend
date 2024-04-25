@@ -119,6 +119,8 @@ const Landingpage = Loadable(lazy(() => import('../views/pages/landingpage/Landi
 const BudgetPlan = Loadable(lazy(() => import('../views/smart-budgeting/BudgetPlan')));
 const I_S = Loadable(lazy(() => import('../views/smart-budgeting/InS')));
 const GoalTracker = Loadable(lazy(() => import('../views/goal-tracker/GoalTracker')));
+const GoalTrackerCreate = Loadable(lazy(() => import('../views/goal-tracker/GoalTrackerCreate')));
+const GoalTrackerDetails = Loadable(lazy(() => import('../views/goal-tracker/GoalTrackerDetails')));
 const FinancialConsultant = Loadable(lazy(() => import('../views/financial-consultant/FinancialConsultant')));
 const InvestmentStrategist = Loadable(lazy(() => import('../views/investment-strategist/InvestmentStrategist')));
 const FinancialStatement = Loadable(lazy(() => import('../views/financial-statement/FinancialStatement')));
@@ -137,7 +139,9 @@ const Router = [
       { path: '/dashboard', exact: true, element: <ModernDash /> }, // default dashboard
       { path: '/smart-budgeting', element: <BudgetPlan /> },
       { path: '/smart-budgeting/income-n-spending', element: <I_S /> },
-      { path: '/goal-tracker', element: <GoalTracker />},
+      { path: '/goal-tracker/stat', element: <GoalTracker />},
+      { path: '/goal-tracker/details/:id', element: <GoalTrackerDetails />},
+      { path: '/goal-tracker/create', element: <GoalTrackerCreate />},
       { path: '/financial-consultant', element: <FinancialConsultant /> },
       { path: '/investment-strategist', element: <InvestmentStrategist /> },
       { path: '/financial-statement', element: <FinancialStatement /> },
