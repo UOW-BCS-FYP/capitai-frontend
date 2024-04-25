@@ -1,7 +1,7 @@
 import { FetchFinancialGoalsRequestType, FinancialGoalType } from "src/types/goal-tracker";
 import mock from "../../../mock";
 
-const FinancialGoalData: FinancialGoalType[] = [
+let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 1,
     title: "Capital Building",
@@ -112,6 +112,28 @@ const FinancialGoalData: FinancialGoalType[] = [
   }
 ];
 
+function getGoals(query: string, sortBy: keyof FinancialGoalType | undefined, sortOrder: "asc" | "desc", page: number, rowsPerPage: number) {
+  let goals = FinancialGoalData;
+  if (query) {
+    goals = goals.filter((goal) => goal.title.toLowerCase().includes(query.toLowerCase()));
+  }
+  if (sortBy) {
+    goals = goals.sort((a, b) => {
+      const aVal = a[sortBy] ?? 0;
+      const bVal = b[sortBy] ?? 0;
+      if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+  const total = goals.length;
+  goals = goals.slice(page! * rowsPerPage!, page! * rowsPerPage! + rowsPerPage!);
+  return {
+    data: goals,
+    total
+  };
+}
+
 // get all financial goals
 mock.onGet("/api/v1/goal-tracker").reply((request) => {
   const { query, sortBy, sortOrder, page, rowsPerPage }: FetchFinancialGoalsRequestType = {
@@ -122,23 +144,7 @@ mock.onGet("/api/v1/goal-tracker").reply((request) => {
     rowsPerPage: 10,
     ...request.params,
   };
-  let goals = FinancialGoalData;
-  if (query) {
-    goals = goals.filter((goal) => goal.title.toLowerCase().includes(query.toLowerCase()));
-  }
-  if (sortBy) {
-    goals = goals.sort((a, b) => {
-      if (a[sortBy] < b[sortBy]) return sortOrder === "asc" ? -1 : 1;
-      if (a[sortBy] > b[sortBy]) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
-  }
-  const total = goals.length;
-  goals = goals.slice(page! * rowsPerPage!, page! * rowsPerPage! + rowsPerPage!);
-  return [200, {
-    data: goals,
-    total,
-  }];
+  return [200, getGoals(query!, sortBy, sortOrder!, page!, rowsPerPage!)];
 });
 
 // add a new financial goal
@@ -158,8 +164,10 @@ mock.onPost("/api/v1/goal-tracker").reply((request) => {
 });
 
 // update a financial goal
-mock.onPut("/api/v1/goal-tracker/:id").reply((request) => {
-  const id = request.params.id;
+mock.onPut(new RegExp("/api/v1/goal-tracker/*")).reply((request) => {
+  // const id = request.params.id;
+  const match = request.url?.match(/\/api\/v1\/goal-tracker\/(.*)/);
+  const id = match ? parseInt(match[1]) : 0;
   const data = JSON.parse(request.data);
   const updatedGoal = FinancialGoalData.find((goal) => goal.id === id);
   if (!updatedGoal) return [400, { message: "Goal not found" }];
@@ -175,5 +183,39 @@ mock.onDelete("/api/v1/goal-tracker/:id").reply((request) => {
   FinancialGoalData.splice(index, 1);
   return [200, { id }];
 });
+
+// rearrange financial goal
+mock.onPut("/api/v1/goal-tracker/rearrange").reply((request) => {
+  const { query, sortBy, sortOrder, page, rowsPerPage }: FetchFinancialGoalsRequestType = {
+    query: "",
+    sortBy: undefined,
+    sortOrder: "asc",
+    page: 0,
+    rowsPerPage: 10,
+    ...request.params,
+  };
+  const data = JSON.parse(request.data);
+  console.log(data)
+  const sortedData = FinancialGoalData.sort((a: FinancialGoalType, b: FinancialGoalType) => a.priority - b.priority);
+  const oldPriority = sortedData.find((goal) => goal.id === data?.id)?.priority; // 5
+  const newPriority = data.priority; // 4
+  if (oldPriority === undefined) return [400, { message: "Goal not found" }];
+  if (oldPriority === newPriority) return [200, { message: "No change" }];
+  const direction = oldPriority < newPriority ? 1 : -1;
+  sortedData.forEach((goal) => {
+    if (goal.id === data.id) return;
+    if (direction === 1 && goal.priority > oldPriority && goal.priority <= newPriority) {
+      goal.priority -= 1;
+    }
+    if (direction === -1 && goal.priority < oldPriority && goal.priority >= newPriority) {
+      goal.priority += 1;
+    }
+  });
+  sortedData.find((goal) => goal.id === data.id)!.priority = newPriority;
+  return [200, getGoals(query!, sortBy, sortOrder!, page!, rowsPerPage!)];
+});
+
+// stat for financial goals
+// can be used to show the total number of goals, completed goals, and total amount of goals
 
 export default FinancialGoalData;

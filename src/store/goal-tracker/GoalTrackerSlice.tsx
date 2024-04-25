@@ -14,6 +14,10 @@ interface StateType {
   fetchGoalsStatus: string;
   fetchGoalsError: string | undefined;
   fetchGoalsFilter: FetchFinancialGoalsRequestType;
+  addGoalStatus: string;
+  addGoalError: string | undefined;
+  updateGoalStatus: string;
+  updateGoalError: string | undefined;
 }
 
 const initialState : StateType = {
@@ -29,7 +33,11 @@ const initialState : StateType = {
     sortOrder: 'asc',
     page: 0,
     rowsPerPage: 10
-  }
+  },
+  addGoalStatus: 'idle',
+  addGoalError: '',
+  updateGoalStatus: 'idle',
+  updateGoalError: '',
 };
 
 export const GoalTrackerSlice = createSlice({
@@ -46,11 +54,13 @@ export const GoalTrackerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Fetch Goals
       .addCase(fetchGoals.pending, (state) => {
         state.fetchGoalsStatus = 'loading';
       })
       .addCase(fetchGoals.fulfilled, (state, action) => {
         state.fetchGoalsStatus = 'succeeded';
+        console.log(action.payload.data)
         state.goals = action.payload.data;
         state.total = action.payload.total;
       })
@@ -58,6 +68,41 @@ export const GoalTrackerSlice = createSlice({
         state.fetchGoalsStatus = 'failed';
         state.fetchGoalsError = action.error.message ?? 'failed to fetch goals';
       })
+      // Add Goal
+      .addCase(addGoal.pending, (state) => {
+        state.addGoalStatus = 'loading';
+      })
+      .addCase(addGoal.fulfilled, (state) => {
+        state.addGoalStatus = 'succeeded';
+      })
+      .addCase(addGoal.rejected, (state, action) => {
+        state.addGoalStatus = 'failed';
+        state.addGoalError = action.error.message ?? 'failed to add goal';
+      })
+      // Update Goal
+      .addCase(updateGoal.pending, (state) => {
+        state.updateGoalStatus = 'loading';
+      })
+      .addCase(updateGoal.fulfilled, (state,) => {
+        state.updateGoalStatus = 'succeeded';
+      })
+      .addCase(updateGoal.rejected, (state, action) => {
+        state.updateGoalStatus = 'failed';
+        state.updateGoalError = action.error.message ?? 'failed to update goal';
+      })
+    builder
+      // .addCase(rearrangeGoal.pending, (state) => {
+      //   // state.fetchGoalsStatus = 'loading';
+      // })
+      .addCase(rearrangeGoal.fulfilled, (state, action) => {
+        state.fetchGoalsStatus = 'succeeded';
+        state.goals = action.payload.data;
+        state.total = action.payload.total;
+      })
+      .addCase(rearrangeGoal.rejected, (state, action) => {
+        state.fetchGoalsStatus = 'failed';
+        state.fetchGoalsError = action.error.message ?? 'failed to rearrange goals';
+      });
   }
 });
 
@@ -88,23 +133,49 @@ export const fetchGoals = createAsyncThunk<
   }
 })
 
-export const addGoal = (goal: FinancialGoalType) => async () => {
+export const addGoal = createAsyncThunk<
+  FinancialGoalType,
+  FinancialGoalType,
+  {
+    state: AppState,
+    dispatch: AppDispatch
+  }
+>('goal-tracker/addGoal', async (goal, thunkAPI) => {
   try {
-    await axios.post(API_URL, goal);
-    fetchGoals({});
+    const { dispatch } = thunkAPI;
+    const response = await axios.post(API_URL, goal);
+    dispatch(fetchGoals({}));
+    return response.data;
   } catch (err) {
     throw err as Error;
   }
-}
+})
 
-export const updateGoal = (goal: FinancialGoalType) => async () => {
+// export const updateGoal = (goal: FinancialGoalType) => async () => {
+//   try {
+//     await axios.put(`${API_URL}/${goal.id}`, goal);
+//     fetchGoals({});
+//   } catch (err) {
+//     throw err as Error;
+//   }
+// }
+export const updateGoal = createAsyncThunk<
+  FinancialGoalType,
+  FinancialGoalType,
+  {
+    state: AppState,
+    dispatch: AppDispatch
+  }
+>('goal-tracker/updateGoal', async (goal, thunkAPI) => {
   try {
-    await axios.put(`${API_URL}/${goal.id}`, goal);
-    fetchGoals({});
+    const { dispatch } = thunkAPI;
+    const response = await axios.put(`${API_URL}/${goal.id}`, goal);
+    dispatch(fetchGoals({}));
+    return response.data;
   } catch (err) {
     throw err as Error;
   }
-}
+})
 
 export const deleteGoal = (id: number) => async () => {
   try {
@@ -114,6 +185,33 @@ export const deleteGoal = (id: number) => async () => {
     throw err as Error;
   }
 }
+
+export const rearrangeGoal = createAsyncThunk<
+  FetchFinancialGoalsResponseType,
+  FinancialGoalType,
+  {
+    state: AppState,
+    dispatch: AppDispatch
+  }
+>('goal-tracker/arrangeGoals', async (goal, thunkAPI) => {
+  try {
+    const { getState } = thunkAPI;
+    const { fetchGoalsFilter } = getState().goalTrackerReducer;  // get the updated filter
+    const resutls = await axios.put(`${API_URL}/rearrange`, goal, {
+      params: {
+        query: fetchGoalsFilter.query,
+        sortBy: fetchGoalsFilter.sortBy,
+        sortOrder: fetchGoalsFilter.sortOrder,
+        page: fetchGoalsFilter.page,
+        rowsPerPage: fetchGoalsFilter.rowsPerPage
+      }
+    });
+    return resutls.data;
+    // dispatch(fetchGoals({}));
+  } catch (err) {
+    throw err as Error;
+  }
+})
 
 export const { setFilter } = GoalTrackerSlice.actions;
 

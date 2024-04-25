@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { alpha } from '@mui/material/styles';
 import {
   Box,
@@ -29,10 +29,10 @@ import {
   TextField,
   Grid,
   Skeleton,
-  TableCellProps
+  TableCellProps,
+  Button
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import CustomCheckbox from 'src/components/forms/theme-elements/CustomCheckbox';
 import CustomSwitch from 'src/components/forms/theme-elements/CustomSwitch';
 import Breadcrumb from 'src/layouts/full/shared/breadcrumb/Breadcrumb';
 import PageContainer from 'src/components/container/PageContainer';
@@ -44,7 +44,8 @@ import MonthlyEarnings from 'src/components/dashboards/modern/MonthlyEarnings';
 import YearlyBreakup from 'src/components/dashboards/modern/YearlyBreakup';
 import PageImpressions from 'src/components/widgets/charts/PageImpressions';
 import { FinancialGoalType, SortOrder } from 'src/types/goal-tracker';
-import { fetchGoals } from 'src/store/goal-tracker/GoalTrackerSlice';
+import { fetchGoals, rearrangeGoal } from 'src/store/goal-tracker/GoalTrackerSlice';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 const BCrumb = [
   {
@@ -112,7 +113,11 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const {
+    // onSelectAllClick, 
+    order, orderBy, 
+    // numSelected, rowCount, 
+    onRequestSort } = props;
   const createSortHandler = (property: keyof FinancialGoalType) => (event: React.MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
@@ -121,14 +126,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     <TableHead>
       <TableRow>
         <TableCell padding="checkbox">
-          <CustomCheckbox
+          {/* <CustomCheckbox
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             tabIndex={-1}
             inputProps={{
               'aria-labelledby': 'select all desserts',
             }}
-          />
+          /> */}
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -153,6 +158,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell>
+          <Typography variant="subtitle1" fontWeight="500">
+            Actions
+          </Typography>
+        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -183,20 +193,25 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           {numSelected} selected
         </Typography>
       ) : (
-        <TextField
-          sx={{ flex: '1 1 100%' }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconSearch size="1.1rem" />
-              </InputAdornment>
-            ),
-          }}
-          placeholder="Search Product"
-          size="small"
-          onChange={handleSearch}
-          value={search}
-        />
+        <>
+          <Button variant="contained" color="primary" component={Link} to={`/goal-tracker/create`} style={{ marginRight: '1.1rem' }}>
+            Create
+          </Button>
+          <TextField
+            sx={{ flex: '1 1 100%' }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IconSearch size="1.1rem" />
+                </InputAdornment>
+              ),
+            }}
+            placeholder="Search Product"
+            size="small"
+            onChange={handleSearch}
+            value={search}
+          />
+        </>
       )}
 
       {numSelected > 0 ? (
@@ -231,27 +246,56 @@ const EnhancedTableCell = (props: TableCellProps & { loading?: boolean; children
   );
 }
 
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 const EnhancedTableRow = (props: { row: FinancialGoalType; loading: boolean; selected: boolean; onSelect: (event: React.MouseEvent<unknown>, id: number) => void }) => {
+  const navigate = useNavigate();
   const { row, loading, selected, onSelect } = props;
-  const labelId = `enhanced-table-checkbox-${row.id}`;
+  // const labelId = `enhanced-table-checkbox-${row.id}`;
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({id: row.id!});
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const onEdit = (event: React.MouseEvent<unknown>, id: number) => {
+    event.stopPropagation();
+    navigate(`/goal-tracker/details/${id}`);
+  }
 
   return (
     <TableRow
       hover
-      onClick={(event) => onSelect(event, row.id)}
-      role="checkbox"
+      onClick={(event) => onSelect(event, row.id!)}
+      // role="checkbox"
       aria-checked={selected}
-      tabIndex={-1}
+      // tabIndex={-1}
       key={row.id}
       selected={selected}
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
     >
       <EnhancedTableCell padding="checkbox">
-        <CustomCheckbox
+        {/* <CustomCheckbox
           checked={selected}
           inputProps={{
             'aria-labelledby': labelId,
           }}
-        />
+        /> */}
+        <Tooltip title="Drag">
+          <DragIndicatorIcon
+            style={{ cursor: 'grab' }}
+            {...listeners}
+          />
+        </Tooltip>
       </EnhancedTableCell>
       <EnhancedTableCell loading={loading}>
         <Typography color="textSecondary" variant="subtitle2" fontWeight="400">
@@ -265,7 +309,7 @@ const EnhancedTableRow = (props: { row: FinancialGoalType; loading: boolean; sel
       </EnhancedTableCell>
       <EnhancedTableCell loading={loading}>
         <Typography color="textSecondary" variant="subtitle2" fontWeight="400">
-          {row.amount.toFixed(2)}
+          {parseFloat(String(row.amount)).toFixed(2)}
         </Typography>
       </EnhancedTableCell>
       <EnhancedTableCell loading={loading}>
@@ -283,14 +327,35 @@ const EnhancedTableRow = (props: { row: FinancialGoalType; loading: boolean; sel
           {row.completed ? 'Yes' : 'No'}
         </Typography>
       </EnhancedTableCell>
+      <EnhancedTableCell loading={loading}>
+        <Button variant="contained" color="primary" onClick={(event) => onEdit(event, row.id!)}>
+          Edit
+        </Button>
+      </EnhancedTableCell>
     </TableRow>
   );
 }
 
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { Link, useNavigate } from 'react-router-dom';
 const EnhanceTable = () => {
   const dispatch = useDispatch();
   const totalCount = useSelector((state) => state.goalTrackerReducer.total);
-  const records = useSelector((state) => state.goalTrackerReducer.goals);
+  const goals = useSelector((state) => state.goalTrackerReducer.goals);
+  const [records, setRecords] = useState<FinancialGoalType[]>([]);
   const fetchStatus = useSelector((state) => state.goalTrackerReducer.fetchGoalsStatus);
   // const fetchError = useSelector((state) => state.goalTrackerReducer.fetchGoalsError);
   const fetchFilter = useSelector((state) => state.goalTrackerReducer.fetchGoalsFilter);
@@ -301,12 +366,12 @@ const EnhanceTable = () => {
     0,
     (state.goalTrackerReducer.total ? Math.min(rowsPerPage, state.goalTrackerReducer.total) : rowsPerPage) - state.goalTrackerReducer.goals?.length
   ));
-
   
   useEffect(() => {
     if (fetchStatus === 'idle') {
       dispatch(fetchGoals({}));
     }
+    goals && setRecords(goals);
   }, [fetchStatus, dispatch]);
 
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -325,7 +390,7 @@ const EnhanceTable = () => {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = records.map((n) => n.id);
+      const newSelecteds = records.map((n) => n.id!);
       setSelected(newSelecteds);
 
       return;
@@ -370,6 +435,41 @@ const EnhanceTable = () => {
 
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  function handleDragEnd(event: any) {
+    const {active, over} = event;
+    
+    if (active?.id && over?.id && active?.id !== over?.id) {
+      const oldIndex = records.findIndex((r) => r.id === active?.id);
+      const newIndex = records.findIndex((r) => r.id === over?.id);
+      const newOrder = arrayMove(records, oldIndex, newIndex);
+      setRecords(newOrder); // update the UI
+      
+      const activeRecord = records.find((r) => r.id === active?.id);
+      const overRecord = records.find((r) => r.id === over?.id);
+
+      if (!activeRecord || !overRecord) {
+        return;
+      }
+      
+      // update the backend
+      dispatch(rearrangeGoal({
+        ...activeRecord,
+        priority: overRecord.priority
+      }))
+      .then((results) => {
+        console.log(results);
+        setRecords((results?.payload as any).data);
+      })
+    }
+  }
+
   return (
     <PageContainer title="Goal Tracker" description="this is Goal Tracker page">
       {/* breadcrumb */}
@@ -393,47 +493,58 @@ const EnhanceTable = () => {
             <Box mb={2} sx={{ mb: 2 }}>
               <EnhancedTableToolbar numSelected={selected.length} search={fetchFilter.query ?? ''} handleSearch={(e: any) => handleSearch(e)} />
               <TableContainer>
-                <Table
-                  sx={{ minWidth: 750 }}
-                  aria-labelledby="tableTitle"
-                  size={dense ? 'small' : 'medium'}
+                <DndContext 
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
                 >
-                  <EnhancedTableHead
-                    numSelected={selected.length}
-                    order={fetchFilter.sortOrder ?? 'asc'}
-                    orderBy={fetchFilter.sortBy ?? ''}
-                    onSelectAllClick={handleSelectAllClick}
-                    onRequestSort={handleRequestSort}
-                    rowCount={records.length}
-                  />
-                  <TableBody>
-                    {records
-                      .map((row) => {
-                        const isItemSelected = isSelected(row.id);
+                  <SortableContext 
+                    items={records as any}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <Table
+                      sx={{ minWidth: 750 }}
+                      aria-labelledby="tableTitle"
+                      size={dense ? 'small' : 'medium'}
+                    >
+                      <EnhancedTableHead
+                        numSelected={selected.length}
+                        order={fetchFilter.sortOrder ?? 'asc'}
+                        orderBy={fetchFilter.sortBy ?? ''}
+                        onSelectAllClick={handleSelectAllClick}
+                        onRequestSort={handleRequestSort}
+                        rowCount={records.length}
+                      />
+                      <TableBody>
+                        {records
+                          .map((row) => {
+                            const isItemSelected = isSelected(row.id!);
 
-                        return (
-                          <EnhancedTableRow
-                            loading={fetchStatus === 'loading'}
-                            key={row.id}
-                            row={row}
-                            selected={isItemSelected}
-                            onSelect={handleSelect}
-                          />
-                        );
-                      })}
-                    {emptyRows > 0 && (
-                      <TableRow
-                        style={{
-                          height: (dense ? 33 : 53) * emptyRows,
-                        }}
-                      >
-                        <TableCell colSpan={7}>
-                          { fetchStatus === 'loading' && records.length === 0 && <Skeleton variant="rectangular" width="100%" height={emptyRows * 53} animation="wave"></Skeleton>}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                            return (
+                              <EnhancedTableRow
+                                loading={fetchStatus === 'loading'}
+                                key={row.id}
+                                row={row}
+                                selected={isItemSelected}
+                                onSelect={handleSelect}
+                              />
+                            );
+                          })}
+                        {emptyRows > 0 && (
+                          <TableRow
+                            style={{
+                              height: (dense ? 33 : 53) * emptyRows,
+                            }}
+                          >
+                            <TableCell colSpan={8}>
+                              { fetchStatus === 'loading' && records.length === 0 && <Skeleton variant="rectangular" width="100%" height={emptyRows * 53} animation="wave"></Skeleton>}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </SortableContext>
+                </DndContext>
               </TableContainer>
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
