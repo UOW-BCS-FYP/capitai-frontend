@@ -72,9 +72,8 @@ export const GoalTrackerSlice = createSlice({
       .addCase(addGoal.pending, (state) => {
         state.addGoalStatus = 'loading';
       })
-      .addCase(addGoal.fulfilled, (state, action) => {
+      .addCase(addGoal.fulfilled, (state) => {
         state.addGoalStatus = 'succeeded';
-        // state.goals.push(action.payload);
       })
       .addCase(addGoal.rejected, (state, action) => {
         state.addGoalStatus = 'failed';
@@ -84,9 +83,8 @@ export const GoalTrackerSlice = createSlice({
       .addCase(updateGoal.pending, (state) => {
         state.updateGoalStatus = 'loading';
       })
-      .addCase(updateGoal.fulfilled, (state, action) => {
+      .addCase(updateGoal.fulfilled, (state,) => {
         state.updateGoalStatus = 'succeeded';
-        // state.goals.push(action.payload);
       })
       .addCase(updateGoal.rejected, (state, action) => {
         state.updateGoalStatus = 'failed';
