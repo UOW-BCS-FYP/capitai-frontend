@@ -1,7 +1,7 @@
 import axios from '../../utils/axios';
 import { createSlice } from '@reduxjs/toolkit';
-import { InSRecordType } from 'src/_mockApis/api/v1/smart-budgeting/InSRecordData';
 import { AppDispatch } from 'src/store/Store';
+import { InSRecordType } from 'src/types/smart-budgeting';
 
 const API_URL = '/api/v1/smart-budgeting/income-spending-record';
 

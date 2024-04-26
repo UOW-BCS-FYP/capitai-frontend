@@ -31,43 +31,7 @@ import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
 import { fetchBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
-import { BudgetCategoryType } from 'src/types/smart-budgeting';
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-
-    return 0;
-}
-
-type Order = 'asc' | 'desc';
-
-function getComparator<Key extends keyof any>(
-    order: Order,
-    orderBy: Key,
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
-    const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) {
-            return order;
-        }
-
-        return a[1] - b[1];
-    });
-
-    return stabilizedThis.map((el) => el[0]);
-}
+import { SortOrder } from 'src/types/common';
 
 interface HeadCell {
     disablePadding: boolean;
@@ -112,7 +76,7 @@ interface EnhancedTableProps {
     numSelected: number;
     onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
     onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    order: Order;
+    order: SortOrder;
     orderBy: string;
     rowCount: number;
 }
@@ -260,12 +224,12 @@ const BudgetingCategoryTableList = () => {
     const totalCount = useSelector((state) => state.budgetCategoryReducer.totalBudgetCategories);
     const categories = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
     const fetchStatus = useSelector((state) => state.budgetCategoryReducer.fetchBudgetCategoryStatus);
-    const fetchError = useSelector((state) => state.budgetCategoryReducer.fetchBudgetCategoryError);
+    // const fetchError = useSelector((state) => state.budgetCategoryReducer.fetchBudgetCategoryError);
     const fetchFilter = useSelector((state) => state.budgetCategoryReducer.fetchBudgetCategoryFilter);
     const page = fetchFilter.page ?? 0;
     const rowsPerPage = fetchFilter.rowsPerPage ?? 5;
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = useSelector((state) => Math.max(0, (totalCount ? Math.min(rowsPerPage, totalCount) : rowsPerPage) - categories.length));
+    const emptyRows = useSelector(() => Math.max(0, (totalCount ? Math.min(rowsPerPage, totalCount) : rowsPerPage) - categories.length));
 
     //Fetch budget categories
     React.useEffect(() => {
@@ -275,7 +239,7 @@ const BudgetingCategoryTableList = () => {
         }
     }, [dispatch]);
 
-    const getBudgetCtgy: BudgetCategoryType[] = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
+    // const getBudgetCtgy: BudgetCategoryType[] = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
 
     // const [rows, setRows] = React.useState<any>(getBudgetCtgy);
     // const [search, setSearch] = React.useState('');

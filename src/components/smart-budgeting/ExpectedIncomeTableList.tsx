@@ -29,9 +29,9 @@ import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
 import { fetchExpInc } from 'src/store/smart-budgeting/ExpectedIncomeSlice';
-import { ExpectedIncomeType } from 'src/_mockApis/api/v1/smart-budgeting/expectedIncomeData';
 import { useState } from 'react';
 import ExpectedIncomeDialog from './ExpectedIncomeDialog';
+import { ExpectedIncomeType } from 'src/types/smart-budgeting';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
