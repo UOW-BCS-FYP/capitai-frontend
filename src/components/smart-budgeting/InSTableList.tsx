@@ -29,7 +29,7 @@ import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
 import { fetchInS } from 'src/store/smart-budgeting/InSRecordSlice';
-import { InSRecordType } from 'src/_mockApis/api/v1/smart-budgeting/InSRecordData';
+import { InSRecordType } from 'src/types/smart-budgeting';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {

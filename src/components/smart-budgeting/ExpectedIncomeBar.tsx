@@ -4,7 +4,7 @@ import React from 'react';
 import { styled } from '@mui/material/styles';
 import { Box, Grid, Typography } from '@mui/material';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import { ExpectedIncomeType } from '../../_mockApis/api/v1/smart-budgeting/expectedIncomeData';
+import { ExpectedIncomeType } from 'src/types/smart-budgeting';
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
     height: 10,

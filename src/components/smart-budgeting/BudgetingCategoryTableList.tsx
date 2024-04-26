@@ -22,6 +22,8 @@ import {
     Paper,
     Stack,
     Fab,
+    Skeleton,
+    TableCellProps,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
@@ -29,43 +31,7 @@ import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
 import { fetchBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
-import { BudgetCategoryType } from '../../_mockApis/api/v1/smart-budgeting/budgetCategoryData';
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-
-    return 0;
-}
-
-type Order = 'asc' | 'desc';
-
-function getComparator<Key extends keyof any>(
-    order: Order,
-    orderBy: Key,
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
-    const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) {
-            return order;
-        }
-
-        return a[1] - b[1];
-    });
-
-    return stabilizedThis.map((el) => el[0]);
-}
+import { SortOrder } from 'src/types/common';
 
 interface HeadCell {
     disablePadding: boolean;
@@ -110,7 +76,7 @@ interface EnhancedTableProps {
     numSelected: number;
     onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
     onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    order: Order;
+    order: SortOrder;
     orderBy: string;
     rowCount: number;
 }
@@ -157,6 +123,21 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                 ))}
             </TableRow>
         </TableHead>
+    );
+}
+
+const EnhancedTableCell = (props: TableCellProps & { loading?: boolean; children: React.ReactNode }) => {
+    const { loading, children, ...rest } = props;
+    return (
+        <TableCell {...rest}>
+            {loading ? (
+                <Skeleton width="100%" animation="wave">
+                {children}
+                </Skeleton>
+            ) : (
+                children
+            )}
+        </TableCell>
     );
 }
 
@@ -233,49 +214,56 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 };
 
 const BudgetingCategoryTableList = () => {
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<any>('calories');
+    // const [order, setOrder] = React.useState<Order>('asc');
+    // const [orderBy, setOrderBy] = React.useState<any>('calories');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
-    const [page, setPage] = React.useState(0);
+    // const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+    // const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const dispatch = useDispatch();
+    const totalCount = useSelector((state) => state.budgetCategoryReducer.totalBudgetCategories);
+    const categories = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
+    const fetchStatus = useSelector((state) => state.budgetCategoryReducer.fetchBudgetCategoryStatus);
+    // const fetchError = useSelector((state) => state.budgetCategoryReducer.fetchBudgetCategoryError);
+    const fetchFilter = useSelector((state) => state.budgetCategoryReducer.fetchBudgetCategoryFilter);
+    const page = fetchFilter.page ?? 0;
+    const rowsPerPage = fetchFilter.rowsPerPage ?? 5;
+    // Avoid a layout jump when reaching the last page with empty rows.
+    const emptyRows = useSelector(() => Math.max(0, (totalCount ? Math.min(rowsPerPage, totalCount) : rowsPerPage) - categories.length));
 
     //Fetch budget categories
     React.useEffect(() => {
-        dispatch(fetchBudgetCtgy());
+        // dispatch(fetchBudgetCtgy());
+        if (fetchStatus === 'idle') {
+            dispatch(fetchBudgetCtgy(fetchFilter));
+        }
     }, [dispatch]);
 
-    const getBudgetCtgy: BudgetCategoryType[] = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
+    // const getBudgetCtgy: BudgetCategoryType[] = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
 
-    const [rows, setRows] = React.useState<any>(getBudgetCtgy);
-    const [search, setSearch] = React.useState('');
+    // const [rows, setRows] = React.useState<any>(getBudgetCtgy);
+    // const [search, setSearch] = React.useState('');
 
-    React.useEffect(() => {
-        setRows(getBudgetCtgy);
-    }, [getBudgetCtgy]);
+    // React.useEffect(() => {
+    //     setRows(getBudgetCtgy);
+    // }, [getBudgetCtgy]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const filteredRows: BudgetCategoryType[] = getBudgetCtgy.filter((row) => {
-            return row.title.toLowerCase().includes(event.target.value);
-        });
-        setSearch(event.target.value);
-        setRows(filteredRows);
+        // setSearch(event.target.value);
+        dispatch(fetchBudgetCtgy({ query: event.target.value }));
     };
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: any) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
+        const isAsc = fetchFilter.sortBy === property && fetchFilter.sortOrder === 'asc';
+        dispatch(fetchBudgetCtgy({ sortBy: property, sortOrder: isAsc ? 'desc' : 'asc' }));
     };
 
     // This is for select all the row
     const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            const newSelecteds = rows.map((n: any) => n.title);
+            const newSelecteds = categories.map((n: any) => n.title);
             setSelected(newSelecteds);
 
             return;
@@ -308,12 +296,11 @@ const BudgetingCategoryTableList = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
+        dispatch(fetchBudgetCtgy({ page: newPage }));
     };
 
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+        dispatch(fetchBudgetCtgy({ rowsPerPage: parseInt(event.target.value, 10), page: 0 }));
     };
 
     const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -323,7 +310,7 @@ const BudgetingCategoryTableList = () => {
     const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    // const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const theme = useTheme();
     const borderColor = theme.palette.divider;
@@ -333,7 +320,7 @@ const BudgetingCategoryTableList = () => {
             <Box>
                 <EnhancedTableToolbar
                     numSelected={selected.length}
-                    search={search}
+                    search={fetchFilter.query ?? ''}
                     handleSearch={(event: any) => handleSearch(event)}
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
@@ -344,15 +331,14 @@ const BudgetingCategoryTableList = () => {
                         >
                             <EnhancedTableHead
                                 numSelected={selected.length}
-                                order={order}
-                                orderBy={orderBy}
+                                order={fetchFilter.sortOrder ?? 'asc'}
+                                orderBy={fetchFilter.sortBy ?? ''}
                                 onSelectAllClick={handleSelectAllClick}
                                 onRequestSort={handleRequestSort}
-                                rowCount={rows.length}
+                                rowCount={totalCount ?? 0}
                             />
                             <TableBody>
-                                {stableSort(rows, getComparator(order, orderBy))
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                {categories
                                     .map((row: any, index) => {
                                         const isItemSelected = isSelected(row.title);
                                         const labelId = `enhanced-table-checkbox-${index}`;
@@ -367,7 +353,7 @@ const BudgetingCategoryTableList = () => {
                                                 key={row.title}
                                                 selected={isItemSelected}
                                             >
-                                                <TableCell padding="checkbox">
+                                                <EnhancedTableCell padding="checkbox" loading={fetchStatus === 'loading'}>
                                                     <CustomCheckbox
                                                         color="primary"
                                                         checked={isItemSelected}
@@ -375,17 +361,17 @@ const BudgetingCategoryTableList = () => {
                                                             'aria-labelledby': labelId,
                                                         }}
                                                     />
-                                                </TableCell>
+                                                </EnhancedTableCell>
 
-                                                <TableCell>
+                                                <EnhancedTableCell loading={fetchStatus === 'loading'}>
                                                     <Box display="flex" alignItems="center">
                                                         <Typography variant="h6" fontWeight="600">
                                                             {row.title}
                                                         </Typography>
                                                     </Box>
-                                                </TableCell>
+                                                </EnhancedTableCell>
 
-                                                <TableCell>
+                                                <EnhancedTableCell loading={fetchStatus === 'loading'}>
                                                     <Box display="flex" alignItems="center">
                                                         <Box
                                                             sx={{
@@ -407,20 +393,20 @@ const BudgetingCategoryTableList = () => {
                                                             {row.isActivated ? 'Active' : 'Inactive'}
                                                         </Typography>
                                                     </Box>
-                                                </TableCell>
+                                                </EnhancedTableCell>
 
-                                                <TableCell>
+                                                <EnhancedTableCell loading={fetchStatus === 'loading'}>
                                                     <Typography fontWeight={600} variant="h6">
                                                         ${row.amount}
                                                     </Typography>
-                                                </TableCell>
-                                                <TableCell>
+                                                </EnhancedTableCell>
+                                                <EnhancedTableCell loading={fetchStatus === 'loading'}>
                                                     <Tooltip title="Edit">
                                                         <IconButton size="small">
                                                             <IconDotsVertical size="1.1rem" />
                                                         </IconButton>
                                                     </Tooltip>
-                                                </TableCell>
+                                                </EnhancedTableCell>
                                             </TableRow>
                                         );
                                     })}
@@ -430,7 +416,9 @@ const BudgetingCategoryTableList = () => {
                                             height: (dense ? 33 : 53) * emptyRows,
                                         }}
                                     >
-                                        <TableCell colSpan={6} />
+                                        <TableCell colSpan={6}>
+                                            { fetchStatus === 'loading' && categories.length === 0 && <Skeleton variant="rectangular" width="100%" height={emptyRows * 53} animation="wave"></Skeleton>}
+                                        </TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -439,7 +427,7 @@ const BudgetingCategoryTableList = () => {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={rows.length}
+                        count={totalCount ?? 0}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

@@ -1,11 +1,5 @@
+import { ExpectedIncomeType } from 'src/types/smart-budgeting';
 import mock from '../../../mock';
-
-export type ExpectedIncomeType = {
-    id: number;
-    title: string;
-    amount: number;
-    isActivated: boolean;
-}
 
 const ExpectedIncomeData: ExpectedIncomeType[] = [
     {

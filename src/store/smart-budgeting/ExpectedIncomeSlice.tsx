@@ -1,7 +1,7 @@
 import axios from '../../utils/axios';
 import { createSlice } from '@reduxjs/toolkit';
 import { AppDispatch } from 'src/store/Store';
-import { ExpectedIncomeType } from 'src/_mockApis/api/v1/smart-budgeting/expectedIncomeData';
+import { ExpectedIncomeType } from 'src/types/smart-budgeting';
 
 const API_URL = '/api/v1/smart-budgeting/expected-income';
 

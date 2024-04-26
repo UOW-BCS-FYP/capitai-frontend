@@ -1,14 +1,5 @@
+import { InSRecordType } from 'src/types/smart-budgeting';
 import mock from '../../../mock';
-
-export type InSRecordType = {
-    id: number;
-    title: string;
-    amount: number;
-    date: Date;
-    subject: string;
-    isIncome: boolean;
-    category: string;
-}
 
 const InSRecordData: InSRecordType[] = [
     {
