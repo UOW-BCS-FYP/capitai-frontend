@@ -25,7 +25,7 @@ export type FinancialGoalType = {
   paymentInterval?: number;
   // long term expense
   frequency?: number;
-  // progress
+  // progress fields - calculated by the system
   progress?: number;
   completedDate?: string;
   remainingDebt?: number;
@@ -37,8 +37,13 @@ export type FinancialGoalType = {
 export type FinancialGoalProgressType = {
   id: number; // progress id
   goalId: number;
-  progress: number;
   completedDate: string;
+  // debt payment progress fields
+  // interestPaid: number;
+  // long term expense progress fields
+  // expenseFrequency: number;
+  // process fields - calculated by the system
+  progress: number;
 };
 
 export type SortOrder = 'asc' | 'desc';
