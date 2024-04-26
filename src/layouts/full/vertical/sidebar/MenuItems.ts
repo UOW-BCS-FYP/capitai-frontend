@@ -117,7 +117,7 @@ const Menuitems: MenuitemsType[] = [
         id: uniqueId(),
         title: 'Create Goal',
         icon: IconPoint,
-        href: '/goal-tracker/details/create',
+        href: '/goal-tracker/create',
       }
     ]
   },

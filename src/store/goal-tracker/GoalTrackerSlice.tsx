@@ -14,6 +14,8 @@ interface StateType {
   fetchGoalsStatus: string;
   fetchGoalsError: string | undefined;
   fetchGoalsFilter: FetchFinancialGoalsRequestType;
+  arrangeGoalsStatus: string;
+  arrangeGoalsError: string | undefined;
   addGoalStatus: string;
   addGoalError: string | undefined;
   updateGoalStatus: string;
@@ -34,6 +36,8 @@ const initialState : StateType = {
     page: 0,
     rowsPerPage: 10
   },
+  arrangeGoalsStatus: 'idle',
+  arrangeGoalsError: '',
   addGoalStatus: 'idle',
   addGoalError: '',
   updateGoalStatus: 'idle',
@@ -90,17 +94,16 @@ export const GoalTrackerSlice = createSlice({
         state.updateGoalStatus = 'failed';
         state.updateGoalError = action.error.message ?? 'failed to update goal';
       })
-    builder
-      // .addCase(rearrangeGoal.pending, (state) => {
-      //   // state.fetchGoalsStatus = 'loading';
-      // })
+      .addCase(rearrangeGoal.pending, (state) => {
+        state.arrangeGoalsStatus = 'loading';
+      })
       .addCase(rearrangeGoal.fulfilled, (state, action) => {
-        state.fetchGoalsStatus = 'succeeded';
+        state.arrangeGoalsStatus = 'succeeded';
         state.goals = action.payload.data;
         state.total = action.payload.total;
       })
       .addCase(rearrangeGoal.rejected, (state, action) => {
-        state.fetchGoalsStatus = 'failed';
+        state.arrangeGoalsStatus = 'failed';
         state.fetchGoalsError = action.error.message ?? 'failed to rearrange goals';
       });
   }

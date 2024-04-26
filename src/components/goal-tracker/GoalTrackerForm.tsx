@@ -10,6 +10,7 @@ import CustomTextField from "../forms/theme-elements/CustomTextField";
 import * as yup from 'yup';
 import { LoadingButton } from '@mui/lab';
 import { FinancialGoalType } from 'src/types/goal-tracker';
+import { AppState } from 'src/store/Store';
 
 interface FormValues {
   id?: number;
@@ -57,7 +58,7 @@ interface GoalTrackerFormProps {
 }
 
 const GoalTrackerForm = (props: GoalTrackerFormProps) => {
-  const loading = useSelector((state: any) => state.goalTrackerReducer.addGoalStatus === 'loading');
+  const loading = useSelector((state: AppState) => state.goalTrackerReducer.addGoalStatus === 'loading' || state.goalTrackerReducer.updateGoalStatus === 'loading');
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -220,7 +221,7 @@ const GoalTrackerForm = (props: GoalTrackerFormProps) => {
       </Stack>
       <Stack justifyContent="space-between" direction="row" alignItems="center" mt={2}>
         <LoadingButton color="primary" variant="contained" type="submit" loading={loading}>
-          Save
+          Save {loading && '...'}
         </LoadingButton>
       </Stack>
     </form>
