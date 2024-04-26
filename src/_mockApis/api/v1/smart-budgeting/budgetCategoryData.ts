@@ -1,11 +1,5 @@
+import { BudgetCategoryType, FetchBudgetCategoryRequestType } from 'src/types/smart-budgeting';
 import mock from '../../../mock';
-
-export type BudgetCategoryType = {
-    id: number;
-    title: string;
-    amount: number;
-    isActivated: boolean;
-}
 
 const BudgetCategoryData: BudgetCategoryType[] = [
     {
@@ -46,8 +40,31 @@ const BudgetCategoryData: BudgetCategoryType[] = [
 ];
 
 // GET : Fetch all budget category
-mock.onGet('/api/v1/smart-budgeting/budget-category').reply(() => {
-    return [200, BudgetCategoryData];
+mock.onGet('/api/v1/smart-budgeting/budget-category').reply((request) => {
+    const { query, sortBy, sortOrder, page, rowsPerPage }: FetchBudgetCategoryRequestType = {
+        query: "",
+        sortBy: undefined,
+        sortOrder: "asc",
+        page: 0,
+        rowsPerPage: 10,
+        ...request.params,
+    };
+    let temp = BudgetCategoryData;
+    if (query) {
+        temp = temp.filter((budgetCategory) => budgetCategory.title.toLowerCase().includes(query.toLowerCase()));
+    }
+    if (sortBy) {
+        temp = temp.sort((a, b) => {
+            const aVal = a[sortBy] ?? 0;
+            const bVal = b[sortBy] ?? 0;
+            if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+            if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+            return 0;
+        });
+    }
+    const total = temp.length;
+    temp = temp.slice(page! * rowsPerPage!, page! * rowsPerPage! + rowsPerPage!);
+    return [200, { data: temp, total }];
 });
 
 // POST : Add new budget category

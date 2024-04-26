@@ -1,77 +1,114 @@
 import axios from '../../utils/axios';
-import { createSlice } from '@reduxjs/toolkit';
-import { AppDispatch } from 'src/store/Store';
-import { BudgetCategoryType } from 'src/_mockApis/api/v1/smart-budgeting/budgetCategoryData';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AppDispatch, AppState } from 'src/store/Store';
+import { BudgetCategoryType, FetchBudgetCategoryRequestType, FetchBudgetCategoryResponseType } from 'src/types/smart-budgeting';
 
 const API_URL = '/api/v1/smart-budgeting/budget-category';
 
 interface StateType {
-    budgetCategories: BudgetCategoryType[];
+  // state: fetch budget category
+  budgetCategories: BudgetCategoryType[];
+  totalBudgetCategories: number;
+  fetchBudgetCategoryFilter: FetchBudgetCategoryRequestType;
+  fetchBudgetCategoryStatus: string;
+  fetchBudgetCategoryError: string | undefined;
 }
 
 const initialState: StateType = {
-    budgetCategories: []
+  budgetCategories: [],
+  totalBudgetCategories: 0,
+  fetchBudgetCategoryFilter: {
+    query: '',
+    sortBy: undefined,
+    sortOrder: 'asc',
+    page: 0,
+    rowsPerPage: 5
+  },
+  fetchBudgetCategoryStatus: 'idle',
+  fetchBudgetCategoryError: ''
 };
 
 export const BudgetCategorySlice = createSlice({
-    name: 'budgetCategory',
-    initialState,
-    reducers: {
-        getBudgetCtgy: (state, action) => {
-            state.budgetCategories = action.payload;
-        },
-        //SearchExpInc: (state, action) => {
-        //    state.noteSearch = action.payload;
-        //}
-        //SelectNote: (state, action) => {
-        //    state.notesContent = action.payload;
-        //},
-
-        //DeleteNote(state: StateType, action) {
-        //    const index = state.notes.findIndex((note) => note.id === action.payload);
-        //    state.notes.splice(index, 1);
-        //},
-
-        //UpdateNote: {
-        //    reducer: (state: StateType, action: PayloadAction<any>) => {
-        //        state.notes = state.notes.map((note) =>
-        //            note.id === action.payload.id
-        //                ? { ...note, [action.payload.field]: action.payload.value }
-        //                : note,
-        //        );
-        //    },
-        //    prepare: (id, field, value) => {
-        //        return {
-        //            payload: { id, field, value },
-        //        };
-        //    },
-        //},
-
-        //addNote: {
-        //    reducer: (state: StateType, action: PayloadAction<any>) => {
-        //        state.notes.push(action.payload);
-        //    },
-        //    prepare: (id, title, color) => {
-        //        return { payload: { id, title, color, datef: new Date().toDateString(), deleted: false } };
-        //    },
-        //},
-    },
+  name: 'budgetCategory',
+  initialState,
+  reducers: {
+    // getBudgetCtgy: (state, action) => {
+    //     state.budgetCategories = action.payload;
+    // },
+    setFilter (state, action) {
+      state.fetchBudgetCategoryFilter = {
+        ...state.fetchBudgetCategoryFilter, // keep the existing properties
+        ...action.payload // override the properties with the new values
+      };
+    }
+    //SearchExpInc: (state, action) => {
+    //    state.noteSearch = action.payload;
+    //}
+    //SelectNote: (state, action) => {
+    //    state.notesContent = action.payload;
+    //},
+    
+    //DeleteNote(state: StateType, action) {
+    //    const index = state.notes.findIndex((note) => note.id === action.payload);
+    //    state.notes.splice(index, 1);
+    //},
+    
+    //UpdateNote: {
+    //    reducer: (state: StateType, action: PayloadAction<any>) => {
+    //        state.notes = state.notes.map((note) =>
+      //            note.id === action.payload.id
+    //                ? { ...note, [action.payload.field]: action.payload.value }
+    //                : note,
+    //        );
+    //    },
+    //    prepare: (id, field, value) => {
+    //        return {
+    //            payload: { id, field, value },
+    //        };
+    //    },
+    //},
+    
+    //addNote: {
+    //    reducer: (state: StateType, action: PayloadAction<any>) => {
+    //        state.notes.push(action.payload);
+    //    },
+    //    prepare: (id, title, color) => {
+    //        return { payload: { id, title, color, datef: new Date().toDateString(), deleted: false } };
+    //    },
+    //},
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchBudgetCtgy.pending, (state) => {
+        state.fetchBudgetCategoryStatus = 'loading';
+      })
+      .addCase(fetchBudgetCtgy.fulfilled, (state, action) => {
+        state.fetchBudgetCategoryStatus = 'succeeded';
+        state.budgetCategories = action.payload.data;
+        state.totalBudgetCategories = action.payload.total;
+      });
+  }
 });
 
 //export const { SearchNotes, getNotes, SelectNote, DeleteNote, UpdateNote, addNote } =
 //    ExpectedIncomeSlice.actions;
 
-export const { getBudgetCtgy } =
-    BudgetCategorySlice.actions;
+export const { setFilter } = BudgetCategorySlice.actions;
 
-
-export const fetchBudgetCtgy = () => async (dispatch: AppDispatch) => {
-    try {
-        const response = await axios.get(`${API_URL}`);
-        dispatch(getBudgetCtgy(response.data));
-    } catch (err: any) {
-        throw new Error(err);
+export const fetchBudgetCtgy = createAsyncThunk<
+  FetchBudgetCategoryResponseType,
+  FetchBudgetCategoryRequestType,
+  { dispatch: AppDispatch, state: AppState }
+>('budgetCategory/fetchBudgetCtgy', async (filter, thunkAPI) => {
+  const { dispatch, getState } = thunkAPI;
+  dispatch(setFilter(filter));  // update the filter
+  const { fetchBudgetCategoryFilter } = getState().budgetCategoryReducer;  // get the updated filter
+  const response = await axios.get(`${API_URL}`, {
+    params: {
+      ...fetchBudgetCategoryFilter
     }
-};
+  });
+  return response.data;
+});
 
 export default BudgetCategorySlice.reducer;
