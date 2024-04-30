@@ -111,4 +111,31 @@ export const fetchBudgetCtgy = createAsyncThunk<
   return response.data;
 });
 
+export const addBudgetCtgy = createAsyncThunk<
+  BudgetCategoryType,
+  BudgetCategoryType,
+  { dispatch: AppDispatch }
+>('budgetCategory/addBudgetCtgy', async (budgetCategory) => {
+  const response = await axios.post(`${API_URL}`, budgetCategory);
+  return response.data;
+});
+
+export const updateBudgetCtgy = createAsyncThunk<
+  BudgetCategoryType,
+  BudgetCategoryType,
+  { dispatch: AppDispatch }
+>('budgetCategory/updateBudgetCtgy', async (budgetCategory) => {
+  const response = await axios.put(`${API_URL}/${budgetCategory.id}`, budgetCategory);
+  return response.data;
+});
+
+export const deleteBudgetCtgy = createAsyncThunk<
+  BudgetCategoryType,
+  BudgetCategoryType,
+  { dispatch: AppDispatch }
+>('budgetCategory/deleteBudgetCtgy', async (budgetCategory) => {
+  const response = await axios.delete(`${API_URL}/${budgetCategory.id}`); 
+  return response.data;
+});
+
 export default BudgetCategorySlice.reducer;

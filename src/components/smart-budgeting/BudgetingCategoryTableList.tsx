@@ -309,12 +309,8 @@ const BudgetingCategoryTableRow = (
 };
 
 const BudgetingCategoryTableList = () => {
-    // const [order, setOrder] = React.useState<Order>('asc');
-    // const [orderBy, setOrderBy] = React.useState<any>('calories');
     const [selected, setSelected] = React.useState<readonly string[]>([]);
-    // const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
-    // const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const dispatch = useDispatch();
     const totalCount = useSelector((state) => state.budgetCategoryReducer.totalBudgetCategories);
     const categories = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
@@ -425,12 +421,13 @@ const BudgetingCategoryTableList = () => {
                             />
                             <TableBody>
                                 {categories
-                                    .map((row: any, index) => {
+                                    .map((row, index) => {
                                         const isItemSelected = isSelected(row.title);
                                         const labelId = `enhanced-table-checkbox-${index}`;
 
                                         return (
                                             <BudgetingCategoryTableRow
+                                                key={row.id}
                                                 row={row}
                                                 isItemSelected={isItemSelected}
                                                 labelId={labelId}
