@@ -24,6 +24,9 @@ import {
     Fab,
     Skeleton,
     TableCellProps,
+    Menu,
+    MenuItem,
+    Grid,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
@@ -32,6 +35,9 @@ import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
 import { fetchBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
 import { SortOrder } from 'src/types/common';
+import { BudgetCategoryType } from 'src/types/smart-budgeting';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface HeadCell {
     disablePadding: boolean;
@@ -63,13 +69,13 @@ const headCells: readonly HeadCell[] = [
         label: 'Amount',
         paddingType: 'normal'
     },
-    {
-        id: 'action',
-        numeric: false,
-        disablePadding: false,
-        label: 'Action',
-        paddingType: 'checkbox'
-    },
+    // {
+    //     id: 'action',
+    //     numeric: false,
+    //     disablePadding: false,
+    //     label: 'Action',
+    //     paddingType: 'checkbox'
+    // },
 ];
 
 interface EnhancedTableProps {
@@ -121,6 +127,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         </TableSortLabel>
                     </TableCell>
                 ))}
+                <TableCell>
+                    Action
+                </TableCell>
             </TableRow>
         </TableHead>
     );
@@ -213,6 +222,92 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     );
 };
 
+const BudgetingCategoryTableRow = (
+    props: {
+        row: BudgetCategoryType,
+        isItemSelected: boolean,
+        labelId: string,
+        handleClick: (event: React.MouseEvent<unknown>, name: string) => void,
+        loading: boolean
+    }
+) => {
+    const { row, isItemSelected, labelId, handleClick, loading } = props;
+
+    return (
+        <TableRow
+            hover
+            onClick={(event) => handleClick(event, row.title)}
+            role="checkbox"
+            aria-checked={isItemSelected}
+            tabIndex={-1}
+            key={row.title}
+            selected={isItemSelected}
+        >
+            <EnhancedTableCell padding="checkbox" loading={loading}>
+                <CustomCheckbox
+                    color="primary"
+                    checked={isItemSelected}
+                    inputProps={{
+                        'aria-labelledby': labelId,
+                    }}
+                />
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Box display="flex" alignItems="center">
+                    <Typography variant="h6" fontWeight="600">
+                        {row.title}
+                    </Typography>
+                </Box>
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Box display="flex" alignItems="center">
+                    <Box
+                        sx={{
+                            backgroundColor: row.isActivated
+                                ? (theme) => theme.palette.success.main
+                                : (theme) => theme.palette.error.main,
+                            borderRadius: '100%',
+                            height: '10px',
+                            width: '10px',
+                        }}
+                    />
+                    <Typography
+                        color="textSecondary"
+                        variant="subtitle2"
+                        sx={{
+                            ml: 1,
+                        }}
+                    >
+                        {row.isActivated ? 'Active' : 'Inactive'}
+                    </Typography>
+                </Box>
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Typography fontWeight={600} variant="h6">
+                    ${row.amount}
+                </Typography>
+            </EnhancedTableCell>
+            <EnhancedTableCell loading={loading}>
+                <Grid container spacing={1}>
+                    <Grid item xs={6}>
+                        <IconButton size="small" onClick={(event) => event.preventDefault()}>
+                            <EditIcon/>
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <IconButton size="small" onClick={(event) => event.preventDefault()}>
+                            <DeleteIcon/>
+                        </IconButton>
+                    </Grid>
+                </Grid>
+            </EnhancedTableCell>
+        </TableRow>
+    )
+};
+
 const BudgetingCategoryTableList = () => {
     // const [order, setOrder] = React.useState<Order>('asc');
     // const [orderBy, setOrderBy] = React.useState<any>('calories');
@@ -238,15 +333,6 @@ const BudgetingCategoryTableList = () => {
             dispatch(fetchBudgetCtgy(fetchFilter));
         }
     }, [dispatch]);
-
-    // const getBudgetCtgy: BudgetCategoryType[] = useSelector((state) => state.budgetCategoryReducer.budgetCategories);
-
-    // const [rows, setRows] = React.useState<any>(getBudgetCtgy);
-    // const [search, setSearch] = React.useState('');
-
-    // React.useEffect(() => {
-    //     setRows(getBudgetCtgy);
-    // }, [getBudgetCtgy]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         // setSearch(event.target.value);
@@ -344,70 +430,13 @@ const BudgetingCategoryTableList = () => {
                                         const labelId = `enhanced-table-checkbox-${index}`;
 
                                         return (
-                                            <TableRow
-                                                hover
-                                                onClick={(event) => handleClick(event, row.title)}
-                                                role="checkbox"
-                                                aria-checked={isItemSelected}
-                                                tabIndex={-1}
-                                                key={row.title}
-                                                selected={isItemSelected}
-                                            >
-                                                <EnhancedTableCell padding="checkbox" loading={fetchStatus === 'loading'}>
-                                                    <CustomCheckbox
-                                                        color="primary"
-                                                        checked={isItemSelected}
-                                                        inputProps={{
-                                                            'aria-labelledby': labelId,
-                                                        }}
-                                                    />
-                                                </EnhancedTableCell>
-
-                                                <EnhancedTableCell loading={fetchStatus === 'loading'}>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.title}
-                                                        </Typography>
-                                                    </Box>
-                                                </EnhancedTableCell>
-
-                                                <EnhancedTableCell loading={fetchStatus === 'loading'}>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Box
-                                                            sx={{
-                                                                backgroundColor: row.isActivated
-                                                                    ? (theme) => theme.palette.success.main
-                                                                    : (theme) => theme.palette.error.main,
-                                                                borderRadius: '100%',
-                                                                height: '10px',
-                                                                width: '10px',
-                                                            }}
-                                                        />
-                                                        <Typography
-                                                            color="textSecondary"
-                                                            variant="subtitle2"
-                                                            sx={{
-                                                                ml: 1,
-                                                            }}
-                                                        >
-                                                            {row.isActivated ? 'Active' : 'Inactive'}
-                                                        </Typography>
-                                                    </Box>
-                                                </EnhancedTableCell>
-
-                                                <EnhancedTableCell loading={fetchStatus === 'loading'}>
-                                                    <Typography fontWeight={600} variant="h6">
-                                                        ${row.amount}
-                                                    </Typography>
-                                                </EnhancedTableCell>
-                                                <EnhancedTableCell loading={fetchStatus === 'loading'}>
-                                                    <Tooltip title="Edit">
-                                                        <IconButton size="small">
-                                                            <IconDotsVertical size="1.1rem" />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </EnhancedTableCell>
-                                            </TableRow>
+                                            <BudgetingCategoryTableRow
+                                                row={row}
+                                                isItemSelected={isItemSelected}
+                                                labelId={labelId}
+                                                handleClick={handleClick}
+                                                loading={fetchStatus === 'loading'}
+                                            />
                                         );
                                     })}
                                 {emptyRows > 0 && (
