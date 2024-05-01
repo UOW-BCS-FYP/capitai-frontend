@@ -1,76 +1,89 @@
 import axios from '../../utils/axios';
-import { createSlice } from '@reduxjs/toolkit';
-import { AppDispatch } from 'src/store/Store';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AppDispatch, AppState } from 'src/store/Store';
+import { FetchRequestType, FetchResponseType } from 'src/types/common';
 import { ExpectedIncomeType } from 'src/types/smart-budgeting';
 
 const API_URL = '/api/v1/smart-budgeting/expected-income';
 
 interface StateType {
     expectedIncomes: ExpectedIncomeType[];
+    totalExpectedIncomes: number;
+    fetchExpectedIncomeFilter: FetchRequestType<ExpectedIncomeType>;
+    fetchExpectedIncomeStatus: string;
+    fetchExpectedIncomeError: string | undefined;
 }
 
 const initialState: StateType = {
-    expectedIncomes: []
+    expectedIncomes: [],
+    totalExpectedIncomes: 0,
+    fetchExpectedIncomeFilter: {
+        query: '',
+        sortBy: undefined,
+        sortOrder: 'asc',
+        page: 0,
+        rowsPerPage: 5,
+    },
+    fetchExpectedIncomeStatus: 'idle',
+    fetchExpectedIncomeError: '',
 };
 
 export const ExpectedIncomeSlice = createSlice({
     name: 'expectedIncome',
     initialState,
     reducers: {
-        getExpInc: (state, action) => {
-            state.expectedIncomes = action.payload;
-        },
-        //SearchExpInc: (state, action) => {
-        //    state.noteSearch = action.payload;
-        //}
-        //SelectNote: (state, action) => {
-        //    state.notesContent = action.payload;
-        //},
-
-        //DeleteNote(state: StateType, action) {
-        //    const index = state.notes.findIndex((note) => note.id === action.payload);
-        //    state.notes.splice(index, 1);
-        //},
-
-        //UpdateNote: {
-        //    reducer: (state: StateType, action: PayloadAction<any>) => {
-        //        state.notes = state.notes.map((note) =>
-        //            note.id === action.payload.id
-        //                ? { ...note, [action.payload.field]: action.payload.value }
-        //                : note,
-        //        );
-        //    },
-        //    prepare: (id, field, value) => {
-        //        return {
-        //            payload: { id, field, value },
-        //        };
-        //    },
-        //},
-
-        //addNote: {
-        //    reducer: (state: StateType, action: PayloadAction<any>) => {
-        //        state.notes.push(action.payload);
-        //    },
-        //    prepare: (id, title, color) => {
-        //        return { payload: { id, title, color, datef: new Date().toDateString(), deleted: false } };
-        //    },
-        //},
+        setFilter(state, action) {
+            state.fetchExpectedIncomeFilter = {
+                ...state.fetchExpectedIncomeFilter,
+                ...action.payload,
+            };
+        }
     },
+    extraReducers: (builder) => {
+        builder.addCase(fetchExpInc.pending, (state) => {
+            state.fetchExpectedIncomeStatus = 'loading';
+        });
+        builder.addCase(fetchExpInc.fulfilled, (state, action) => {
+            state.fetchExpectedIncomeStatus = 'succeeded';
+            state.expectedIncomes = action.payload.data;
+            state.totalExpectedIncomes = action.payload.total;
+        });
+        builder.addCase(fetchExpInc.rejected, (state, action) => {
+            state.fetchExpectedIncomeStatus = 'failed';
+            state.fetchExpectedIncomeError = action.error.message;
+        });
+    }
 });
 
 //export const { SearchNotes, getNotes, SelectNote, DeleteNote, UpdateNote, addNote } =
 //    ExpectedIncomeSlice.actions;
 
-export const { getExpInc } =
-    ExpectedIncomeSlice.actions;
+export const { setFilter } = ExpectedIncomeSlice.actions;
 
-export const fetchExpInc = () => async (dispatch: AppDispatch) => {
+// export const fetchExpInc = () => async (dispatch: AppDispatch) => {
+//     try {
+//         const response = await axios.get(`${API_URL}`);
+//         dispatch(getExpInc(response.data));
+//     } catch (err:any) {
+//         throw new Error(err);
+//     }
+// };
+export const fetchExpInc = createAsyncThunk<
+    FetchResponseType<ExpectedIncomeType>,
+    FetchRequestType<ExpectedIncomeType>,
+    { dispatch: AppDispatch, state: AppState }
+>('expectedIncome/fetchExpInc', async (filter, thunkAPI) => {
     try {
-        const response = await axios.get(`${API_URL}`);
-        dispatch(getExpInc(response.data));
-    } catch (err:any) {
+        const { dispatch, getState } = thunkAPI;
+        dispatch(setFilter(filter));  // update the filter
+        const response = await axios.get(`${API_URL}`, {
+            params: getState().expectedIncomeReducer.fetchExpectedIncomeFilter
+        });
+        return response.data;
+    } catch (err: any) {
         throw new Error(err);
     }
-};
+});
+
 
 export default ExpectedIncomeSlice.reducer;

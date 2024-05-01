@@ -93,8 +93,9 @@ mock.onPut('/api/v1/smart-budgeting/budget-category').reply((request) => {
 });
 
 // DELETE : Delete budget category
-mock.onDelete('/api/v1/smart-budgeting/budget-category').reply((request) => {
-    const { id } = JSON.parse(request.data);
+mock.onDelete('/api/v1/smart-budgeting/budget-category/*').reply((request) => {
+    const match = request.url?.match(/\/api\/v1\/smart-budgeting\/budget-category\/([^\/]*)/);
+    const id = match ? parseInt(match[1]) : 0;
     const index = BudgetCategoryData.findIndex((budgetCategory) => budgetCategory.id === id);
     if (index > -1) {
         BudgetCategoryData.splice(index, 1);
