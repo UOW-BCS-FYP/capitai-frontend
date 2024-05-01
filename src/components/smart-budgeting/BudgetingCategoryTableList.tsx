@@ -24,15 +24,13 @@ import {
     Fab,
     Skeleton,
     TableCellProps,
-    Menu,
-    MenuItem,
     Grid,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
 import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
-import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
+import { IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
 import { fetchBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
 import { SortOrder } from 'src/types/common';
 import { BudgetCategoryType } from 'src/types/smart-budgeting';

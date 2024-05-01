@@ -1,25 +1,15 @@
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import { Box, Divider, Grid, Typography } from '@mui/material';
 import SBSTab from 'src/components/smart-budgeting/SBSTab';
 import ExpectedIncomeBar from 'src/components/smart-budgeting/ExpectedIncomeBar'
-import { fetchExpInc } from '../../store/smart-budgeting/ExpectedIncomeSlice';
-import { useSelector, useDispatch } from 'src/store/Store';
+// import { fetchExpInc } from '../../store/smart-budgeting/ExpectedIncomeSlice';
+// import { useSelector, useDispatch } from 'src/store/Store';
 import AppCard from '../../components/shared/AppCard';
 import ExpectedIncomeTableList from '../../components/smart-budgeting/ExpectedIncomeTableList';
 import BudgetingCategoryTableList from '../../components/smart-budgeting/BudgetingCategoryTableList';
 import BudgetingChart from 'src/components/smart-budgeting/BudgetingChart';
 
 const BudgetPlan = () => {
-
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(fetchExpInc());
-    }, [dispatch]);
-
-    const expectedIncomes = useSelector((state) =>
-        state.expectedIncomeReducer.expectedIncomes
-    );
-
     return (
       <Box
           flexDirection="column"
@@ -38,9 +28,7 @@ const BudgetPlan = () => {
             <Grid item xs={6}>
               <Typography variant='h4' align='right' margin='5px' marginRight='20px'>Expected Incomes</Typography>
               <Divider variant="middle"/>
-              {expectedIncomes.map((expInc) => (
-                  <ExpectedIncomeBar expInc={expInc} />
-              ))}
+              <ExpectedIncomeBar />
             </Grid>
 
             <Grid item xs={6}>

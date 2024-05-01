@@ -2,8 +2,7 @@ import { Skeleton } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Props } from 'react-apexcharts';
 import Chart from 'react-apexcharts';
-import { AppState, useSelector } from 'src/store/Store';
-import { BudgetCategoryType } from 'src/types/smart-budgeting';
+import { useSelector } from 'src/store/Store';
 
 export default () => {
   // chart color
