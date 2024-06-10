@@ -362,11 +362,18 @@ const EnhanceTable = () => {
   const page = fetchFilter.page ?? 0;
   const rowsPerPage = fetchFilter.rowsPerPage ?? 5;
   // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows = useSelector((state) => Math.max(
+  const emptyRows = useSelector(() => Math.max(
     0,
-    (state.goalTrackerReducer.total ? Math.min(rowsPerPage, state.goalTrackerReducer.total) : rowsPerPage) - state.goalTrackerReducer.goals?.length
+    (totalCount ? Math.min(rowsPerPage, totalCount) : rowsPerPage) - goals.length
   ));
   
+  useEffect(() => {
+    if (fetchStatus === 'idle') {
+      dispatch(fetchGoals({}));
+    }
+    goals && setRecords(goals);
+  }, [fetchStatus, dispatch]);
+
   useEffect(() => {
     if (fetchStatus === 'idle') {
       dispatch(fetchGoals({}));
