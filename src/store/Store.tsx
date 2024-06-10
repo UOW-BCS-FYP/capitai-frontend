@@ -10,7 +10,7 @@ import UserProfileReducer from './apps/userProfile/UserProfileSlice';
 import BlogReducer from './apps/blog/BlogSlice';
 import ExpectedIncomeReducer from './smart-budgeting/ExpectedIncomeSlice'
 import BudgetCategoryReducer from './smart-budgeting/BudgetCategorySlice'
-import I_SRecordRecuder from './smart-budgeting/InSRecordSlice'
+import InSRecordRecuder from './smart-budgeting/InSRecordSlice'
 import GoalTrackerReducer from './goal-tracker/GoalTrackerSlice';
 import FinancialStatementReducer from './financial-statement/FinancialStatementSlice';
 
@@ -34,7 +34,7 @@ export const store = configureStore({
     blogReducer: BlogReducer,
     expectedIncomeReducer: ExpectedIncomeReducer,
     budgetCategoryReducer: BudgetCategoryReducer,
-    I_SRecordRecuder: I_SRecordRecuder,
+    InSRecordRecuder: InSRecordRecuder,
     goalTrackerReducer: GoalTrackerReducer,
     statementReducer: FinancialStatementReducer,
   },
@@ -52,7 +52,7 @@ const rootReducer = combineReducers({
   blogReducer: BlogReducer,
   expectedIncomeReducer: ExpectedIncomeReducer,
   budgetCategoryReducer: BudgetCategoryReducer,
-  I_SRecordRecuder: I_SRecordRecuder,
+  InSRecordRecuder: InSRecordRecuder,
   goalTrackerReducer: GoalTrackerReducer,
   statementReducer: FinancialStatementReducer,
 });

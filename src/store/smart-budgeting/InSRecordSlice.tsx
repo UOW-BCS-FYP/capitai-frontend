@@ -1,76 +1,76 @@
 import axios from '../../utils/axios';
-import { createSlice } from '@reduxjs/toolkit';
-import { AppDispatch } from 'src/store/Store';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { AppDispatch, AppState } from 'src/store/Store';
+import { FetchRequestType, FetchResponseType } from 'src/types/common';
 import { InSRecordType } from 'src/types/smart-budgeting';
 
 const API_URL = '/api/v1/smart-budgeting/income-spending-record';
 
 interface StateType {
     InSRecords: InSRecordType[];
+    totalInSRecords: number;
+    fetchFilter: FetchRequestType<InSRecordType>;
+    fetchStatus: string;
+    fetchError: string | undefined;
 }
 
 const initialState: StateType = {
-    InSRecords: []
+    InSRecords: [],
+    totalInSRecords: 0,
+    fetchFilter: {
+        query: '',
+        sortBy: undefined,
+        sortOrder: 'asc',
+        page: 0,
+        rowsPerPage: 5,
+    },
+    fetchStatus: 'idle',
+    fetchError: '',
 };
 
 export const InSRecordSlice = createSlice({
     name: 'I_SRecord',
     initialState,
     reducers: {
-        getInS: (state, action) => {
-            state.InSRecords = action.payload;
-        },
-        //SearchExpInc: (state, action) => {
-        //    state.noteSearch = action.payload;
-        //}
-        //SelectNote: (state, action) => {
-        //    state.notesContent = action.payload;
-        //},
-
-        //DeleteNote(state: StateType, action) {
-        //    const index = state.notes.findIndex((note) => note.id === action.payload);
-        //    state.notes.splice(index, 1);
-        //},
-
-        //UpdateNote: {
-        //    reducer: (state: StateType, action: PayloadAction<any>) => {
-        //        state.notes = state.notes.map((note) =>
-        //            note.id === action.payload.id
-        //                ? { ...note, [action.payload.field]: action.payload.value }
-        //                : note,
-        //        );
-        //    },
-        //    prepare: (id, field, value) => {
-        //        return {
-        //            payload: { id, field, value },
-        //        };
-        //    },
-        //},
-
-        //addNote: {
-        //    reducer: (state: StateType, action: PayloadAction<any>) => {
-        //        state.notes.push(action.payload);
-        //    },
-        //    prepare: (id, title, color) => {
-        //        return { payload: { id, title, color, datef: new Date().toDateString(), deleted: false } };
-        //    },
-        //},
+        setFilter: (state, action) => {
+            state.fetchFilter = {
+                ...state.fetchFilter,
+                ...action.payload,
+            };
+        }
     },
+    extraReducers: (builder) => {
+        builder.addCase(fetchInS.pending, (state) => {
+            state.fetchStatus = 'loading';
+        });
+        builder.addCase(fetchInS.fulfilled, (state, action) => {
+            state.fetchStatus = 'succeeded';
+            state.InSRecords = action.payload.data;
+            state.totalInSRecords = action.payload.total;
+        });
+        builder.addCase(fetchInS.rejected, (state, action) => {
+            state.fetchStatus = 'failed';
+            state.fetchError = action.error.message;
+        });
+    }
 });
 
-//export const { SearchNotes, getNotes, SelectNote, DeleteNote, UpdateNote, addNote } =
-//    ExpectedIncomeSlice.actions;
+export const { setFilter } = InSRecordSlice.actions;
 
-export const { getInS } =
-    InSRecordSlice.actions;
-
-export const fetchInS = () => async (dispatch: AppDispatch) => {
+export const fetchInS = createAsyncThunk<
+    FetchResponseType<InSRecordType>,
+    FetchRequestType<InSRecordType>,
+    { dispatch: AppDispatch, state: AppState }
+>('InSRecord/fetchInS', async (filter, { dispatch, getState }) => {
     try {
-        const response = await axios.get(`${API_URL}`);
-        dispatch(getInS(response.data));
+        dispatch(setFilter(filter));
+        const response = await axios.get(`${API_URL}`, {
+            params: getState().InSRecordRecuder.fetchFilter
+        });
+        return response.data;
     } catch (err: any) {
         throw new Error(err);
     }
-};
+});
 
 export default InSRecordSlice.reducer;
