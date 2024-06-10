@@ -218,7 +218,7 @@ const I_STableList = () => {
     const totalRecord = useSelector((state) => state.InSRecordRecuder.totalInSRecords);
     const fetchFilter = useSelector((state) => state.InSRecordRecuder.fetchFilter);
     const fetchStatus = useSelector((state) => state.InSRecordRecuder.fetchStatus);
-    const fetchError = useSelector((state) => state.InSRecordRecuder.fetchError);
+    // const fetchError = useSelector((state) => state.InSRecordRecuder.fetchError);
     const page = useSelector((state) => state.InSRecordRecuder.fetchFilter.page ?? 0);
     const rowsPerPage = useSelector((state) => state.InSRecordRecuder.fetchFilter.rowsPerPage ?? 5);
     // Avoid a layout jump when reaching the last page with empty rows.
