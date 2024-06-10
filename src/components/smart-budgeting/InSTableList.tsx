@@ -22,6 +22,7 @@ import {
     Paper,
     Fab,
     Stack,
+    Skeleton,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
@@ -29,43 +30,7 @@ import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
 import { fetchInS } from 'src/store/smart-budgeting/InSRecordSlice';
-import { InSRecordType } from 'src/types/smart-budgeting';
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-
-    return 0;
-}
-
-type Order = 'asc' | 'desc';
-
-function getComparator<Key extends keyof any>(
-    order: Order,
-    orderBy: Key,
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-    return order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
-    const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) {
-            return order;
-        }
-
-        return a[1] - b[1];
-    });
-
-    return stabilizedThis.map((el) => el[0]);
-}
+import { SortOrder } from 'src/types/common';
 
 interface HeadCell {
     disablePadding: boolean;
@@ -124,7 +89,7 @@ interface EnhancedTableProps {
     numSelected: number;
     onRequestSort: (event: React.MouseEvent<unknown>, property: any) => void;
     onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    order: Order;
+    order: SortOrder;
     orderBy: string;
     rowCount: number;
 }
@@ -247,49 +212,39 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 };
 
 const I_STableList = () => {
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<any>('calories');
-    const [selected, setSelected] = React.useState<readonly string[]>([]);
-    const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [selected, setSelected] = React.useState<readonly string[]>([]);
+    const records = useSelector((state) => state.InSRecordRecuder.InSRecords);
+    const totalRecord = useSelector((state) => state.InSRecordRecuder.totalInSRecords);
+    const fetchFilter = useSelector((state) => state.InSRecordRecuder.fetchFilter);
+    const fetchStatus = useSelector((state) => state.InSRecordRecuder.fetchStatus);
+    // const fetchError = useSelector((state) => state.InSRecordRecuder.fetchError);
+    const page = useSelector((state) => state.InSRecordRecuder.fetchFilter.page ?? 0);
+    const rowsPerPage = useSelector((state) => state.InSRecordRecuder.fetchFilter.rowsPerPage ?? 5);
+    // Avoid a layout jump when reaching the last page with empty rows.
+    const emptyRows = useSelector(() => Math.max(0, (totalRecord ? Math.min(rowsPerPage, totalRecord) : rowsPerPage) - records?.length));
 
     const dispatch = useDispatch();
 
     //Fetch Expected incomes
     React.useEffect(() => {
-        dispatch(fetchInS());
+        dispatch(fetchInS(fetchFilter));
     }, [dispatch]);
 
-    const getI_S: InSRecordType[] = useSelector((state) => state.I_SRecordRecuder.InSRecords);
-
-    const [rows, setRows] = React.useState<any>(getI_S);
-    const [search, setSearch] = React.useState('');
-
-    React.useEffect(() => {
-        setRows(getI_S);
-    }, [getI_S]);
-
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const filteredRows: InSRecordType[] = getI_S.filter((row) => {
-            return row.title.toLowerCase().includes(event.target.value);
-        });
-        setSearch(event.target.value);
-        setRows(filteredRows);
+        dispatch(fetchInS({ ...fetchFilter, query: event.target.value }));
     };
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: any) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
+        dispatch(fetchInS({ ...fetchFilter, sortBy: property, sortOrder: fetchFilter.sortOrder === 'asc' ? 'desc' : 'asc' }));
     };
 
     // This is for select all the row
     const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            const newSelecteds = rows.map((n: any) => n.title);
+            const newSelecteds = records.map((n: any) => n.title);
             setSelected(newSelecteds);
 
             return;
@@ -322,12 +277,11 @@ const I_STableList = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
+        dispatch(fetchInS({ ...fetchFilter, page: newPage }));
     };
 
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+        dispatch(fetchInS({ ...fetchFilter, rowsPerPage: parseInt(event.target.value, 10) }));
     };
 
     const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -335,9 +289,6 @@ const I_STableList = () => {
     };
 
     const isSelected = (name: string) => selected.indexOf(name) !== -1;
-
-    // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const theme = useTheme();
     const borderColor = theme.palette.divider;
@@ -347,7 +298,7 @@ const I_STableList = () => {
             <Box>
                 <EnhancedTableToolbar
                     numSelected={selected.length}
-                    search={search}
+                    search={fetchFilter.query ?? ''}
                     handleSearch={(event: any) => handleSearch(event)}
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
@@ -358,16 +309,15 @@ const I_STableList = () => {
                         >
                             <EnhancedTableHead
                                 numSelected={selected.length}
-                                order={order}
-                                orderBy={orderBy}
+                                order={fetchFilter.sortOrder ?? 'asc'}
+                                orderBy={fetchFilter.sortBy ?? 'name'}
                                 onSelectAllClick={handleSelectAllClick}
                                 onRequestSort={handleRequestSort}
-                                rowCount={rows.length}
+                                rowCount={totalRecord ?? 0}
                             />
                             <TableBody>
-                                {stableSort(rows, getComparator(order, orderBy))
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row: any, index) => {
+                                {records
+                                    ?.map((row: any, index) => {
                                         const isItemSelected = isSelected(row.title);
                                         const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -471,7 +421,9 @@ const I_STableList = () => {
                                             height: (dense ? 33 : 53) * emptyRows,
                                         }}
                                     >
-                                        <TableCell colSpan={6} />
+                                        <TableCell colSpan={7}>
+                                            { fetchStatus === 'loading' && records?.length === 0 && <Skeleton variant="rectangular" width="100%" height={emptyRows * 53} animation="wave"></Skeleton>}
+                                        </TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -480,7 +432,7 @@ const I_STableList = () => {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={rows.length}
+                        count={totalRecord}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
