@@ -19,33 +19,38 @@ import {
 } from '@mui/material';
 import { useSelector, useDispatch } from 'src/store/Store';
 import Scrollbar from 'src/components/custom-scroll/Scrollbar';
-import { SelectChat, fetchChats, SearchChat } from 'src/store/financial-consultant/ConsultSlice';
-import { ChatsType } from 'src/types/financial-consultant';
+// import { SelectChat, fetchChats, SearchChat } from 'src/store/financial-consultant/ConsultSlice';
+import { FinancialConsultant } from 'src/types/financial-consultant';
 import { last } from 'lodash';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { IconChevronDown, IconSearch } from '@tabler/icons-react';
+import { fetchConsultant, selectConsultant } from 'src/store/financial-consultant/ConsultSlice';
 // import user1 from 'src/assets/images/profile/user-1.jpg';
 
 const ChatListing = () => {
   const dispatch = useDispatch();
-  const activeChat = useSelector((state) => state.chatReducer.chatContent);
+  const chattingWith = useSelector((state) => state.financialConsultantReducer.chattingWith);
+  // const ws = useSelector((state) => state.financialConsultantReducer.ws);
+  // console.log('ws', ws);
 
-  useEffect(() => {
-    dispatch(fetchChats());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchChats());
+  // }, [dispatch]);
 
-  const filterChats = (chats: ChatsType[], cSearch: string) => {
-    if (chats)
-      return chats.filter((t) => t.name.toLocaleLowerCase().includes(cSearch.toLocaleLowerCase()));
+  // const filterChats = (chats: ChatsType[], cSearch: string) => {
+  //   if (chats)
+  //     return chats.filter((t) => t.name.toLocaleLowerCase().includes(cSearch.toLocaleLowerCase()));
 
-    return chats;
-  };
+  //   return chats;
+  // };
 
-  const chats = useSelector((state) =>
-    filterChats(state.chatReducer.chats, state.chatReducer.chatSearch),
-  );
+  // const chats = useSelector((state) =>
+  //   filterChats(state.financialConsultantReducer.chats, state.financialConsultantReducer.chatSearch),
+  // );
 
-  const getDetails = (conversation: ChatsType) => {
+  const consultants = useSelector((state) => state.financialConsultantReducer.consultants);
+
+  const getDetails = (conversation: FinancialConsultant) => {
     let displayText = '';
 
     const lastMessage = conversation.messages[conversation.messages.length - 1];
@@ -58,7 +63,7 @@ const ChatListing = () => {
     return displayText;
   };
 
-  const lastActivity = (chat: ChatsType) => last(chat.messages)?.createdAt;
+  const lastActivity = (chat: FinancialConsultant) => last(chat.messages)?.createdAt;
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -88,7 +93,7 @@ const ChatListing = () => {
         </Badge> */}
         <Box>
           <Typography variant="body1" fontWeight={600}>
-            All Consultants
+            All Advisors
           </Typography>
           <Typography variant="body2">We are here to help you</Typography>
         </Box>
@@ -111,7 +116,7 @@ const ChatListing = () => {
             ),
           }}
           fullWidth
-          onChange={(e) => dispatch(SearchChat(e.target.value))}
+          onChange={(e) => dispatch(fetchConsultant({ query: e.target.value }))}
         />
       </Box>
       {/* ------------------------------------------- */}
@@ -144,27 +149,27 @@ const ChatListing = () => {
           </Menu>
         </Box>
         <Scrollbar sx={{ height: { lg: 'calc(100vh - 100px)', md: '100vh' }, maxHeight: '600px' }}>
-          {chats && chats.length ? (
-            chats.map((chat) => (
+          {consultants && consultants.length ? (
+            consultants.map((consultant) => (
               <ListItemButton
-                key={chat.id}
-                onClick={() => dispatch(SelectChat(chat.id))}
+                key={consultant.id}
+                onClick={() => dispatch(selectConsultant(consultant.id))}
                 sx={{
                   mb: 0.5,
                   py: 2,
                   px: 3,
                   alignItems: 'start',
                 }}
-                selected={activeChat === chat.id}
+                selected={chattingWith === consultant.id}
               >
                 <ListItemAvatar>
                   <Badge
                     color={
-                      chat.status === 'online'
+                      consultant.status === 'online'
                         ? 'success'
-                        : chat.status === 'busy'
+                        : consultant.status === 'busy'
                         ? 'error'
-                        : chat.status === 'away'
+                        : consultant.status === 'away'
                         ? 'warning'
                         : 'secondary'
                     }
@@ -175,16 +180,16 @@ const ChatListing = () => {
                     }}
                     overlap="circular"
                   >
-                    <Avatar alt="Remy Sharp" src={chat.thumb} sx={{ width: 42, height: 42 }} />
+                    <Avatar alt="Remy Sharp" src={consultant.thumb} sx={{ width: 42, height: 42 }} />
                   </Badge>
                 </ListItemAvatar>
                 <ListItemText
                   primary={
                     <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
-                      {chat.name}
+                      {consultant.name}
                     </Typography>
                   }
-                  secondary={getDetails(chat)}
+                  secondary={getDetails(consultant)}
                   secondaryTypographyProps={{
                     noWrap: true,
                   }}
@@ -192,7 +197,7 @@ const ChatListing = () => {
                 />
                 <Box sx={{ flexShrink: '0' }} mt={0.5}>
                   <Typography variant="body2">
-                    {formatDistanceToNowStrict(new Date(lastActivity(chat)), {
+                    {formatDistanceToNowStrict(new Date(lastActivity(consultant)), {
                       addSuffix: false,
                     })}
                   </Typography>

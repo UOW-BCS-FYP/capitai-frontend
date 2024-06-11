@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Divider, Box } from '@mui/material';
 import Breadcrumb from 'src/layouts/full/shared/breadcrumb/Breadcrumb';
 import PageContainer from 'src/components/container/PageContainer';
@@ -8,9 +8,17 @@ import ChatSidebar from 'src/components/financial-consultant/ChatSidebar';
 import ChatContent from 'src/components/financial-consultant/ChatContent';
 import ChatMsgSent from 'src/components/financial-consultant/ChatMsgSent';
 import AppCard from 'src/components/shared/AppCard';
+import { fetchConsultant } from 'src/store/financial-consultant/ConsultSlice';
+import { useDispatch } from 'src/store/Store';
 
 const FinanicalConsultant = () => {
+  const dispatch = useDispatch();
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    // Fetch consultant data when page loads
+    dispatch(fetchConsultant({}));
+  }, [dispatch]);
 
   return (
     <PageContainer title="Personal Financial Advisor" description="this is Personal Financial Advisor page">

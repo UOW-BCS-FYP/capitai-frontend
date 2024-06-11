@@ -8,22 +8,21 @@ import {
   ListItem,
   ListItemText,
   ListItemAvatar,
-  IconButton,
+  // IconButton,
   Box,
   Stack,
   Badge,
-  useMediaQuery,
-  Theme
+  // useMediaQuery,
+  // Theme
 } from '@mui/material';
 import {
-  IconDotsVertical, IconMenu2,
+  // IconDotsVertical, 
+  IconMenu2,
   // IconPhone, IconVideo
 } from '@tabler/icons-react';
 import { useSelector } from 'src/store/Store';
-
-import { ChatsType } from 'src/types/financial-consultant';
 import { formatDistanceToNowStrict } from 'date-fns';
-import ChatInsideSidebar from './ChatInsideSidebar';
+// import ChatInsideSidebar from './ChatInsideSidebar';
 import Scrollbar from 'src/components/custom-scroll/Scrollbar';
 
 
@@ -32,11 +31,12 @@ interface ChatContentProps {
 }
 
   const ChatContent: React.FC<ChatContentProps> = ({ toggleChatSidebar }) => {
-  const [open, setOpen] = React.useState(false);
-  const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'));
+  // const [open, setOpen] = React.useState(false);
+  // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'));
 
-  const chatDetails: ChatsType = useSelector(
-    (state) => state.chatReducer.chats[state.chatReducer.chatContent - 1],
+  const chattingWith = useSelector((state) => state.financialConsultantReducer.chattingWith);
+  const chatDetails = useSelector(
+    (state) => chattingWith && state.financialConsultantReducer.consultants.find((c) => c.id === chattingWith),
   );
 
   return (
@@ -90,9 +90,9 @@ interface ChatContentProps {
                 <IconButton aria-label="delete">
                   <IconVideo stroke={1.5} />
                 </IconButton> */}
-                <IconButton aria-label="delete" onClick={() => setOpen(!open)}>
+                {/* <IconButton aria-label="delete" onClick={() => setOpen(!open)}>
                   <IconDotsVertical stroke={1.5} />
-                </IconButton>
+                </IconButton> */}
               </Stack>
             </Box>
             <Divider />
@@ -198,7 +198,7 @@ interface ChatContentProps {
             {/* ------------------------------------------- */}
             {/* Chat right sidebar Content */}
             {/* ------------------------------------------- */}
-            <ChatInsideSidebar isInSidebar={lgUp ? open : !open} chat={chatDetails} />
+            {/* <ChatInsideSidebar isInSidebar={open} consultant={chatDetails} /> */}
           </Box>
         </Box>
       ) : (

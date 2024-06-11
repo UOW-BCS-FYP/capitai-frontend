@@ -13,6 +13,7 @@ import BudgetCategoryReducer from './smart-budgeting/BudgetCategorySlice'
 import InSRecordRecuder from './smart-budgeting/InSRecordSlice'
 import GoalTrackerReducer from './goal-tracker/GoalTrackerSlice';
 import FinancialStatementReducer from './financial-statement/FinancialStatementSlice';
+import FinancialConsultantReducer from './financial-consultant/ConsultSlice';
 
 import { combineReducers } from 'redux';
 import {
@@ -37,7 +38,14 @@ export const store = configureStore({
     InSRecordRecuder: InSRecordRecuder,
     goalTrackerReducer: GoalTrackerReducer,
     statementReducer: FinancialStatementReducer,
+    financialConsultantReducer: FinancialConsultantReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredPaths: ['financialConsultantReducer.ws'],
+      },
+    }),
 });
 
 const rootReducer = combineReducers({
@@ -55,6 +63,7 @@ const rootReducer = combineReducers({
   InSRecordRecuder: InSRecordRecuder,
   goalTrackerReducer: GoalTrackerReducer,
   statementReducer: FinancialStatementReducer,
+  financialConsultantReducer: FinancialConsultantReducer,
 });
 
 export type AppState = ReturnType<typeof rootReducer>;
