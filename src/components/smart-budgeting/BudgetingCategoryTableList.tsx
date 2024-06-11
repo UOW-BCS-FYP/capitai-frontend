@@ -31,11 +31,13 @@ import { useSelector, useDispatch } from 'src/store/Store';
 import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
-import { fetchBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
+import { addBudgetCtgy, fetchBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
 import { SortOrder } from 'src/types/common';
 import { BudgetCategoryType } from 'src/types/smart-budgeting';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useState } from 'react';
+import BudgetingCategoryDialog from './BudgetingCategoryDialog';
 
 interface HeadCell {
     disablePadding: boolean;
@@ -152,10 +154,11 @@ interface EnhancedTableToolbarProps {
     numSelected: number;
     handleSearch: React.ChangeEvent<HTMLInputElement> | any;
     search: string;
+    handleAdd: React.ChangeEvent<HTMLInputElement> | any;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { numSelected, handleSearch, search } = props;
+    const { numSelected, handleSearch, search, handleAdd } = props;
 
     return (
         <Toolbar
@@ -174,7 +177,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 <Box>
                     <Stack>
                         <Tooltip title="Add" placement="bottom">
-                            <Fab size="small" color="info">
+                            <Fab size="small" color="info" onClick={handleAdd}>
                                 <IconPlus size="16" />
                             </Fab>
                         </Tooltip>
@@ -389,11 +392,17 @@ const BudgetingCategoryTableList = () => {
 
     const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
+    const handleDialogClose = () => {
+        setOpenDialog(false);
+    };
+
     // Avoid a layout jump when reaching the last page with empty rows.
     // const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const theme = useTheme();
     const borderColor = theme.palette.divider;
+
+    const [openDialog, setOpenDialog] = useState(false);
 
     return (
         <Box>
@@ -402,6 +411,7 @@ const BudgetingCategoryTableList = () => {
                     numSelected={selected.length}
                     search={fetchFilter.query ?? ''}
                     handleSearch={(event: any) => handleSearch(event)}
+                    handleAdd={() => setOpenDialog(true)}  
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
                     <TableContainer>
@@ -465,6 +475,18 @@ const BudgetingCategoryTableList = () => {
                     />
                 </Box>
             </Box>
+            <BudgetingCategoryDialog
+                open={openDialog}
+                onClose={handleDialogClose}
+                onSubmit={(values) =>
+                    dispatch(addBudgetCtgy({
+                        ...values,
+                        isActivated: true
+                    }))
+                    .then(handleDialogClose)
+                    .then(() => { dispatch(fetchBudgetCtgy(fetchFilter)) })
+                }
+            />
         </Box>
     );
 };

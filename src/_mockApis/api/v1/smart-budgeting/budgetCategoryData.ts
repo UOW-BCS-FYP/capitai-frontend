@@ -7,6 +7,8 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         title:
             'rent',
         amount: 10000,
+        isBill: true,
+        intervalMonth: 1,
         isActivated: true
     },
     {
@@ -14,6 +16,8 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         title:
             'transportation',
         amount: 200,
+        isBill: true,
+        intervalMonth: 1,
         isActivated: true
     },
     {
@@ -21,6 +25,8 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         title:
             'food',
         amount: 3000,
+        isBill: true,
+        intervalMonth: 1,
         isActivated: true
     },
     {
@@ -28,6 +34,8 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         title:
             'water bill',
         amount: 300,
+        isBill: true,
+        intervalMonth: 3,
         isActivated: true
     },
     {
@@ -35,6 +43,8 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         title:
             'other',
         amount: 500,
+        isBill: false,
+        intervalMonth: 0,
         isActivated: true
     },
 ];

@@ -1,10 +1,13 @@
 import { FetchRequestType, FetchResponseType } from "./common";
 
 export type BudgetCategoryType = {
-  id: number;
+  id?: number;
   title: string;
-  amount: number;
-  isActivated: boolean;
+    amount: number;
+    intervalMonth?: number;
+    isBill: boolean;
+    lastInterval?: number;
+    isActivated: boolean;
 }
 
 export type FetchBudgetCategoryRequestType = FetchRequestType<BudgetCategoryType>;
