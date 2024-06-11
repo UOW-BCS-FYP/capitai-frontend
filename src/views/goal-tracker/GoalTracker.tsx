@@ -37,12 +37,11 @@ import CustomSwitch from 'src/components/forms/theme-elements/CustomSwitch';
 import Breadcrumb from 'src/layouts/full/shared/breadcrumb/Breadcrumb';
 import PageContainer from 'src/components/container/PageContainer';
 import { IconTrash, IconFilter, IconSearch } from '@tabler/icons-react';
-// import { EnhancedTableData, EnTableType } from 'src/components/tables/tableData';
 import BlankCard from '../../components/shared/BlankCard';
 import { useDispatch, useSelector } from '../../store/Store';
-import MonthlyEarnings from 'src/components/dashboards/modern/MonthlyEarnings';
-import YearlyBreakup from 'src/components/dashboards/modern/YearlyBreakup';
-import PageImpressions from 'src/components/widgets/charts/PageImpressions';
+import CapitialBuildCard from 'src/components/goal-tracker/CapitalBuildingCard';
+import DebtPaymentCard from 'src/components/goal-tracker/DebtPaymentCard';
+import LongTermExpenseCard from 'src/components/goal-tracker/LongTermExpenseCard';
 import { FinancialGoalType, SortOrder } from 'src/types/goal-tracker';
 import { fetchGoals, rearrangeGoal } from 'src/store/goal-tracker/GoalTrackerSlice';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -485,13 +484,13 @@ const EnhanceTable = () => {
         <Grid item xs={12} lg={12}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={4}>
-              <YearlyBreakup />
+              <CapitialBuildCard />
             </Grid>
             <Grid item xs={12} md={4}>
-              <MonthlyEarnings />
+              <DebtPaymentCard />
             </Grid>
             <Grid item xs={12} md={4}>
-              <PageImpressions />
+              <LongTermExpenseCard />
             </Grid>
           </Grid>
         </Grid>
