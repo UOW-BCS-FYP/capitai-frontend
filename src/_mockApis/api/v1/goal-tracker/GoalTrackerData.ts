@@ -166,7 +166,7 @@ mock.onPost("/api/v1/goal-tracker").reply((request) => {
 // update a financial goal
 mock.onPut(new RegExp("/api/v1/goal-tracker/*")).reply((request) => {
   // const id = request.params.id;
-  const match = request.url?.match(/\/api\/v1\/goal-tracker\/(.*)/);
+  const match = request.url?.match(/\/api\/v1\/goal-tracker\/([^\/]*)/);
   const id = match ? parseInt(match[1]) : 0;
   const data = JSON.parse(request.data);
   const updatedGoal = FinancialGoalData.find((goal) => goal.id === id);
