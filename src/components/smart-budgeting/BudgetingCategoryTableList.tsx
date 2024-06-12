@@ -50,14 +50,14 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
     {
-        id: 'name',
+        id: 'title',
         numeric: false,
         disablePadding: false,
         label: 'Title',
         paddingType: 'normal',
     },
     {
-        id: 'status',
+        id: 'isActivated',
         numeric: false,
         disablePadding: false,
         label: 'Status',
@@ -156,10 +156,12 @@ interface EnhancedTableToolbarProps {
     handleSearch: React.ChangeEvent<HTMLInputElement> | any;
     search: string;
     handleAdd: React.ChangeEvent<HTMLInputElement> | any;
+    handleDelMultiple: () => void;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { numSelected, handleSearch, search, handleAdd } = props;
+    const { numSelected, handleSearch, search, handleAdd, handleDelMultiple } = props;
+    const [openDel, setDelDialog] = useState(false);
 
     return (
         <Toolbar
@@ -209,7 +211,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
-                    <IconButton>
+                    <IconButton onClick={()=>setDelDialog(true)}>
                         <IconTrash width="18" />
                     </IconButton>
                 </Tooltip>
@@ -220,6 +222,11 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                     </IconButton>
                 </Tooltip>
             )}
+            <DeleteConfirmDialog
+                open={openDel}
+                onClose={() => setDelDialog(false)}
+                onSubmit={handleDelMultiple}
+            />
         </Toolbar>
     );
 };
@@ -251,7 +258,6 @@ const BudgetingCategoryTableRow = (
     return (
         <TableRow
             hover
-            onClick={(event) => handleClick(event, row.title)}
             role="checkbox"
             aria-checked={isItemSelected}
             tabIndex={-1}
@@ -262,6 +268,7 @@ const BudgetingCategoryTableRow = (
                 <CustomCheckbox
                     color="primary"
                     checked={isItemSelected}
+                    onClick={(event) => handleClick(event, row.title)}
                     inputProps={{
                         'aria-labelledby': labelId,
                     }}
@@ -374,6 +381,7 @@ const BudgetingCategoryTableList = () => {
     // @ts-ignore
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: any) => {
         const isAsc = fetchFilter.sortBy === property && fetchFilter.sortOrder === 'asc';
+        console.log(property);
         dispatch(fetchBudgetCtgy({ sortBy: property, sortOrder: isAsc ? 'desc' : 'asc' }));
     };
 
@@ -445,7 +453,12 @@ const BudgetingCategoryTableList = () => {
                     numSelected={selected.length}
                     search={fetchFilter.query ?? ''}
                     handleSearch={(event: any) => handleSearch(event)}
-                    handleAdd={() => setOpenDialog(true)}  
+                    handleAdd={() => setOpenDialog(true)}
+                    handleDelMultiple={() => selected.forEach(row => {
+                        dispatch(deleteBudgetCtgy(
+                            categories.filter(ctgy => ctgy.title === row )[0]
+                        )).then(() => { dispatch(fetchBudgetCtgy(fetchFilter)); setSelected([]); })
+                    })}
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
                     <TableContainer>
@@ -464,7 +477,6 @@ const BudgetingCategoryTableList = () => {
                             <TableBody>
                                 {categories
                                     .map((row, index) => {
-                                        console.log(row);
                                         const isItemSelected = isSelected(row.title);
                                         const labelId = `enhanced-table-checkbox-${index}`;
                                         return (
