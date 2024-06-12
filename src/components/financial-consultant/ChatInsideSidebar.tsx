@@ -13,22 +13,22 @@ import {
   IconButton,
   styled,
 } from '@mui/material';
-import { ChatsType } from 'src/types/financial-consultant';
+import { FinancialConsultant } from 'src/types/financial-consultant';
 import { uniq, flatten } from 'lodash';
 import { IconDownload } from '@tabler/icons-react';
 
 interface chatType {
   isInSidebar?: boolean;
-  chat?: ChatsType;
+  consultant?: FinancialConsultant;
 }
 
 const drawerWidth = 320;
 
-const ChatInsideSidebar = ({ isInSidebar, chat }: chatType) => {
+const ChatInsideSidebar = ({ isInSidebar, consultant }: chatType) => {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'));
-  const totalAttachment = uniq(flatten(chat?.messages.map((item) => item.attachment))).length;
+  const totalAttachment = uniq(flatten(consultant?.messages.map((item) => item.attachments))).length;
   const totalMedia =
-    uniq(flatten(chat?.messages.map((item) => (item?.type === 'image' ? item.msg : null)))).length -
+    uniq(flatten(consultant?.messages.map((item) => (item?.type === 'image' ? item.msg : null)))).length -
     1;
 
   const StyledStack = styled(Stack)(() => ({
@@ -62,7 +62,7 @@ const ChatInsideSidebar = ({ isInSidebar, chat }: chatType) => {
             Media ({totalMedia})
           </Typography>
           <Grid container spacing={2}>
-            {chat?.messages.map((c) => {
+            {consultant?.messages.map((c) => {
               return (
                 <Grid item xs={12} lg={4} key={c.id}>
                   {c?.type === 'image' ? (
@@ -87,10 +87,10 @@ const ChatInsideSidebar = ({ isInSidebar, chat }: chatType) => {
             Attachments ({totalAttachment})
           </Typography>
           <Box>
-            {chat?.messages.map((c, index) => {
+            {consultant?.messages.map((c, index) => {
               return (
                 <Stack spacing={2.5} key={index} direction="column">
-                  {c?.attachment?.map((a, index) => {
+                  {c?.attachments?.map((a, index) => {
                     return (
                       <StyledStack key={index} direction="row" gap={2}>
                         <Avatar
