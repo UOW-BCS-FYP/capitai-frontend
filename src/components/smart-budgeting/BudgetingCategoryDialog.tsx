@@ -13,6 +13,7 @@ interface FormValues {
     title: string;
     amount: number;
     isBill: boolean;
+    isActivated: boolean;
     intervalMonth?: number;
 }
 interface BudgetCategoryDialogProps {
@@ -28,6 +29,7 @@ export default function BudgetingCategoryDialog(props: BudgetCategoryDialogProps
             title: '',
             amount: 0,
             isBill: false,
+            isActivated: true,
             intervalMonth: 0,
             ...props.editCategory
         },
@@ -41,6 +43,7 @@ export default function BudgetingCategoryDialog(props: BudgetCategoryDialogProps
         props.onClose();
     };
 
+    const isEdit = props.editCategory !== undefined;
     return (
         <Dialog
             open={props.open}
@@ -50,7 +53,7 @@ export default function BudgetingCategoryDialog(props: BudgetCategoryDialogProps
                 onSubmit: formik.handleSubmit,
             }}
         >
-            <DialogTitle>New Budget Category</DialogTitle>
+            {isEdit? <DialogTitle>Edit Budget Category</DialogTitle> : <DialogTitle>New Budget Category</DialogTitle>}
             <DialogContent>
                 <Grid container style={{ width: '400px' }}>
                     {/* select date */}
@@ -62,6 +65,7 @@ export default function BudgetingCategoryDialog(props: BudgetCategoryDialogProps
                         id="title"
                         name="title"
                         onChange={formik.handleChange}
+                        value={formik.values.title}
                         label="Title"
                         type="text"
                         variant="standard"
@@ -76,9 +80,9 @@ export default function BudgetingCategoryDialog(props: BudgetCategoryDialogProps
                         <TextField
                         margin="dense"
                         id="amount"
-                            name="amount"
-                            onChange={formik.handleChange}
-
+                        name="amount"
+                        onChange={formik.handleChange}
+                        value={formik.values.amount}
                         label="Amount"
                         type="number"
                         style={{ width: '100%' }}
@@ -92,18 +96,39 @@ export default function BudgetingCategoryDialog(props: BudgetCategoryDialogProps
                     <Grid item xs={6} sx={{
                         display: 'flex',
                     }}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox color="primary"
-                                    icon={<CheckBoxOutlineBlankIcon />}
-                                    checkedIcon={<CheckBoxIcon />}
-                                    name="isBill"
-                                    onChange={formik.handleChange}
-                                />
-                            }
-                            label="Bill"
-                            defaultChecked= {false}
-                        />
+                        <Grid item xs={3} sx={{
+                            display: 'flex',
+                        }}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox color="primary"
+                                        icon={<CheckBoxOutlineBlankIcon />}
+                                        checkedIcon={<CheckBoxIcon />}
+                                        name="isBill"
+                                        onChange={formik.handleChange}
+                                        defaultChecked={formik.values.isBill}
+                                    />
+                                }
+                                label="Bill"
+                            />
+                        </Grid>
+                        <Grid item xs={2} />
+                        <Grid item xs={1} sx={{
+                            display: 'flex',
+                        }}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox color="primary"
+                                        icon={<CheckBoxOutlineBlankIcon />}
+                                        checkedIcon={<CheckBoxIcon />}
+                                        name="isActivated"
+                                        onChange={formik.handleChange}
+                                        defaultChecked={formik.values.isActivated}
+                                    />
+                                }
+                                label="Activate"
+                            />
+                        </Grid>
                     </Grid>
                     <Grid item xs={6} justifyContent="center">
                         <TextField
@@ -120,6 +145,7 @@ export default function BudgetingCategoryDialog(props: BudgetCategoryDialogProps
                             }}
                             required={formik.values.isBill}
                             disabled={!formik.values.isBill}
+                            value={formik.values.intervalMonth}
                     />
                     </Grid>
                 </Grid>

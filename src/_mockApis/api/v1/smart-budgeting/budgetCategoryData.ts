@@ -36,7 +36,7 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         amount: 300,
         isBill: true,
         intervalMonth: 3,
-        isActivated: true
+        isActivated: false
     },
     {
         id: 5,
@@ -79,12 +79,14 @@ mock.onGet('/api/v1/smart-budgeting/budget-category').reply((request) => {
 
 // POST : Add new budget category
 mock.onPost('/api/v1/smart-budgeting/budget-category').reply((request) => {
-    const { title, amount, isActivated } = JSON.parse(request.data);
+    const { title, amount, isBill, intervalMonth, isActivated } = JSON.parse(request.data);
     const id = BudgetCategoryData.length + 1;
     const newBudgetCategory = {
         id,
         title,
         amount,
+        isBill,
+        intervalMonth,
         isActivated
     };
     BudgetCategoryData.push(newBudgetCategory);
@@ -92,18 +94,21 @@ mock.onPost('/api/v1/smart-budgeting/budget-category').reply((request) => {
 });
 
 // PUT : Update budget category
-mock.onPut('/api/v1/smart-budgeting/budget-category').reply((request) => {
-    const { id, title, amount, isActivated } = JSON.parse(request.data);
-    const index = BudgetCategoryData.findIndex((budgetCategory) => budgetCategory.id === id);
+mock.onPut(new RegExp(`/api/v1/smart-budgeting/budget-category/*`)).reply((request) => {
+    const match = request.url?.match(/\/api\/v1\/smart-budgeting\/budget-category\/([^\/]*)/);
+    const idToEdit = match ? parseInt(match[1]) : 0;
+    const index = BudgetCategoryData.findIndex((budgetCategory) => budgetCategory.id === idToEdit);
     if (index > -1) {
-        BudgetCategoryData[index] = { id, title, amount, isActivated };
+        const { id, title, amount, isBill, intervalMonth, isActivated } = JSON.parse(request.data);
+        const index = BudgetCategoryData.findIndex((budgetCategory) => budgetCategory.id === id);
+        BudgetCategoryData[index] = { id, title, amount, isBill, intervalMonth, isActivated };
         return [200, BudgetCategoryData[index]];
     }
     return [400];
 });
 
 // DELETE : Delete budget category
-mock.onDelete('/api/v1/smart-budgeting/budget-category/*').reply((request) => {
+mock.onDelete(new RegExp(`/api/v1/smart-budgeting/budget-category/*`)).reply((request) => {
     const match = request.url?.match(/\/api\/v1\/smart-budgeting\/budget-category\/([^\/]*)/);
     const id = match ? parseInt(match[1]) : 0;
     const index = BudgetCategoryData.findIndex((budgetCategory) => budgetCategory.id === id);

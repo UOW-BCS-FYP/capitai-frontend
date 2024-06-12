@@ -31,13 +31,14 @@ import { useSelector, useDispatch } from 'src/store/Store';
 import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
-import { addBudgetCtgy, fetchBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
+import { addBudgetCtgy, deleteBudgetCtgy, fetchBudgetCtgy, updateBudgetCtgy } from '../../store/smart-budgeting/BudgetCategorySlice';
 import { SortOrder } from 'src/types/common';
 import { BudgetCategoryType } from 'src/types/smart-budgeting';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 import BudgetingCategoryDialog from './BudgetingCategoryDialog';
+import DeleteConfirmDialog from '../shared/DeleteConfirmDialog';
 
 interface HeadCell {
     disablePadding: boolean;
@@ -230,9 +231,22 @@ const BudgetingCategoryTableRow = (
         labelId: string,
         handleClick: (event: React.MouseEvent<unknown>, name: string) => void,
         loading: boolean
+        refetch: () => void
     }
 ) => {
-    const { row, isItemSelected, labelId, handleClick, loading } = props;
+    const { row, isItemSelected, labelId, handleClick, loading, refetch } = props;
+
+    const dispatch = useDispatch();
+    const [openDel, setDelDialog] = useState(false);
+    const [openEdit, setEditDialog] = useState(false);
+
+    const handleDelClose = () => {
+        setDelDialog(false);
+    };
+
+    const handleEditClose = () => {
+        setEditDialog(false);
+    };
 
     return (
         <TableRow
@@ -294,17 +308,37 @@ const BudgetingCategoryTableRow = (
             <EnhancedTableCell loading={loading}>
                 <Grid container spacing={1}>
                     <Grid item xs={6}>
-                        <IconButton size="small" onClick={(event) => event.preventDefault()}>
+                        <IconButton size="small" onClick={() => setEditDialog(true)}>
                             <EditIcon/>
                         </IconButton>
                     </Grid>
                     <Grid item xs={6}>
-                        <IconButton size="small" onClick={(event) => event.preventDefault()}>
+                        <IconButton size="small" onClick={() => setDelDialog(true)}>
                             <DeleteIcon/>
                         </IconButton>
                     </Grid>
                 </Grid>
             </EnhancedTableCell>
+            <DeleteConfirmDialog
+                open={openDel}
+                onClose={handleDelClose}
+                onSubmit={() =>
+                    dispatch(deleteBudgetCtgy(row))
+                    .then(refetch)
+                }
+            />
+            <BudgetingCategoryDialog
+                open={openEdit}
+                onClose={handleEditClose}
+                onSubmit={(values) =>
+                    dispatch(updateBudgetCtgy({
+                        ...values
+                    }))
+                        .then(handleEditClose)
+                        .then(refetch)
+                }
+                editCategory={row}
+            />
         </TableRow>
     )
 };
@@ -430,9 +464,9 @@ const BudgetingCategoryTableList = () => {
                             <TableBody>
                                 {categories
                                     .map((row, index) => {
+                                        console.log(row);
                                         const isItemSelected = isSelected(row.title);
                                         const labelId = `enhanced-table-checkbox-${index}`;
-
                                         return (
                                             <BudgetingCategoryTableRow
                                                 key={row.id}
@@ -441,6 +475,7 @@ const BudgetingCategoryTableList = () => {
                                                 labelId={labelId}
                                                 handleClick={handleClick}
                                                 loading={fetchStatus === 'loading'}
+                                                refetch={ ()=>dispatch(fetchBudgetCtgy(fetchFilter)) }
                                             />
                                         );
                                     })}
@@ -480,8 +515,7 @@ const BudgetingCategoryTableList = () => {
                 onClose={handleDialogClose}
                 onSubmit={(values) =>
                     dispatch(addBudgetCtgy({
-                        ...values,
-                        isActivated: true
+                        ...values
                     }))
                     .then(handleDialogClose)
                     .then(() => { dispatch(fetchBudgetCtgy(fetchFilter)) })
