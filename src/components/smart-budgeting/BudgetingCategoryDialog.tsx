@@ -104,7 +104,7 @@ export default function BudgetingCategoryDialog(props: BudgetCategoryDialogProps
                                     <Checkbox color="primary"
                                         icon={<CheckBoxOutlineBlankIcon />}
                                         checkedIcon={<CheckBoxIcon />}
-                                        name="isBill"
+                                        name="isRegular"
                                         onChange={formik.handleChange}
                                         defaultChecked={formik.values.isBill}
                                     />

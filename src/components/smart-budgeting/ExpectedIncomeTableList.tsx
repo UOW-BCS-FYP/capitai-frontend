@@ -31,12 +31,14 @@ import { useSelector, useDispatch } from 'src/store/Store';
 import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
-import { fetchExpInc } from 'src/store/smart-budgeting/ExpectedIncomeSlice';
+import { addExpInc, deleteExpInc, fetchExpInc, updateExpInc } from 'src/store/smart-budgeting/ExpectedIncomeSlice';
 import { useState } from 'react';
 import ExpectedIncomeDialog from './ExpectedIncomeDialog';
 import { ExpectedIncomeType } from 'src/types/smart-budgeting';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteConfirmDialog from '../shared/DeleteConfirmDialog';
+import FilterDialog from './FilterDialog';
 
 type Order = 'asc' | 'desc';
 
@@ -151,14 +153,26 @@ const ExpectedIncomeTableRow = (
         labelId: string,
         handleClick: (event: React.MouseEvent<unknown>, name: string) => void,
         loading: boolean
+        refetch: () => void
     }
 ) => {
-    const { row, isItemSelected, labelId, handleClick, loading } = props;
+    const { row, isItemSelected, labelId, handleClick, loading, refetch } = props;
+
+    const dispatch = useDispatch();
+    const [openDel, setDelDialog] = useState(false);
+    const [openEdit, setEditDialog] = useState(false);
+
+    const handleDelClose = () => {
+        setDelDialog(false);
+    };
+
+    const handleEditClose = () => {
+        setEditDialog(false);
+    };
 
     return (
         <TableRow
             hover
-            onClick={(event) => handleClick(event, row.title)}
             role="checkbox"
             aria-checked={isItemSelected}
             tabIndex={-1}
@@ -167,6 +181,7 @@ const ExpectedIncomeTableRow = (
         >
             <EnhancedTableCell padding="checkbox" loading={loading}>
                 <CustomCheckbox
+                    onClick={(event) => handleClick(event, row.title)}
                     color="primary"
                     checked={isItemSelected}
                     inputProps={{
@@ -216,17 +231,37 @@ const ExpectedIncomeTableRow = (
             <EnhancedTableCell loading={loading}>
                 <Grid container spacing={0}>
                     <Grid item xs={6}>
-                        <IconButton size="small" onClick={(event) => event.preventDefault()}>
+                        <IconButton size="small" onClick={() => setEditDialog(true)}>
                             <EditIcon/>
                         </IconButton>
                     </Grid>
                     <Grid item xs={6}>
-                        <IconButton size="small" onClick={(event) => event.preventDefault()}>
+                        <IconButton size="small" onClick={() => setDelDialog(true)}>
                             <DeleteIcon/>
                         </IconButton>
                     </Grid>
                 </Grid>
             </EnhancedTableCell>
+            <DeleteConfirmDialog
+                open={openDel}
+                onClose={handleDelClose}
+                onSubmit={() =>
+                    dispatch(deleteExpInc(row))
+                        .then(refetch)
+                }
+            />
+            <ExpectedIncomeDialog
+                open={openEdit}
+                onClose={handleEditClose}
+                onSubmit={(values) =>
+                    dispatch(updateExpInc({
+                        ...values
+                    }))
+                        .then(handleEditClose)
+                        .then(refetch)
+                }
+                editExpInc={row}
+            />
         </TableRow>
     );
 };
@@ -236,10 +271,14 @@ interface EnhancedTableToolbarProps {
     handleSearch: React.ChangeEvent<HTMLInputElement> | any;
     search: string;
     handleAdd: React.ChangeEvent<HTMLInputElement> | any;
+    handleDelMultiple: () => void;
+    handleFilter: (values: any) => void;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { numSelected, handleSearch, search, handleAdd } = props;
+    const { numSelected, handleSearch, search, handleAdd, handleDelMultiple, handleFilter } = props;
+    const [openDel, setDelDialog] = useState(false);
+    const [openFilter, setFilterDialog] = useState(false);
 
     return (
         <Toolbar
@@ -289,17 +328,27 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
-                    <IconButton>
+                    <IconButton onClick={() => setDelDialog(true)}>
                         <IconTrash width="18" />
                     </IconButton>
                 </Tooltip>
             ) : (
                 <Tooltip title="Filter list">
-                    <IconButton>
+                    <IconButton onClick={()=>setFilterDialog(true)}>
                         <IconFilter size="1.2rem" />
                     </IconButton>
                 </Tooltip>
             )}
+            <DeleteConfirmDialog
+                open={openDel}
+                onClose={() => setDelDialog(false)}
+                onSubmit={handleDelMultiple}
+            />
+            <FilterDialog
+                open={openFilter}
+                onClose={() => setFilterDialog(false)}
+                onSubmit={handleFilter}
+            />
         </Toolbar>
     );
 };
@@ -394,6 +443,10 @@ const ExpectedIncomeTableList = () => {
         setDense(event.target.checked);
     };
 
+    const handleFilter = (values: any) => {
+        dispatch(fetchExpInc({ isRegular: values.isRegular, isActivated: values.isActivated, min: values.min, max: values.max }));
+    };
+
     const handleDialogClose = () => {
         setOpenDialog(false);
     };
@@ -410,7 +463,13 @@ const ExpectedIncomeTableList = () => {
                     numSelected={selected.length}
                     search={fetchFilter.query ?? ''}
                     handleSearch={(event: any) => handleSearch(event)}
-                    handleAdd={() => setOpenDialog(true)}                    
+                    handleAdd={() => setOpenDialog(true)}  
+                    handleDelMultiple={() => selected.forEach(row => {
+                        dispatch(deleteExpInc(
+                            records.filter(expInc => expInc.title === row)[0]
+                        )).then(() => { dispatch(fetchExpInc(fetchFilter)); setSelected([]); })
+                    })}
+                    handleFilter={(values) => handleFilter(values)}
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
                     <TableContainer>
@@ -440,6 +499,7 @@ const ExpectedIncomeTableList = () => {
                                                 labelId={labelId}
                                                 handleClick={handleClick}
                                                 loading={fetchStatus === 'loading'}
+                                                refetch={() => dispatch(fetchExpInc(fetchFilter))}
                                             />
                                         );
                                     })}
@@ -477,6 +537,13 @@ const ExpectedIncomeTableList = () => {
             <ExpectedIncomeDialog
                 open={openDialog}
                 onClose={handleDialogClose}
+                onSubmit={(values) =>
+                    dispatch(addExpInc({
+                        ...values
+                    }))
+                        .then(handleDialogClose)
+                        .then(() => { dispatch(fetchExpInc(fetchFilter)) })
+                }
             />
         </Box>
     );

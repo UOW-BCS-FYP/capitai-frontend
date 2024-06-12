@@ -24,7 +24,7 @@ const initialState: StateType = {
     page: 0,
     rowsPerPage: 5,
     isActivated: '',
-    isBill: ''
+    isRegular: ''
   },
   fetchBudgetCategoryStatus: 'idle',
   fetchBudgetCategoryError: ''

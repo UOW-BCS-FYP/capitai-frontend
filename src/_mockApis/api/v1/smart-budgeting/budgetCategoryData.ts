@@ -51,7 +51,7 @@ const BudgetCategoryData: BudgetCategoryType[] = [
 
 // GET : Fetch all budget category
 mock.onGet('/api/v1/smart-budgeting/budget-category').reply((request) => {
-    const { query, sortBy, sortOrder, page, rowsPerPage, isBill, isActivated, min, max }: FetchBudgetCategoryRequestType = {
+    const { query, sortBy, sortOrder, page, rowsPerPage, isRegular, isActivated, min, max }: FetchBudgetCategoryRequestType = {
         query: "",
         sortBy: undefined,
         sortOrder: "asc",
@@ -68,9 +68,9 @@ mock.onGet('/api/v1/smart-budgeting/budget-category').reply((request) => {
         temp = temp.filter((budgetCategory) => budgetCategory.title.toLowerCase().includes(query.toLowerCase()));
     }
 
-    if (isBill === 'true')
+    if (isRegular === 'true')
         temp = temp.filter((budgetCategory) => budgetCategory.isBill);
-    else if (isBill === 'false')
+    else if (isRegular === 'false')
         temp = temp.filter((budgetCategory) => !budgetCategory.isBill);
 
     if (isActivated === 'true')

@@ -7,7 +7,7 @@ import { useFormik } from 'formik';
 import CustomRadio from '../forms/theme-elements/CustomRadio';
 
 export interface FormValues {
-    isBill: string;
+    isRegular: string;
     isActivated: string;
     min?: number;
     max?: number;
@@ -21,7 +21,7 @@ interface FilterDialogProps {
 export default function FilterDialog(props: FilterDialogProps) {
     const formik = useFormik({
         initialValues: {
-            isBill: '',
+            isRegular: '',
             isActivated: '',
             min: undefined,
             max: undefined,
@@ -38,7 +38,7 @@ export default function FilterDialog(props: FilterDialogProps) {
     };
 
     const handleReset = () => {
-        formik.values.isBill = '';
+        formik.values.isRegular = '';
         formik.values.isActivated = '';
         formik.values.min = undefined;
         formik.values.max = undefined;
@@ -91,10 +91,10 @@ export default function FilterDialog(props: FilterDialogProps) {
                         display: 'flex',
                     }}>
                         <FormControl>
-                            <FormLabel>Is Bill</FormLabel>
+                            <FormLabel>Is Regular</FormLabel>
                             <RadioGroup
-                                name="isBill"
-                                value={formik.values.isBill}
+                                name="isRegular"
+                                value={formik.values.isRegular}
                                 onChange={formik.handleChange}
                             >
                                 <FormControlLabel value="true" control={<CustomRadio />} label="True" />

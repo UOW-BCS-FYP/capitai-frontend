@@ -27,7 +27,7 @@ import {
     Grid,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { useSelector, useDispatch, dispatch } from 'src/store/Store';
+import { useSelector, useDispatch } from 'src/store/Store';
 import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
@@ -436,7 +436,7 @@ const BudgetingCategoryTableList = () => {
     };
 
     const handleFilter = (values: any) => {
-        dispatch(fetchBudgetCtgy({ isBill: values.isBill, isActivated: values.isActivated, min: values.min, max: values.max }));
+        dispatch(fetchBudgetCtgy({ isRegular: values.isRegular, isActivated: values.isActivated, min: values.min, max: values.max }));
     };
 
     const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,8 +1,8 @@
 import { FetchRequestType, FetchResponseType } from "./common";
 
 export type BudgetCategoryType = {
-  id?: number;
-  title: string;
+    id?: number;
+    title: string;
     amount: number;
     intervalMonth?: number;
     isBill: boolean;
@@ -14,10 +14,13 @@ export type FetchBudgetCategoryRequestType = FetchRequestType<BudgetCategoryType
 export type FetchBudgetCategoryResponseType = FetchResponseType<BudgetCategoryType>;
 
 export type ExpectedIncomeType = {
-  id: number;
-  title: string;
-  amount: number;
-  isActivated: boolean;
+    id?: number;
+    title: string;
+    amount: number;
+    intervalMonth?: number;
+    isRegular: boolean;
+    lastInterval?: number;
+    isActivated: boolean;
 }
 
 export type FetchExpectedIncomeRequestType = FetchRequestType<ExpectedIncomeType>;
