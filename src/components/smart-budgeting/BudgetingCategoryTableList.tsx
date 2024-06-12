@@ -27,7 +27,7 @@ import {
     Grid,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { useSelector, useDispatch } from 'src/store/Store';
+import { useSelector, useDispatch, dispatch } from 'src/store/Store';
 import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
 import { IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
@@ -39,6 +39,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 import BudgetingCategoryDialog from './BudgetingCategoryDialog';
 import DeleteConfirmDialog from '../shared/DeleteConfirmDialog';
+import FilterDialog from './FilterDialog';
 
 interface HeadCell {
     disablePadding: boolean;
@@ -157,11 +158,13 @@ interface EnhancedTableToolbarProps {
     search: string;
     handleAdd: React.ChangeEvent<HTMLInputElement> | any;
     handleDelMultiple: () => void;
+    handleFilter: (values: any) => void;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { numSelected, handleSearch, search, handleAdd, handleDelMultiple } = props;
+    const { numSelected, handleSearch, search, handleAdd, handleDelMultiple, handleFilter } = props;
     const [openDel, setDelDialog] = useState(false);
+    const [openFilter, setFilterDialog] = useState(false);
 
     return (
         <Toolbar
@@ -217,7 +220,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 </Tooltip>
             ) : (
                 <Tooltip title="Filter list">
-                    <IconButton>
+                    <IconButton onClick={()=>setFilterDialog(true)}>
                         <IconFilter size="1.2rem" />
                     </IconButton>
                 </Tooltip>
@@ -226,6 +229,11 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 open={openDel}
                 onClose={() => setDelDialog(false)}
                 onSubmit={handleDelMultiple}
+            />
+            <FilterDialog
+                open={openFilter}
+                onClose={() => setFilterDialog(false)}
+                onSubmit={handleFilter}
             />
         </Toolbar>
     );
@@ -381,7 +389,6 @@ const BudgetingCategoryTableList = () => {
     // @ts-ignore
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: any) => {
         const isAsc = fetchFilter.sortBy === property && fetchFilter.sortOrder === 'asc';
-        console.log(property);
         dispatch(fetchBudgetCtgy({ sortBy: property, sortOrder: isAsc ? 'desc' : 'asc' }));
     };
 
@@ -428,6 +435,10 @@ const BudgetingCategoryTableList = () => {
         dispatch(fetchBudgetCtgy({ rowsPerPage: parseInt(event.target.value, 10), page: 0 }));
     };
 
+    const handleFilter = (values: any) => {
+        dispatch(fetchBudgetCtgy({ isBill: values.isBill, isActivated: values.isActivated, min: values.min, max: values.max }));
+    };
+
     const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDense(event.target.checked);
     };
@@ -456,9 +467,10 @@ const BudgetingCategoryTableList = () => {
                     handleAdd={() => setOpenDialog(true)}
                     handleDelMultiple={() => selected.forEach(row => {
                         dispatch(deleteBudgetCtgy(
-                            categories.filter(ctgy => ctgy.title === row )[0]
+                            categories.filter(ctgy => ctgy.title === row)[0]
                         )).then(() => { dispatch(fetchBudgetCtgy(fetchFilter)); setSelected([]); })
                     })}
+                    handleFilter={(values) => handleFilter(values)}
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
                     <TableContainer>

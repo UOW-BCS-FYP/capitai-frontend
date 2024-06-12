@@ -6,6 +6,10 @@ export type FetchRequestType<T> = {
   sortOrder?: SortOrder; // sort order
   page?: number; // current page
   rowsPerPage?: number; // rows per page
+  isBill?: String;
+  isActivated?: String;
+  min?: number;
+  max?: number;
 };
 
 export type FetchResponseType<T> = {
