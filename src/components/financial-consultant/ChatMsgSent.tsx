@@ -1,17 +1,19 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useEffect } from 'react';
 import { useSelector, useDispatch } from 'src/store/Store';
 import { IconButton, InputBase, Box, Popover } from '@mui/material';
 import Picker, { EmojiClickData } from 'emoji-picker-react';
 import { IconMoodSmile, IconPaperclip, IconPhoto, IconSend } from '@tabler/icons-react';
 import { sendMsg } from 'src/store/financial-consultant/ConsultSlice';
+import useAuth from 'src/guards/authGuard/UseAuth';
 
 const ChatMsgSent = () => {
   const [msg, setMsg] = React.useState<string>('');
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [chosenEmoji, setChosenEmoji] = React.useState<EmojiClickData>();
+  const auth = useAuth();
 
   const onEmojiClick = (emojiObject: EmojiClickData) => {
     setChosenEmoji(emojiObject);
@@ -36,6 +38,7 @@ const ChatMsgSent = () => {
   const onChatMsgSubmit = (e: FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    auth.socket?.emit('client_message', newMsg);
     dispatch(sendMsg(newMsg));
     setMsg('');
   };

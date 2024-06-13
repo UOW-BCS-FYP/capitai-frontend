@@ -1,5 +1,7 @@
 import { createContext, useEffect, useReducer } from 'react';
 import { firebase } from './Firebase';
+import { Socket, io } from 'socket.io-client';
+import { WebSocketLike } from 'react-use-websocket/dist/lib/types';
 
 export interface UserProps {
   id: string;
@@ -14,6 +16,7 @@ export interface InitialStateType {
   isAuthenticated?: boolean;
   isInitialized?: boolean;
   user?: UserProps | null | undefined;
+  socket?: Socket | null;
   platform?: string;
   signup: (username: string, email: string, password: string) => Promise<firebase.auth.UserCredential>;
   signin: (email: string, password: string) => Promise<firebase.auth.UserCredential>;
@@ -29,6 +32,7 @@ const initialState: InitialStateType = {
   isAuthenticated: false,
   isInitialized: false,
   user: null,
+  socket: null,
   signup: () => Promise.resolve({} as firebase.auth.UserCredential),
   signin: () => Promise.resolve({} as firebase.auth.UserCredential),
   logout: () => Promise.resolve(),
@@ -39,7 +43,7 @@ const initialState: InitialStateType = {
   loginWithTwitter: () => Promise.resolve({} as firebase.auth.UserCredential),
 };
 
-const reducer = (state: InitialStateType, action: { type: string, payload: { isAuthenticated: boolean, user?: UserProps | null } }) => {
+const reducer = (state: InitialStateType, action: { type: string, payload: { isAuthenticated: boolean, user?: UserProps | null, socket?: Socket } }) => {
   if (action.type === 'AUTH_STATE_CHANGED') {
     const { isAuthenticated, user } = action.payload;
 
@@ -47,7 +51,14 @@ const reducer = (state: InitialStateType, action: { type: string, payload: { isA
       ...state,
       isAuthenticated,
       isInitialized: true,
-      user,
+      user
+    };
+  }
+  if (action.type === 'SOCKET_STATE_CHANGED') {
+    const { socket } = action.payload;
+    return {
+      ...state,
+      socket
     };
   }
 
@@ -85,6 +96,19 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
               },
             },
           });
+          user.getIdToken().then((token) => {
+            dispatch({
+              type: 'SOCKET_STATE_CHANGED',
+              payload: {
+                isAuthenticated: true,
+                socket: io('http://localhost:5001', {
+                  extraHeaders: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }),
+              },
+            });
+          });
         } else {
           dispatch({
             type: 'AUTH_STATE_CHANGED',
@@ -93,6 +117,7 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
               user: null,
             },
           });
+          state.socket?.close();
         }
       }),
     [dispatch],
