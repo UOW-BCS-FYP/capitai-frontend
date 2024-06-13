@@ -11,8 +11,8 @@ import CustomTextField from '../forms/theme-elements/CustomTextField';
 import CustomFormLabel from '../forms/theme-elements/CustomFormLabel';
 
 export interface FormValues {
-    dateStart: string;
-    dateEnd: string;
+    dateStart?: Date;
+    dateEnd?: Date;
     isIncome: string;
     category: string;
     min?: number;
@@ -28,8 +28,8 @@ export default function InSFilterDialog(props: FilterDialogProps) {
 
     const formik = useFormik({
         initialValues: {
-            dateStart: '',
-            dateEnd: '',
+            dateStart: undefined,
+            dateEnd: undefined,
             isIncome: '',
             category: '',
             min: undefined,
@@ -37,7 +37,6 @@ export default function InSFilterDialog(props: FilterDialogProps) {
         },
         //validationSchema: validationSchema,
         onSubmit: (values) => {
-            console.log(values);
             props.onSubmit(values);
             handleClose();
         }
@@ -48,6 +47,12 @@ export default function InSFilterDialog(props: FilterDialogProps) {
     };
 
     const handleReset = () => {
+        formik.values.dateStart = undefined;
+        formik.values.dateEnd = undefined;
+        formik.values.isIncome = '';
+        formik.values.category = '';
+        formik.values.min = undefined;
+        formik.values.max = undefined;
         props.onSubmit(formik.values);
         handleClose();
     };
@@ -73,8 +78,8 @@ export default function InSFilterDialog(props: FilterDialogProps) {
                             renderInput={(inputProps) => (
                                 <CustomTextField
                                     fullWidth
-                                    id="deadline"
-                                    name="deadline"
+                                    id="dateStart"
+                                    name="dateStart"
                                     variant="outlined"
                                     size="small"
                                     inputProps={{ 'aria-label': 'basic date picker' }}
@@ -95,8 +100,8 @@ export default function InSFilterDialog(props: FilterDialogProps) {
                             renderInput={(inputProps) => (
                                 <CustomTextField
                                     fullWidth
-                                    id="deadline"
-                                    name="deadline"
+                                    id="dateEnd"
+                                    name="dateEnd"
                                     variant="outlined"
                                     size="small"
                                     inputProps={{ 'aria-label': 'basic date picker' }}

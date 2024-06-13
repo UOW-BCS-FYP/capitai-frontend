@@ -338,7 +338,7 @@ const InSTableRow = (
 
             <EnhancedTableCell loading={loading}>
                 <Typography fontWeight={600} variant="h6">
-                    {row.date.toString()}
+                    {new Date(row.date).getFullYear() + '-' + (new Date(row.date).getMonth() + 1) + '-' + new Date(row.date).getDate()}
                 </Typography>
             </EnhancedTableCell>
 
@@ -463,7 +463,14 @@ const I_STableList = () => {
     };
 
     const handleFilter = (values: any) => {
-        dispatch(fetchInS({ isRegular: values.isRegular, isActivated: values.isActivated, min: values.min, max: values.max }));
+        dispatch(fetchInS({
+            dateStart: values.dateStart,
+            dateEnd: values.dateEnd,
+            isIncome: values.isIncome,
+            category: values.category,
+            min: values.min,
+            max: values.max
+        }));
     };
 
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -11,7 +11,7 @@ interface FormValues {
     id?: number;
     title: string;
     amount: number;
-    date: string;
+    date: Date;
     subject: string;
     category?: string;
     isIncome: boolean;
@@ -82,7 +82,6 @@ export default function InSDialog(props: InSDialogProps) {
                     <Grid item xs={1} />
                     <Grid item xs={5}>
                         <TextField
-                            autoFocus
                             margin="dense"
                             id="subject"
                             name="subject"

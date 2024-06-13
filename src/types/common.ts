@@ -8,8 +8,8 @@ export type FetchRequestType<T> = {
   rowsPerPage?: number; // rows per page
   isRegular?: String; //budget ctgy & expinc
   isActivated?: String; //budget ctgy & expinc
-  dateStart?: string; //i&s date range filter
-  dateEnd?: string; //i&s date range filter
+  dateStart?: Date; //i&s date range filter
+  dateEnd?: Date; //i&s date range filter
   subject?: string; //i&s
   isIncome?: string; //i&s
   category?: string; //i&s
