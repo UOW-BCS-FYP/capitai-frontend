@@ -11,7 +11,6 @@ interface FormValues {
     id?: number;
     title: string;
     amount: number;
-    date: Date;
     subject: string;
     category?: string;
     isIncome: boolean;
@@ -28,7 +27,6 @@ export default function InSDialog(props: InSDialogProps) {
         initialValues: {
             title: '',
             amount: 0,
-            date: '',
             subject: '',
             isIncome: true,
             ...props.editInS
