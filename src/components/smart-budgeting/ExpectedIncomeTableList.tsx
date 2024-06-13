@@ -38,7 +38,7 @@ import { ExpectedIncomeType } from 'src/types/smart-budgeting';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteConfirmDialog from '../shared/DeleteConfirmDialog';
-import FilterDialog from './FilterDialog';
+import SBSFilterDialog from './SBSFilterDialog';
 
 type Order = 'asc' | 'desc';
 
@@ -344,7 +344,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 onClose={() => setDelDialog(false)}
                 onSubmit={handleDelMultiple}
             />
-            <FilterDialog
+            <SBSFilterDialog
                 open={openFilter}
                 onClose={() => setFilterDialog(false)}
                 onSubmit={handleFilter}

@@ -23,14 +23,24 @@ import {
     Fab,
     Stack,
     Skeleton,
+    TableCellProps,
+    Grid,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useSelector, useDispatch } from 'src/store/Store';
 import CustomCheckbox from '../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../forms/theme-elements/CustomSwitch';
-import { IconDotsVertical, IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
-import { fetchInS } from 'src/store/smart-budgeting/InSRecordSlice';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { IconFilter, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
+import { addInS, deleteInS, fetchInS, updateInS } from 'src/store/smart-budgeting/InSRecordSlice';
 import { SortOrder } from 'src/types/common';
+import DeleteConfirmDialog from '../shared/DeleteConfirmDialog';
+import InSFilterDialog from './InSFilterDialog';
+import { useState } from 'react';
+import { InSRecordType } from '../../types/smart-budgeting';
+import InSDialog from './InSDialog';
+import InSRecordData from '../../_mockApis/api/v1/smart-budgeting/InSRecordData';
 
 interface HeadCell {
     disablePadding: boolean;
@@ -42,14 +52,14 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
     {
-        id: 'name',
+        id: 'title',
         numeric: false,
         disablePadding: false,
         label: 'Title',
         paddingType: 'normal',
     },
     {
-        id: 'type',
+        id: 'isIncome',
         numeric: false,
         disablePadding: false,
         label: 'Status',
@@ -63,7 +73,7 @@ const headCells: readonly HeadCell[] = [
         paddingType: 'normal'
     },
     {
-        id: 'issuedOn',
+        id: 'date',
         numeric: false,
         disablePadding: false,
         label: 'Issued On',
@@ -134,8 +144,26 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         </TableSortLabel>
                     </TableCell>
                 ))}
+                <TableCell>
+                    Action
+                </TableCell>
             </TableRow>
         </TableHead>
+    );
+}
+
+const EnhancedTableCell = (props: TableCellProps & { loading?: boolean; children: React.ReactNode }) => {
+    const { loading, children, ...rest } = props;
+    return (
+        <TableCell {...rest}>
+            {loading ? (
+                <Skeleton width="100%" animation="wave">
+                    {children}
+                </Skeleton>
+            ) : (
+                children
+            )}
+        </TableCell>
     );
 }
 
@@ -143,10 +171,15 @@ interface EnhancedTableToolbarProps {
     numSelected: number;
     handleSearch: React.ChangeEvent<HTMLInputElement> | any;
     search: string;
+    handleAdd: React.ChangeEvent<HTMLInputElement> | any;
+    handleDelMultiple: () => void;
+    handleFilter: (values: any) => void;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { numSelected, handleSearch, search } = props;
+    const { numSelected, handleSearch, search, handleAdd, handleDelMultiple, handleFilter } = props;
+    const [openDel, setDelDialog] = useState(false);
+    const [openFilter, setFilterDialog] = useState(false);
 
     return (
         <Toolbar
@@ -165,7 +198,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 <Box>
                     <Stack>
                         <Tooltip title="Add" placement="bottom">
-                            <Fab size="small" color="info">
+                            <Fab size="small" color="info" onClick={handleAdd}>
                                 <IconPlus size="16" />
                             </Fab>
                         </Tooltip>
@@ -186,7 +219,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                                 </InputAdornment>
                             ),
                         }}
-                        placeholder="Search Expected Income"
+                        placeholder="Search I&S Records"
                         size="small"
                         onChange={handleSearch}
                         value={search}
@@ -196,20 +229,169 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
-                    <IconButton>
+                    <IconButton onClick={() => setDelDialog(true)}>
                         <IconTrash width="18" />
                     </IconButton>
                 </Tooltip>
             ) : (
                 <Tooltip title="Filter list">
-                    <IconButton>
+                    <IconButton onClick={() => setFilterDialog(true)}>
                         <IconFilter size="1.2rem" />
                     </IconButton>
                 </Tooltip>
             )}
+            <DeleteConfirmDialog
+                open={openDel}
+                onClose={() => setDelDialog(false)}
+                onSubmit={handleDelMultiple}
+            />
+            <InSFilterDialog
+                open={openFilter}
+                onClose={() => setFilterDialog(false)}
+                onSubmit={handleFilter}
+            />
         </Toolbar>
     );
 };
+
+const InSTableRow = (
+    props: {
+        row: InSRecordType,
+        isItemSelected: boolean,
+        labelId: string,
+        handleClick: (event: React.MouseEvent<unknown>, name: string) => void,
+        loading: boolean
+        refetch: () => void
+    }
+) => {
+    const { row, isItemSelected, labelId, handleClick, loading, refetch } = props;
+
+    const dispatch = useDispatch();
+    const [openDel, setDelDialog] = useState(false);
+    const [openEdit, setEditDialog] = useState(false);
+
+    const handleDelClose = () => {
+        setDelDialog(false);
+    };
+
+    const handleEditClose = () => {
+        setEditDialog(false);
+    };
+
+    return (
+        <TableRow
+            hover
+            role="checkbox"
+            aria-checked={isItemSelected}
+            tabIndex={-1}
+            key={row.title}
+            selected={isItemSelected}
+        >
+            <EnhancedTableCell padding="checkbox" loading={loading}>
+                <CustomCheckbox
+                    color="primary"
+                    checked={isItemSelected}
+                    onClick={(event) => handleClick(event, row.title)}
+                    inputProps={{
+                        'aria-labelledby': labelId,
+                    }}
+                />
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Box display="flex" alignItems="center">
+                    <Typography variant="h6" fontWeight="600">
+                        {row.title}
+                    </Typography>
+                </Box>
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Box display="flex" alignItems="center">
+                    <Box
+                        sx={{
+                            backgroundColor: row.isIncome
+                                ? (theme) => theme.palette.success.main
+                                : (theme) => theme.palette.error.main,
+                            borderRadius: '100%',
+                            height: '10px',
+                            width: '10px',
+                        }}
+                    />
+                    <Typography
+                        color="textSecondary"
+                        variant="subtitle2"
+                        sx={{
+                            ml: 1,
+                        }}
+                    >
+                        {row.isIncome ? 'Income' : 'Spending'}
+                    </Typography>
+                </Box>
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Typography fontWeight={600} variant="h6">
+                    ${row.amount}
+                </Typography>
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Typography fontWeight={600} variant="h6">
+                    {row.date.toString()}
+                </Typography>
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Typography fontWeight={600} variant="h6">
+                    {row.subject}
+                </Typography>
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Typography fontWeight={600} variant="h6">
+                    {row.category}
+                </Typography>
+            </EnhancedTableCell>
+
+            <EnhancedTableCell loading={loading}>
+                <Grid container spacing={1}>
+                    <Grid item xs={6}>
+                        <IconButton size="small" onClick={() => setEditDialog(true)}>
+                            <EditIcon />
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <IconButton size="small" onClick={() => setDelDialog(true)}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Grid>
+                </Grid>
+            </EnhancedTableCell>
+            <DeleteConfirmDialog
+                open={openDel}
+                onClose={handleDelClose}
+                onSubmit={() =>
+                    dispatch(deleteInS(row))
+                        .then(refetch)
+                }
+            />
+            <InSDialog
+                open={openEdit}
+                onClose={handleEditClose}
+                onSubmit={(values) =>
+                    dispatch(updateInS({
+                        ...values
+                    }))
+                        .then(handleEditClose)
+                        .then(refetch)
+                }
+                editInS={row}
+            />
+        </TableRow>
+    )
+};
+
 
 const I_STableList = () => {
     const [dense, setDense] = React.useState(false);
@@ -280,6 +462,10 @@ const I_STableList = () => {
         dispatch(fetchInS({ ...fetchFilter, page: newPage }));
     };
 
+    const handleFilter = (values: any) => {
+        dispatch(fetchInS({ isRegular: values.isRegular, isActivated: values.isActivated, min: values.min, max: values.max }));
+    };
+
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(fetchInS({ ...fetchFilter, rowsPerPage: parseInt(event.target.value, 10) }));
     };
@@ -288,10 +474,17 @@ const I_STableList = () => {
         setDense(event.target.checked);
     };
 
+
     const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
     const theme = useTheme();
     const borderColor = theme.palette.divider;
+
+    const [openDialog, setOpenDialog] = useState(false);
+
+    const handleDialogClose = () => {
+        setOpenDialog(false);
+    };
 
     return (
         <Box>
@@ -300,6 +493,13 @@ const I_STableList = () => {
                     numSelected={selected.length}
                     search={fetchFilter.query ?? ''}
                     handleSearch={(event: any) => handleSearch(event)}
+                    handleAdd={() => setOpenDialog(true)}
+                    handleDelMultiple={() => selected.forEach(row => {
+                        dispatch(deleteInS(
+                            InSRecordData.filter(InSRecord => InSRecord.title === row)[0]
+                        )).then(() => { dispatch(fetchInS(fetchFilter)); setSelected([]); })
+                    })}
+                    handleFilter={(values) => handleFilter(values)}
                 />
                 <Paper variant="outlined" sx={{ mx: 2, mt: 1, border: `1px solid ${borderColor}` }}>
                     <TableContainer>
@@ -317,102 +517,19 @@ const I_STableList = () => {
                             />
                             <TableBody>
                                 {records
-                                    ?.map((row: any, index) => {
+                                    .map((row, index) => {
                                         const isItemSelected = isSelected(row.title);
                                         const labelId = `enhanced-table-checkbox-${index}`;
-
                                         return (
-                                            <TableRow
-                                                hover
-                                                onClick={(event) => handleClick(event, row.title)}
-                                                role="checkbox"
-                                                aria-checked={isItemSelected}
-                                                tabIndex={-1}
-                                                key={row.title}
-                                                selected={isItemSelected}
-                                            >
-                                                <TableCell padding="checkbox">
-                                                    <CustomCheckbox
-                                                        color="primary"
-                                                        checked={isItemSelected}
-                                                        inputProps={{
-                                                            'aria-labelledby': labelId,
-                                                        }}
-                                                    />
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.title}
-                                                        </Typography>
-                                                    </Box>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Box
-                                                            sx={{
-                                                                backgroundColor: row.isIncome
-                                                                    ? (theme) => theme.palette.success.main
-                                                                    : (theme) => theme.palette.error.main,
-                                                                borderRadius: '100%',
-                                                                height: '10px',
-                                                                width: '10px',
-                                                            }}
-                                                        />
-                                                        <Typography
-                                                            color="textSecondary"
-                                                            variant="subtitle2"
-                                                            sx={{
-                                                                ml: 1,
-                                                            }}
-                                                        >
-                                                            {row.isIncome ? 'Income' : 'Spending'}
-                                                        </Typography>
-                                                    </Box>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.amount}
-                                                        </Typography>
-                                                    </Box>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.date.substring(0, 10)}
-                                                        </Typography>
-                                                    </Box>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.subject}
-                                                        </Typography>
-                                                    </Box>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center">
-                                                        <Typography variant="h6" fontWeight="600">
-                                                            {row.category}
-                                                        </Typography>
-                                                    </Box>
-                                                </TableCell>
-
-                                                <TableCell>
-                                                    <Tooltip title="Edit">
-                                                        <IconButton size="small">
-                                                            <IconDotsVertical size="1.1rem" />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </TableCell>
-                                            </TableRow>
+                                            <InSTableRow
+                                                key={row.id}
+                                                row={row}
+                                                isItemSelected={isItemSelected}
+                                                labelId={labelId}
+                                                handleClick={handleClick}
+                                                loading={fetchStatus === 'loading'}
+                                                refetch={() => dispatch(fetchInS(fetchFilter))}
+                                            />
                                         );
                                     })}
                                 {emptyRows > 0 && (
@@ -446,6 +563,17 @@ const I_STableList = () => {
                     />
                 </Box>
             </Box>
+            <InSDialog
+                open={openDialog}
+                onClose={handleDialogClose}
+                onSubmit={(values) =>
+                    dispatch(addInS({
+                        ...values
+                    }))
+                        .then(handleDialogClose)
+                        .then(() => { dispatch(fetchInS(fetchFilter)) })
+                }
+            />
         </Box>
     );
 };

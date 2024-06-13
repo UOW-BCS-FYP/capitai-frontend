@@ -73,4 +73,31 @@ export const fetchInS = createAsyncThunk<
     }
 });
 
+export const addInS = createAsyncThunk<
+    InSRecordType,
+    InSRecordType,
+    { dispatch: AppDispatch }
+>('InSRecord/addInS', async (InSReq) => {
+    const response = await axios.post(`${API_URL}`, InSReq);
+    return response.data;
+});
+
+export const deleteInS = createAsyncThunk<
+    InSRecordType,
+    InSRecordType,
+    { dispatch: AppDispatch }
+>('InSRecord/deleteInS', async (InSReq) => {
+    const response = await axios.delete(`${API_URL}/${InSReq.id}`);
+    return response.data;
+});
+
+export const updateInS = createAsyncThunk<
+    InSRecordType,
+    InSRecordType,
+    { dispatch: AppDispatch }
+>('InSRecord/updateInS', async (InSReq) => {
+    const response = await axios.put(`${API_URL}/${InSReq.id}`, InSReq);
+    return response.data;
+});
+
 export default InSRecordSlice.reducer;

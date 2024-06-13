@@ -26,13 +26,13 @@ export type ExpectedIncomeType = {
 export type FetchExpectedIncomeRequestType = FetchRequestType<ExpectedIncomeType>;
 
 export type InSRecordType = {
-  id: number;
+  id?: number;
   title: string;
   amount: number;
-  date: Date;
+  date: string;
   subject: string;
   isIncome: boolean;
-  category: string;
+  category?: string;
 }
 
 export type FetchInSRecordRequestType = FetchRequestType<InSRecordType>;

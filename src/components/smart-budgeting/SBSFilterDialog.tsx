@@ -18,7 +18,7 @@ interface FilterDialogProps {
     onClose: () => void;
 }
 
-export default function FilterDialog(props: FilterDialogProps) {
+export default function SBSFilterDialog(props: FilterDialogProps) {
     const formik = useFormik({
         initialValues: {
             isRegular: '',

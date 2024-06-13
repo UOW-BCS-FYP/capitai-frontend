@@ -39,7 +39,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 import BudgetingCategoryDialog from './BudgetingCategoryDialog';
 import DeleteConfirmDialog from '../shared/DeleteConfirmDialog';
-import FilterDialog from './FilterDialog';
+import SBSFilterDialog from './SBSFilterDialog';
 
 interface HeadCell {
     disablePadding: boolean;
@@ -230,7 +230,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
                 onClose={() => setDelDialog(false)}
                 onSubmit={handleDelMultiple}
             />
-            <FilterDialog
+            <SBSFilterDialog
                 open={openFilter}
                 onClose={() => setFilterDialog(false)}
                 onSubmit={handleFilter}
