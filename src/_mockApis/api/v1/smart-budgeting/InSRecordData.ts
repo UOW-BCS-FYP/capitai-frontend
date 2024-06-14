@@ -68,7 +68,7 @@ const InSRecordData: InSRecordType[] = [
 ];
 
 mock.onGet('/api/v1/smart-budgeting/income-spending-record').reply((request) => {
-    const { query, sortBy, sortOrder, page, rowsPerPage, dateStart, dateEnd, isIncome, category, min, max }: FetchInSRecordRequestType = {
+    const { query, sortBy, sortOrder, page, rowsPerPage, dateStart, dateEnd, isIncome, min, max }: FetchInSRecordRequestType = {
         query: "",
         sortBy: undefined,
         sortOrder: "asc",
@@ -82,10 +82,10 @@ mock.onGet('/api/v1/smart-budgeting/income-spending-record').reply((request) => 
     }
 
     if (dateStart)
-        temp = temp.filter((InSRecord) => InSRecord.date.getTime() >= dateStart.getTime());
+        temp = temp.filter((InSRecord) => (InSRecord.date as Date).getTime() >= dateStart.getTime());
 
     if (dateEnd)
-        temp = temp.filter((InSRecord) => InSRecord.date.getTime() <= dateEnd.getTime());
+        temp = temp.filter((InSRecord) => (InSRecord.date as Date).getTime() <= dateEnd.getTime());
 
     if (isIncome === 'true')
         temp = temp.filter((InSRecord) => InSRecord.isIncome);
@@ -113,7 +113,7 @@ mock.onGet('/api/v1/smart-budgeting/income-spending-record').reply((request) => 
 });
 
 mock.onPost('/api/v1/smart-budgeting/income-spending-record').reply((request) => {
-    const { title, amount, subject, isIncome } = JSON.parse(request.data);
+    const { title, amount, subject, isIncome} = JSON.parse(request.data);
     const id = InSRecordData.length + 1;
     const category = 'other';
     const date = new Date();

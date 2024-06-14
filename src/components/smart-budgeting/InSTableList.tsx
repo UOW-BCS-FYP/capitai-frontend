@@ -338,7 +338,7 @@ const InSTableRow = (
 
             <EnhancedTableCell loading={loading}>
                 <Typography fontWeight={600} variant="h6">
-                    {new Date(row.date).getFullYear() + '-' + (new Date(row.date).getMonth() + 1) + '-' + new Date(row.date).getDate()}
+                    {new Date(row.date as Date).getFullYear() + '-' + (new Date(row.date as Date).getMonth() + 1) + '-' + new Date(row.date as Date).getDate()}
                 </Typography>
             </EnhancedTableCell>
 
@@ -381,7 +381,8 @@ const InSTableRow = (
                 onClose={handleEditClose}
                 onSubmit={(values) =>
                     dispatch(updateInS({
-                        ...values
+                        ...values,
+                        isIncome: values.isIncome as boolean
                     }))
                         .then(handleEditClose)
                         .then(refetch)
@@ -575,7 +576,8 @@ const I_STableList = () => {
                 onClose={handleDialogClose}
                 onSubmit={(values) =>
                     dispatch(addInS({
-                        ...values
+                        ...values,
+                        isIncome: values.isIncome as boolean,
                     }))
                         .then(handleDialogClose)
                         .then(() => { dispatch(fetchInS(fetchFilter)) })

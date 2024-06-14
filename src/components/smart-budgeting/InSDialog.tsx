@@ -13,7 +13,7 @@ interface FormValues {
     amount: number;
     subject: string;
     category?: string;
-    isIncome: boolean;
+    isIncome: string | boolean;
 }
 interface InSDialogProps {
     editInS?: InSRecordType;
@@ -28,7 +28,7 @@ export default function InSDialog(props: InSDialogProps) {
             title: '',
             amount: 0,
             subject: '',
-            isIncome: true,
+            isIncome: 'true',
             ...props.editInS
         },
         //validationSchema: validationSchema,
@@ -54,7 +54,10 @@ export default function InSDialog(props: InSDialogProps) {
                 onSubmit: formik.handleSubmit,
             }}
         >
-            <DialogTitle>{isEdit ? (props.editInS?.isIncome ? 'Edit Income Record' : 'Edit Spending Record') : 'New Income/Spending Record'}</DialogTitle>
+            <DialogTitle>{isEdit ?
+                (props.editInS?.isIncome ? 'Edit Income Record' : 'Edit Spending Record') :
+                (formik.values.isIncome === 'true' ? 'New Income Record' : 'New Spending Record')}
+            </DialogTitle>
             <DialogContent>
                 <Grid container style={{ width: '400px' }}>
                     {/* select date */}
@@ -121,8 +124,8 @@ export default function InSDialog(props: InSDialogProps) {
                                     value={formik.values.isIncome}
                                     onChange={formik.handleChange}
                                 >
-                                    <FormControlLabel value={true} control={<CustomRadio />} label="Income" />
-                                    <FormControlLabel value={false} control={<CustomRadio />} label="Spending" />
+                                    <FormControlLabel value='true' control={<CustomRadio />} label="Income" />
+                                    <FormControlLabel value='false' control={<CustomRadio />} label="Spending" />
                                 </RadioGroup>
                             </FormControl>
                         </Grid>

@@ -29,7 +29,7 @@ export type InSRecordType = {
   id?: number;
   title: string;
   amount: number;
-  date: Date;
+  date?: Date;
   subject: string;
   isIncome: boolean;
   category?: string;
