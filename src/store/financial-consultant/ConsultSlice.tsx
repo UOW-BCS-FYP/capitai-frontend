@@ -21,7 +21,6 @@ interface StateType {
   fetchConsultantStatus: string;
   fetchConsultantError: string | undefined;
   fetchConsultantFilter: FetchFinancialConsultantRequestType;
-  agentNewToken: string;
   agentStatus: 'idle' | 'loading' | 'succeeded' | 'failed' | 'completed';
 }
 
@@ -42,8 +41,7 @@ const initialState: StateType = {
     page: 0,
     rowsPerPage: 10,
   },
-  agentNewToken: '',
-  agentStatus: 'idle',
+  agentStatus: 'idle'
 };
 
 export const ConsultantSlice = createSlice({
@@ -59,12 +57,13 @@ export const ConsultantSlice = createSlice({
     selectConsultant: (state: StateType, action: { payload: number | string }) => {
       state.chattingWith = action.payload;
     },
-    sendMsg: (state: StateType, action) => {
+    sendMsg: (state: StateType, action: { payload: { consultant_id: string | number, msg: string, message_id: string }}) => {
       const conversation = action.payload;
-      const { id, msg } = conversation;
+      const { consultant_id, msg, message_id } = conversation;
 
+      // create a new user message
       const newMessage: ConsultantMessage = {
-        id: id,
+        id: message_id,
         msg: msg,
         type: 'text',
         attachments: Array<ConsultantAttachement>(),
@@ -72,9 +71,21 @@ export const ConsultantSlice = createSlice({
         senderId: uniqueId(),
       };
 
+      // create a new consultant message
+      const replyMessage: ConsultantMessage = {
+        id: `${message_id}-r`,
+        msg: '',      // dummy message
+        type: 'text', // must be 'text'
+        attachments: Array<ConsultantAttachement>(),
+        createdAt: new Date().getTime(),
+        senderId: consultant_id,
+      }
+
+      // put user message in the chat
       state.consultants = state.consultants.map((consultant) => {
-        if (consultant.id === action.payload.id) {
+        if (consultant.id === consultant_id) {
           consultant.messages.push(newMessage);
+          consultant.messages.push(replyMessage);
         }
         return consultant;
       });
@@ -88,8 +99,20 @@ export const ConsultantSlice = createSlice({
     setAgentStatus(state, action: { payload: 'idle' | 'loading' | 'succeeded' | 'failed' | 'completed' }) {
       state.agentStatus = action.payload;
     },
-    setAgentNewToken(state, action: { payload: string }) {
-      state.agentNewToken += action.payload;
+    setConsultantNewToken(state, action: { payload: { token: string, consultant_id: string | number, message_id: string }}) {
+      // state.agentNewToken += action.payload;
+      state.consultants = state.consultants.map((consultant) => {
+        if (consultant.id === action.payload.consultant_id) {
+          consultant.messages = consultant.messages.map((message) => {
+            if (message.id === action.payload.message_id) {
+              // message.attachments = [{ type: 'token', token: action.payload.token }];
+              message.msg += `${action.payload.token}`;
+            }
+            return message;
+          });
+        }
+        return consultant;
+      });
     },
   },
   extraReducers: (builder) => {
@@ -137,7 +160,7 @@ export const fetchConsultant = createAsyncThunk<
   }
 })
 
-export const { selectConsultant, setFilter, sendMsg, setAgentStatus, setAgentNewToken } = ConsultantSlice.actions;
+export const { selectConsultant, setFilter, sendMsg, setAgentStatus, setConsultantNewToken } = ConsultantSlice.actions;
 
 // auth.socket?.on('server_response', (response: any) => {
 //   console.log('server_response', response);

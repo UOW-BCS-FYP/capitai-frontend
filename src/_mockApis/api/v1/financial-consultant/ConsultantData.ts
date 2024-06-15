@@ -23,7 +23,7 @@ import { uniqueId } from 'lodash';
 
 const ConsultantData: FinancialConsultant[] = [
   {
-    id: 1,
+    id: 'agent-carson',
     name: 'Carson Capit',
     status: 'online',
     thumb: user1,
@@ -33,7 +33,7 @@ const ConsultantData: FinancialConsultant[] = [
       {
         createdAt: sub(new Date(), { hours: 1 }),
         msg: 'Hi, i am AI powered financial advisor, Carson Capit',
-        senderId: 1,
+        senderId: 'agent-carson',
         type: 'text',
         attachments: [
           { icon: adobe, file: 'service-task.pdf', fileSize: '2MB' },
@@ -47,7 +47,7 @@ const ConsultantData: FinancialConsultant[] = [
       {
         createdAt: sub(new Date(), { minutes: 30 }),
         msg: 'How can i help you today?',
-        senderId: 1,
+        senderId: 'agent-carson',
         type: 'text',
         attachments: [],
         id: uniqueId(),
@@ -70,7 +70,7 @@ const ConsultantData: FinancialConsultant[] = [
       {
         createdAt: sub(new Date(), { minutes: 5 }),
         msg: 'Your provided image seem like a scam, please be careful',
-        senderId: 1,
+        senderId: 'agent-carson',
         type: 'text',
         attachments: [],
         id: uniqueId(),
@@ -78,7 +78,7 @@ const ConsultantData: FinancialConsultant[] = [
     ],
   },
   {
-    id: 2,
+    id: 'agent-sunny',
     name: 'Sunny Capit',
     status: 'away',
     thumb: user2,

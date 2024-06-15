@@ -1,7 +1,6 @@
-import { createContext, useEffect, useReducer } from 'react';
-import { firebase } from './Firebase';
+import { createContext, useEffect, useReducer, useState } from 'react';
+import { Auth, firebase } from './Firebase';
 import { Socket, io } from 'socket.io-client';
-import { WebSocketLike } from 'react-use-websocket/dist/lib/types';
 
 export interface UserProps {
   id: string;
@@ -32,7 +31,7 @@ const initialState: InitialStateType = {
   isAuthenticated: false,
   isInitialized: false,
   user: null,
-  socket: null,
+  socket: io('https://capitai-llm-svc-ooioetwrbq-de.a.run.app', { autoConnect: false }),
   signup: () => Promise.resolve({} as firebase.auth.UserCredential),
   signin: () => Promise.resolve({} as firebase.auth.UserCredential),
   logout: () => Promise.resolve(),
@@ -72,9 +71,22 @@ const AuthContext = createContext<InitialStateType>({
 
 export const AuthProvider = ({ children }: { children: React.ReactElement }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  console.log(state.socket);
   useEffect(
-    () =>
+    () => {
+      state.socket?.io.on('reconnect', () => {
+        console.log('reconnect!!');
+      });
+      state.socket?.io.on('reconnect_attempt', async () => {
+        await firebase.auth().currentUser?.getIdToken().then((token) => {
+          if (state.socket) {
+            state.socket.io.opts.extraHeaders = {
+              Authorization: `Bearer ${token}`,
+            };
+          }
+        });
+        console.log('reconnect_attempt!!');
+      });
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       firebase.auth().onAuthStateChanged((user) => {
@@ -97,17 +109,12 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
             },
           });
           user.getIdToken().then((token) => {
-            dispatch({
-              type: 'SOCKET_STATE_CHANGED',
-              payload: {
-                isAuthenticated: true,
-                socket: io('http://localhost:5001', {
-                  extraHeaders: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }),
-              },
-            });
+            if (state.socket) {
+              state.socket.io.opts.extraHeaders = {
+                Authorization: `Bearer ${token}`,
+              };
+              state.socket?.connect();
+            }
           });
         } else {
           dispatch({
@@ -119,7 +126,8 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
           });
           state.socket?.close();
         }
-      }),
+      })
+    },
     [dispatch],
   );
 
