@@ -1,5 +1,5 @@
-import { createContext, useEffect, useReducer, useState } from 'react';
-import { Auth, firebase } from './Firebase';
+import { createContext, useEffect, useReducer } from 'react';
+import { firebase } from './Firebase';
 import { Socket, io } from 'socket.io-client';
 
 export interface UserProps {

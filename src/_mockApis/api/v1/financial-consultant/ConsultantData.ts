@@ -1,16 +1,16 @@
 import mock from '../../../mock';
-import bg1 from 'src/assets/images/blog/blog-img1.jpg';
-import fakeChart from 'src/assets/images/financial-consultant/fake-chart.jpg'
+// import bg1 from 'src/assets/images/blog/blog-img1.jpg';
+// import fakeChart from 'src/assets/images/financial-consultant/fake-chart.jpg'
 import user1 from 'src/assets/images/profile/user-1.jpg';
 import user2 from 'src/assets/images/profile/user-2.jpg';
 // import user3 from 'src/assets/images/profile/user-3.jpg';
 // import user4 from 'src/assets/images/profile/user-4.jpg';
 // import user5 from 'src/assets/images/profile/user-5.jpg';
-import adobe from 'src/assets/images/chat/icon-adobe.svg';
-import chrome from 'src/assets/images/chat/icon-chrome.svg';
-import figma from 'src/assets/images/chat/icon-figma.svg';
-import java from 'src/assets/images/chat/icon-javascript.svg';
-import zip from 'src/assets/images/chat/icon-zip-folder.svg';
+// import adobe from 'src/assets/images/chat/icon-adobe.svg';
+// import chrome from 'src/assets/images/chat/icon-chrome.svg';
+// import figma from 'src/assets/images/chat/icon-figma.svg';
+// import java from 'src/assets/images/chat/icon-javascript.svg';
+// import zip from 'src/assets/images/chat/icon-zip-folder.svg';
 // import { Chance } from 'chance';
 import type { FetchFinancialConsultantRequestType, FinancialConsultant } from 'src/types/financial-consultant';
 import { sub } from 'date-fns';

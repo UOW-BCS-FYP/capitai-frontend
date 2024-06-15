@@ -29,7 +29,7 @@ const ChatMsgSent = () => {
   };
 
   const consultant_id = useSelector((state) => state.financialConsultantReducer.chattingWith);
-  const consultant = useSelector((state) => state.financialConsultantReducer.consultants.find((c) => c.id === consultant_id));
+  // const consultant = useSelector((state) => state.financialConsultantReducer.consultants.find((c) => c.id === consultant_id));
 
   const handleChatMsgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMsg(e.target.value);
