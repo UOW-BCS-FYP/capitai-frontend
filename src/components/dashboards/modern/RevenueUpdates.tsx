@@ -103,8 +103,8 @@ const RevenueUpdates = () => {
           value={month}
           onChange={handleChange}
         >
-          <MenuItem value={1}>2024</MenuItem>
-          <MenuItem value={2}>2023</MenuItem>
+          <MenuItem value={1}>2023</MenuItem>
+          <MenuItem value={2}>2024</MenuItem>
         </CustomSelect>
       }
     >

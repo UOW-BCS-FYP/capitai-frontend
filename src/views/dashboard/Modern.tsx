@@ -29,11 +29,6 @@ const Modern = () => {
     <PageContainer title="Modern Dashboard" description="this is Modern Dashboard page">
       <Box>
         <Grid container spacing={3}>
-          {/* column */}
-          {/* <Grid item xs={12} lg={12}>
-           <TopCards /> 
-          </Grid> */}
-          {/* column */}
           <Grid item xs={12} lg={12}>
             <WelcomeCard/>
           </Grid>
@@ -43,18 +38,6 @@ const Modern = () => {
           <Grid item xs={12} lg={5}>
             <BudgetingCard />
           </Grid>
-
-          {/* column */}
-          {/* <Grid item xs={12} lg={3}>
-            <Grid container spacing={3}>
-              <Grid item xs={6} sm={6} lg={12}>
-                <CapitalBuildingGoalCard />
-              </Grid>
-              <Grid item xs={6} sm={6} lg={12}>
-                <CapitalBuildingGoalCard />
-              </Grid>
-            </Grid>
-          </Grid> */}
 
           <Grid item xs={12} sm={6} lg={6}>
             <Grid container spacing={3}>
@@ -85,37 +68,7 @@ const Modern = () => {
             </Grid>
           </Grid>
           
-          {/* column */}
-          {/* <Grid item xs={12} lg={4}>
-            <EmployeeSalary />
-          </Grid> */}
-          {/* column */}
-          {/* <Grid item xs={12} lg={4}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <Customers />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Projects />
-              </Grid>
-              <Grid item xs={12}>
-                <Social />
-              </Grid>
-            </Grid>
-          </Grid> */}
-          {/* column */}
-          
-          {/* column */}
-          {/* <Grid item xs={12} lg={4}>
-            <WeeklyStats />
-          </Grid> */}
-          {/* column */}
-          {/* <Grid item xs={12} lg={8}>
-            <TopPerformers />
-          </Grid> */}
         </Grid>
-        {/* column */}
-        {/* <Welcome /> */}
       </Box>
     </PageContainer>
   );
