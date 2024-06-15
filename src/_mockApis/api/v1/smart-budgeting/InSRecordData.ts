@@ -4,7 +4,7 @@ import mock from '../../../mock';
 const InSRecordData: InSRecordType[] = [
     {
         id: 1,
-        title: 'rent payment',
+        title: 'Rent Payment',
         amount: 10000,
         date: new Date('2021-11-17'),
         subject: 'landlord',

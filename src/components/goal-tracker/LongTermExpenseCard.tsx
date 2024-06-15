@@ -100,7 +100,7 @@ const LongTermExpenseCard = () => {
             options={optionscolumnchart}
             series={seriescolumnchart}
             type="bar"
-            height="100px"
+            height="125.5px"
           />
         </Grid>
       </Grid>

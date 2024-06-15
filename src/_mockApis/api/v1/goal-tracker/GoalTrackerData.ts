@@ -5,7 +5,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 1,
     title: "Capital Building",
-    type: "capital building",
+    type: "Capital Building",
     amount: 10000,
     deadline: "2022-12-31",
     priority: 1,
@@ -14,7 +14,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 2,
     title: "Debt Payment",
-    type: "debt payment",
+    type: "Debt Payment",
     amount: 5000,
     deadline: "2022-12-31",
     priority: 2,
@@ -23,7 +23,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 3,
     title: "Long Term Expense",
-    type: "long term expense",
+    type: "Long Term Expense",
     amount: 2000,
     deadline: "2022-12-31",
     priority: 3,
@@ -32,7 +32,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 4,
     title: "Capital Building",
-    type: "capital building",
+    type: "Capital Building",
     amount: 10000,
     deadline: "2022-12-31",
     priority: 4,
@@ -41,7 +41,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 5,
     title: "Debt Payment",
-    type: "debt payment",
+    type: "Debt Payment",
     amount: 5000,
     deadline: "2022-12-31",
     priority: 5,
@@ -50,7 +50,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 6,
     title: "Long Term Expense",
-    type: "long term expense",
+    type: "Long Term Expense",
     amount: 2000,
     deadline: "2022-12-31",
     priority: 6,
@@ -59,7 +59,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 7,
     title: "Capital Building",
-    type: "capital building",
+    type: "Capital Building",
     amount: 10000,
     deadline: "2022-12-31",
     priority: 7,
@@ -68,7 +68,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 8,
     title: "Debt Payment",
-    type: "debt payment",
+    type: "Debt Payment",
     amount: 5000,
     deadline: "2022-12-31",
     priority: 8,
@@ -77,7 +77,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 9,
     title: "Long Term Expense",
-    type: "long term expense",
+    type: "Long Term Expense",
     amount: 2000,
     deadline: "2022-12-31",
     priority: 9,
@@ -86,7 +86,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 10,
     title: "Capital Building",
-    type: "capital building",
+    type: "Capital Building",
     amount: 10000,
     deadline: "2022-12-31",
     priority: 10,
@@ -95,7 +95,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 11,
     title: "Debt Payment",
-    type: "debt payment",
+    type: "Debt Payment",
     amount: 5000,
     deadline: "2022-12-31",
     priority: 11,
@@ -104,7 +104,7 @@ let FinancialGoalData: FinancialGoalType[] = [
   {
     id: 12,
     title: "Long Term Expense",
-    type: "long term expense",
+    type: "Long Term Expense",
     amount: 2000,
     deadline: "2022-12-31",
     priority: 12,
