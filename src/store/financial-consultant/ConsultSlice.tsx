@@ -114,6 +114,19 @@ export const ConsultantSlice = createSlice({
         return consultant;
       });
     },
+    setConsultantOutput(state, action: { payload: { consultant_id: string | number, message_id: string, output: string, intermediate_steps: Array<string> }}) {
+      state.consultants = state.consultants.map((consultant) => {
+        if (consultant.id === action.payload.consultant_id) {
+          consultant.messages = consultant.messages.map((message) => {
+            if (message.id === action.payload.message_id) {
+              message.msg = `${action.payload.output}`;
+            }
+            return message;
+          });
+        }
+        return consultant;
+      });
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -160,7 +173,7 @@ export const fetchConsultant = createAsyncThunk<
   }
 })
 
-export const { selectConsultant, setFilter, sendMsg, setAgentStatus, setConsultantNewToken } = ConsultantSlice.actions;
+export const { selectConsultant, setFilter, sendMsg, setAgentStatus, setConsultantNewToken, setConsultantOutput } = ConsultantSlice.actions;
 
 // auth.socket?.on('server_response', (response: any) => {
 //   console.log('server_response', response);

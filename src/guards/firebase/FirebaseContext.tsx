@@ -15,7 +15,6 @@ export interface InitialStateType {
   isAuthenticated?: boolean;
   isInitialized?: boolean;
   user?: UserProps | null | undefined;
-  socket?: Socket | null;
   platform?: string;
   signup: (username: string, email: string, password: string) => Promise<firebase.auth.UserCredential>;
   signin: (email: string, password: string) => Promise<firebase.auth.UserCredential>;
@@ -25,13 +24,14 @@ export interface InitialStateType {
   loginWithGoogle: () => Promise<firebase.auth.UserCredential>;
   loginWithFaceBook: () => Promise<firebase.auth.UserCredential>;
   loginWithTwitter: () => Promise<firebase.auth.UserCredential>;
+  socket?: Socket | null;
+  socketReconnect: () => Promise<void>;
 }
 
 const initialState: InitialStateType = {
   isAuthenticated: false,
   isInitialized: false,
   user: null,
-  socket: io('https://capitai-llm-svc-ooioetwrbq-de.a.run.app', { autoConnect: false }),
   signup: () => Promise.resolve({} as firebase.auth.UserCredential),
   signin: () => Promise.resolve({} as firebase.auth.UserCredential),
   logout: () => Promise.resolve(),
@@ -40,6 +40,9 @@ const initialState: InitialStateType = {
   loginWithGoogle: () => Promise.resolve({} as firebase.auth.UserCredential),
   loginWithFaceBook: () => Promise.resolve({} as firebase.auth.UserCredential),
   loginWithTwitter: () => Promise.resolve({} as firebase.auth.UserCredential),
+  socket: io('https://capitai-llm-svc-ooioetwrbq-de.a.run.app', { autoConnect: false }),
+  // socket: io('http://localhost:5001', { autoConnect: false }),
+  socketReconnect: () => Promise.resolve(),
 };
 
 const reducer = (state: InitialStateType, action: { type: string, payload: { isAuthenticated: boolean, user?: UserProps | null, socket?: Socket } }) => {
@@ -184,6 +187,18 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
     return firebase.database().ref('users').once('value');
   }
 
+  const socketReconnect = async () => {
+    await firebase.auth().currentUser?.getIdToken().then((token) => {
+      if (state.socket) {
+        state.socket.disconnect()
+        state.socket.io.opts.extraHeaders = {
+          Authorization: `Bearer ${token}`,
+        };
+        state.socket.connect();
+      }
+    });
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -197,6 +212,7 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
         loginWithFaceBook,
         loginWithTwitter,
         logout,
+        socketReconnect
       }}
     >
       {children}

@@ -42,11 +42,13 @@ const ChatMsgSent = () => {
     const newMsg = { consultant_id: consultant_id, msg, message_id: uniqueId() };
     dispatch(sendMsg(newMsg));
     setMsg('');
-    auth.socket?.emit('client_message', {
-      msg: newMsg.msg,
-      agent_id: consultant_id,
-      message_id: `${newMsg.message_id}-r`
-    });
+    // auth.socketReconnect().then(() => {
+      auth.socket?.emit('client_message', {
+        msg: newMsg.msg,
+        agent_id: consultant_id,
+        message_id: `${newMsg.message_id}-r`
+      });
+    // });
   };
 
   return (
