@@ -68,7 +68,7 @@ const DebtPaymentCard = () => {
       //   </Fab>
       // }
       footer={
-        <Chart options={optionscolumnchart} series={seriescolumnchart} type="area" height="60px" />
+        <Chart options={optionscolumnchart} series={seriescolumnchart} type="area" height="68px" />
       }
     >
       <>

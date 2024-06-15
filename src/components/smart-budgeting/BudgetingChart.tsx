@@ -80,7 +80,7 @@ export default () => {
     labels: categories.map((category) => category.title),
   };
 
-  // const seriesdoughnutchart = [45, 15, 27, 18, 35];
+  //const seriesdoughnutchart = [45, 15, 27, 18, 35];
   const seriesdoughnutchart = categories.map((category) => category.amount);
 
   return (

@@ -9,7 +9,7 @@ import { IconArrowUpLeft } from '@tabler/icons-react';
 import DashboardCard from '../shared/DashboardCard';
 import { Props } from 'react-apexcharts';
 
-const CapitialBuildCard = () => {
+const CapitalBuildCard = () => {
   // chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
@@ -115,4 +115,4 @@ const CapitialBuildCard = () => {
   );
 };
 
-export default CapitialBuildCard;
+export default CapitalBuildCard;

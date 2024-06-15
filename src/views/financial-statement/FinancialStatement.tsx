@@ -281,7 +281,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               </InputAdornment>
             ),
           }}
-          placeholder="Search Product"
+          placeholder="Search"
           size="small"
           onChange={handleSearch}
           value={search}

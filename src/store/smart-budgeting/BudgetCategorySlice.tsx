@@ -22,7 +22,9 @@ const initialState: StateType = {
     sortBy: undefined,
     sortOrder: 'asc',
     page: 0,
-    rowsPerPage: 5
+    rowsPerPage: 5,
+    isActivated: '',
+    isRegular: ''
   },
   fetchBudgetCategoryStatus: 'idle',
   fetchBudgetCategoryError: ''

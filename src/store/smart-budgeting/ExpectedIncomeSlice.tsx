@@ -85,5 +85,31 @@ export const fetchExpInc = createAsyncThunk<
     }
 });
 
+export const addExpInc = createAsyncThunk<
+    ExpectedIncomeType,
+    ExpectedIncomeType,
+    { dispatch: AppDispatch }
+>('expectedIncome/addExpInc', async (expInc) => {
+    const response = await axios.post(`${API_URL}`, expInc);
+    return response.data;
+});
+
+export const deleteExpInc = createAsyncThunk<
+    ExpectedIncomeType,
+    ExpectedIncomeType,
+    { dispatch: AppDispatch }
+>('expectedIncome/deleteExpInc', async (expInc) => {
+    const response = await axios.delete(`${API_URL}/${expInc.id}`);
+    return response.data;
+});
+
+export const updateExpInc = createAsyncThunk<
+    ExpectedIncomeType,
+    ExpectedIncomeType,
+    { dispatch: AppDispatch }
+>('expectedIncome/updateExpInc', async (expInc) => {
+    const response = await axios.put(`${API_URL}/${expInc.id}`, expInc);
+    return response.data;
+});
 
 export default ExpectedIncomeSlice.reducer;
