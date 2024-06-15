@@ -1,17 +1,20 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useEffect } from 'react';
 import { useSelector, useDispatch } from 'src/store/Store';
 import { IconButton, InputBase, Box, Popover } from '@mui/material';
 import Picker, { EmojiClickData } from 'emoji-picker-react';
 import { IconMoodSmile, IconPaperclip, IconPhoto, IconSend } from '@tabler/icons-react';
 import { sendMsg } from 'src/store/financial-consultant/ConsultSlice';
+import useAuth from 'src/guards/authGuard/UseAuth';
+import { uniqueId } from 'lodash';
 
 const ChatMsgSent = () => {
   const [msg, setMsg] = React.useState<string>('');
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [chosenEmoji, setChosenEmoji] = React.useState<EmojiClickData>();
+  const auth = useAuth();
 
   const onEmojiClick = (emojiObject: EmojiClickData) => {
     setChosenEmoji(emojiObject);
@@ -25,19 +28,27 @@ const ChatMsgSent = () => {
     setAnchorEl(null);
   };
 
-  const id = useSelector((state) => state.financialConsultantReducer.chattingWith);
+  const consultant_id = useSelector((state) => state.financialConsultantReducer.chattingWith);
+  // const consultant = useSelector((state) => state.financialConsultantReducer.consultants.find((c) => c.id === consultant_id));
 
   const handleChatMsgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMsg(e.target.value);
   };
 
-  const newMsg = { id, msg };
-
   const onChatMsgSubmit = (e: FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!msg || !consultant_id) return;
+    const newMsg = { consultant_id: consultant_id, msg, message_id: uniqueId() };
     dispatch(sendMsg(newMsg));
     setMsg('');
+    // auth.socketReconnect().then(() => {
+      auth.socket?.emit('client_message', {
+        msg: newMsg.msg,
+        agent_id: consultant_id,
+        message_id: `${newMsg.message_id}-r`
+      });
+    // });
   };
 
   return (
@@ -86,10 +97,7 @@ const ChatMsgSent = () => {
         />
         <IconButton
           aria-label="delete"
-          onClick={() => {
-            dispatch(sendMsg(newMsg));
-            setMsg('');
-          }}
+          onClick={onChatMsgSubmit}
           disabled={!msg}
           color="primary"
         >

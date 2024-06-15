@@ -36,7 +36,7 @@ const FinanicalConsultant = () => {
         {/* Right part */}
         {/* ------------------------------------------- */}
 
-        <Box flexGrow={1}>
+        <Box flexGrow={1} width={'100%'}>
           <ChatContent toggleChatSidebar={() => setMobileSidebarOpen(true)} />
           <Divider />
           <ChatMsgSent />

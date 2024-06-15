@@ -2,9 +2,11 @@ import axios from '../../utils/axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AppDispatch, AppState } from 'src/store/Store';
 import { uniqueId } from 'lodash';
-import { sub } from 'date-fns';
-import { io } from 'socket.io-client';
+// import { sub } from 'date-fns';
 import { ConsultantAttachement, ConsultantMessage, FetchFinancialConsultantRequestType, FetchFinancialConsultantResponseType, FinancialConsultant } from 'src/types/financial-consultant';
+// import useAuth from 'src/guards/authGuard/UseAuth';
+// import { useContext } from 'react';
+// import AuthContext from 'src/guards/firebase/FirebaseContext';
 
 const API_URL = '/api/v1/financial-consultant';
 
@@ -12,20 +14,21 @@ interface StateType {
   // chats: any[];
   // chatContent: number;
   // chatSearch: string;
-  ws: any;
+  // ws: any;
   total: number;
   consultants: FinancialConsultant[];
   chattingWith: number | string | undefined;
   fetchConsultantStatus: string;
   fetchConsultantError: string | undefined;
   fetchConsultantFilter: FetchFinancialConsultantRequestType;
+  agentStatus: 'idle' | 'loading' | 'succeeded' | 'failed' | 'completed';
 }
 
 const initialState: StateType = {
   // chats: [],
   // chatContent: 1,
   // chatSearch: '',
-  ws: io('http://localhost:5001'),
+  // ws: io('http://localhost:5001'),
   total: 0,
   consultants: Array<FinancialConsultant>(),
   chattingWith: undefined,
@@ -38,6 +41,7 @@ const initialState: StateType = {
     page: 0,
     rowsPerPage: 10,
   },
+  agentStatus: 'idle'
 };
 
 export const ConsultantSlice = createSlice({
@@ -53,42 +57,35 @@ export const ConsultantSlice = createSlice({
     selectConsultant: (state: StateType, action: { payload: number | string }) => {
       state.chattingWith = action.payload;
     },
-    sendMsg: (state: StateType, action) => {
+    sendMsg: (state: StateType, action: { payload: { consultant_id: string | number, msg: string, message_id: string }}) => {
       const conversation = action.payload;
-      const { id, msg } = conversation;
+      const { consultant_id, msg, message_id } = conversation;
 
+      // create a new user message
       const newMessage: ConsultantMessage = {
-        id: id,
+        id: message_id,
         msg: msg,
         type: 'text',
         attachments: Array<ConsultantAttachement>(),
-        createdAt: sub(new Date(), { seconds: 1 }),
+        createdAt: new Date().getTime(),
         senderId: uniqueId(),
       };
 
-      state.ws.once('server_response', (response: any) => {
-        console.log('server_response', response);
-        let replyMessage: ConsultantMessage = {
-          id: response.id,
-          msg: response.msg,
-          type: 'text',
-          attachments: response.attachment,
-          senderId: id,
-        }
+      // create a new consultant message
+      const replyMessage: ConsultantMessage = {
+        id: `${message_id}-r`,
+        msg: '',      // dummy message
+        type: 'text', // must be 'text'
+        attachments: Array<ConsultantAttachement>(),
+        createdAt: new Date().getTime(),
+        senderId: consultant_id,
+      }
 
-        // update the chat with the response asynchrounously
-        state.consultants = state.consultants.map((consultant) => {
-          if (consultant.id === response.id) {
-            consultant.messages.push(replyMessage);
-          }
-          return consultant;
-        });
-      })
-      state.ws.emit('client_message', newMessage);
-
+      // put user message in the chat
       state.consultants = state.consultants.map((consultant) => {
-        if (consultant.id === action.payload.id) {
+        if (consultant.id === consultant_id) {
           consultant.messages.push(newMessage);
+          consultant.messages.push(replyMessage);
         }
         return consultant;
       });
@@ -98,6 +95,37 @@ export const ConsultantSlice = createSlice({
         ...state.fetchConsultantFilter,
         ...action.payload
       }
+    },
+    setAgentStatus(state, action: { payload: 'idle' | 'loading' | 'succeeded' | 'failed' | 'completed' }) {
+      state.agentStatus = action.payload;
+    },
+    setConsultantNewToken(state, action: { payload: { token: string, consultant_id: string | number, message_id: string }}) {
+      // state.agentNewToken += action.payload;
+      state.consultants = state.consultants.map((consultant) => {
+        if (consultant.id === action.payload.consultant_id) {
+          consultant.messages = consultant.messages.map((message) => {
+            if (message.id === action.payload.message_id) {
+              // message.attachments = [{ type: 'token', token: action.payload.token }];
+              message.msg += `${action.payload.token}`;
+            }
+            return message;
+          });
+        }
+        return consultant;
+      });
+    },
+    setConsultantOutput(state, action: { payload: { consultant_id: string | number, message_id: string, output: string, intermediate_steps: Array<string> }}) {
+      state.consultants = state.consultants.map((consultant) => {
+        if (consultant.id === action.payload.consultant_id) {
+          consultant.messages = consultant.messages.map((message) => {
+            if (message.id === action.payload.message_id) {
+              message.msg = `${action.payload.output}`;
+            }
+            return message;
+          });
+        }
+        return consultant;
+      });
     }
   },
   extraReducers: (builder) => {
@@ -145,9 +173,22 @@ export const fetchConsultant = createAsyncThunk<
   }
 })
 
-// export const { SearchChat, getChats, sendMsg, SelectChat } = ConsultantSlice.actions;
-export const { selectConsultant, setFilter, sendMsg } = ConsultantSlice.actions;
+export const { selectConsultant, setFilter, sendMsg, setAgentStatus, setConsultantNewToken, setConsultantOutput } = ConsultantSlice.actions;
 
+// auth.socket?.on('server_response', (response: any) => {
+//   console.log('server_response', response);
+//   // let replyMessage: ConsultantMessage = {
+//   //   id: response.id,
+//   //   msg: response.msg,
+//   //   type: 'text',
+//   //   attachments: response.attachment,
+//   //   createdAt: sub(new Date(), { seconds: 1 }),
+//   //   senderId: response.id,
+//   // }
+
+//   // update the chat with the response asynchrounously
+//   // ConsultantSlice.reducer(undefined, sendMsg({ id: response.id, msg: response.msg }));
+// })
 
 // export const fetchChats = () => async (dispatch: AppDispatch) => {
 //   try {

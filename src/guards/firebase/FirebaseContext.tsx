@@ -1,5 +1,6 @@
 import { createContext, useEffect, useReducer } from 'react';
 import { firebase } from './Firebase';
+import { Socket, io } from 'socket.io-client';
 
 export interface UserProps {
   id: string;
@@ -23,6 +24,8 @@ export interface InitialStateType {
   loginWithGoogle: () => Promise<firebase.auth.UserCredential>;
   loginWithFaceBook: () => Promise<firebase.auth.UserCredential>;
   loginWithTwitter: () => Promise<firebase.auth.UserCredential>;
+  socket?: Socket | null;
+  socketReconnect: () => Promise<void>;
 }
 
 const initialState: InitialStateType = {
@@ -37,9 +40,12 @@ const initialState: InitialStateType = {
   loginWithGoogle: () => Promise.resolve({} as firebase.auth.UserCredential),
   loginWithFaceBook: () => Promise.resolve({} as firebase.auth.UserCredential),
   loginWithTwitter: () => Promise.resolve({} as firebase.auth.UserCredential),
+  socket: io('https://capitai-llm-svc-ooioetwrbq-de.a.run.app', { autoConnect: false }),
+  // socket: io('http://localhost:5001', { autoConnect: false }),
+  socketReconnect: () => Promise.resolve(),
 };
 
-const reducer = (state: InitialStateType, action: { type: string, payload: { isAuthenticated: boolean, user?: UserProps | null } }) => {
+const reducer = (state: InitialStateType, action: { type: string, payload: { isAuthenticated: boolean, user?: UserProps | null, socket?: Socket } }) => {
   if (action.type === 'AUTH_STATE_CHANGED') {
     const { isAuthenticated, user } = action.payload;
 
@@ -47,7 +53,14 @@ const reducer = (state: InitialStateType, action: { type: string, payload: { isA
       ...state,
       isAuthenticated,
       isInitialized: true,
-      user,
+      user
+    };
+  }
+  if (action.type === 'SOCKET_STATE_CHANGED') {
+    const { socket } = action.payload;
+    return {
+      ...state,
+      socket
     };
   }
 
@@ -61,9 +74,22 @@ const AuthContext = createContext<InitialStateType>({
 
 export const AuthProvider = ({ children }: { children: React.ReactElement }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  console.log(state.socket);
   useEffect(
-    () =>
+    () => {
+      state.socket?.io.on('reconnect', () => {
+        console.log('reconnect!!');
+      });
+      state.socket?.io.on('reconnect_attempt', async () => {
+        await firebase.auth().currentUser?.getIdToken().then((token) => {
+          if (state.socket) {
+            state.socket.io.opts.extraHeaders = {
+              Authorization: `Bearer ${token}`,
+            };
+          }
+        });
+        console.log('reconnect_attempt!!');
+      });
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       firebase.auth().onAuthStateChanged((user) => {
@@ -85,6 +111,14 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
               },
             },
           });
+          user.getIdToken().then((token) => {
+            if (state.socket) {
+              state.socket.io.opts.extraHeaders = {
+                Authorization: `Bearer ${token}`,
+              };
+              state.socket?.connect();
+            }
+          });
         } else {
           dispatch({
             type: 'AUTH_STATE_CHANGED',
@@ -93,8 +127,10 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
               user: null,
             },
           });
+          state.socket?.close();
         }
-      }),
+      })
+    },
     [dispatch],
   );
 
@@ -151,6 +187,18 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
     return firebase.database().ref('users').once('value');
   }
 
+  const socketReconnect = async () => {
+    await firebase.auth().currentUser?.getIdToken().then((token) => {
+      if (state.socket) {
+        state.socket.disconnect()
+        state.socket.io.opts.extraHeaders = {
+          Authorization: `Bearer ${token}`,
+        };
+        state.socket.connect();
+      }
+    });
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -164,6 +212,7 @@ export const AuthProvider = ({ children }: { children: React.ReactElement }) => 
         loginWithFaceBook,
         loginWithTwitter,
         logout,
+        socketReconnect
       }}
     >
       {children}

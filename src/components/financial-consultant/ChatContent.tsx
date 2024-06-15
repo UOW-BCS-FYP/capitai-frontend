@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Typography,
   Divider,
@@ -12,6 +12,9 @@ import {
   Box,
   Stack,
   Badge,
+  CircularProgress,
+  CircularProgressProps,
+  circularProgressClasses,
   // useMediaQuery,
   // Theme
 } from '@mui/material';
@@ -20,17 +23,57 @@ import {
   IconMenu2,
   // IconPhone, IconVideo
 } from '@tabler/icons-react';
-import { useSelector } from 'src/store/Store';
+import { useDispatch, useSelector } from 'src/store/Store';
 import { formatDistanceToNowStrict } from 'date-fns';
 // import ChatInsideSidebar from './ChatInsideSidebar';
 import Scrollbar from 'src/components/custom-scroll/Scrollbar';
-
+import useAuth from 'src/guards/authGuard/UseAuth';
+import { setConsultantNewToken, setConsultantOutput } from 'src/store/financial-consultant/ConsultSlice';
+import Markdown from 'marked-react';
+import { useUnmountEffect } from 'framer-motion';
 
 interface ChatContentProps {
   toggleChatSidebar: () => void;
 }
 
-  const ChatContent: React.FC<ChatContentProps> = ({ toggleChatSidebar }) => {
+function ChatCircularProgress(props: CircularProgressProps) {
+  return (
+    <Box sx={{ position: 'relative' }}>
+      <CircularProgress
+        variant="determinate"
+        sx={{
+          color: (theme) =>
+            theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+        }}
+        size={30}
+        thickness={4}
+        {...props}
+        value={100}
+      />
+      <CircularProgress
+        variant="indeterminate"
+        disableShrink
+        sx={{
+          color: (theme) => (theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8'),
+          animationDuration: '550ms',
+          position: 'absolute',
+          left: 0,
+          [`& .${circularProgressClasses.circle}`]: {
+            strokeLinecap: 'round',
+          },
+        }}
+        size={30}
+        thickness={4}
+        {...props}
+      />
+    </Box>
+  );
+}
+
+const ChatContent: React.FC<ChatContentProps> = ({ toggleChatSidebar }) => {
+  const dispatch = useDispatch();
+  const auth = useAuth();
+  
   // const [open, setOpen] = React.useState(false);
   // const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'));
 
@@ -38,6 +81,63 @@ interface ChatContentProps {
   const chatDetails = useSelector(
     (state) => chattingWith && state.financialConsultantReducer.consultants.find((c) => c.id === chattingWith),
   );
+
+  const scrollToBottom = () => {
+    const chatContent = document.getElementById('chat-content');
+    if (chatContent && chatContent.parentElement && chatContent.parentElement.parentElement) {
+      chatContent.parentElement.parentElement.scrollTop = chatContent.scrollHeight;
+    }
+  }
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatDetails]);
+
+  function onLLMNewToken (new_token: { data: string, agent_id: string, message_id: string }) {
+    dispatch(setConsultantNewToken({
+      token: new_token.data,
+      consultant_id: new_token.agent_id,
+      message_id: new_token.message_id
+    }));
+  }
+
+  function onChainEnd (response: any) {
+    console.log('chain_end', response);
+    const { agent_id, message_id, intermediate_steps, data } = response;
+    if (intermediate_steps) {
+      intermediate_steps.forEach((step: any) => {
+        console.log('step', step);
+      });
+    }
+    dispatch(setConsultantOutput({
+      consultant_id: agent_id,
+      message_id,
+      output: data,
+      intermediate_steps
+    }))
+  }
+
+  function onToolStart (data: any) {
+    console.log('tool_start', data);
+  }
+
+  function onAgentAction (data: any) {
+    console.log('agent_action', data);
+  }
+
+  useEffect(() => {
+    auth.socket?.on('llm_new_token', onLLMNewToken);
+    auth.socket?.on('chain_end', onChainEnd);
+    auth.socket?.on('tool_start', onToolStart);
+    auth.socket?.on('agent_action', onAgentAction);
+  }, []);
+
+  useUnmountEffect(() => {
+    auth.socket?.off('llm_new_token', onLLMNewToken);
+    auth.socket?.off('chain_end', onChainEnd);
+    auth.socket?.off('tool_start', onToolStart);
+    auth.socket?.off('agent_action', onAgentAction);
+  })
 
   return (
     <Box>
@@ -101,20 +201,20 @@ interface ChatContentProps {
           {/* Chat Content */}
           {/* ------------------------------------------- */}
 
-          <Box display="flex">
+          <Box display="flex" sx={{ height: 'calc(100vh - 400px)' }}>
             {/* ------------------------------------------- */}
             {/* Chat msges */}
             {/* ------------------------------------------- */}
 
             <Box width="100%">
-              <Scrollbar sx={{ height: '650px', overflow: 'auto', maxHeight: '800px' }}>
-                <Box p={3}>
+              <Scrollbar sx={{ height: '650px', overflow: 'auto', maxHeight: 'calc(100vh - 400px)' }}>
+                <Box p={3} id="chat-content">
                   {chatDetails.messages.map((chat) => {
                     return (
                       <Box key={chat.id + chat.msg + chat.createdAt}>
                         {chatDetails.id === chat.senderId ? (
                           <>
-                            <Box display="flex">
+                            <Box display={'flex'}>
                               <ListItemAvatar>
                                 <Avatar
                                   alt={chatDetails.name}
@@ -132,19 +232,21 @@ interface ChatContentProps {
                                     ago
                                   </Typography>
                                 ) : null}
-                                {chat.type === 'text' ? (
+                                {chat.type === 'text' && chat.msg ? (
                                   <Box
-                                    mb={2}
+                                    mb={1}
                                     sx={{
-                                      p: 1,
-                                      backgroundColor: 'grey.100',
-                                      mr: 'auto',
-                                      maxWidth: '320px',
+                                      p: 2,
+                                      backgroundColor: 'grey',
+                                      color: '#e8e8e8',
+                                      mr: 'auto'
                                     }}
                                   >
-                                    {chat.msg}
+                                    <Markdown>
+                                      { chat.msg }
+                                    </Markdown>
                                   </Box>
-                                ) : null}
+                                ) : <ChatCircularProgress /> }
                                 {chat.type === 'image' ? (
                                   <Box mb={1} sx={{ overflow: 'hidden', lineHeight: '0px' }}>
                                     <img src={chat.msg} alt="attach" width="150" />
@@ -174,10 +276,11 @@ interface ChatContentProps {
                                     p: 1,
                                     backgroundColor: 'primary.light',
                                     ml: 'auto',
-                                    maxWidth: '320px',
                                   }}
                                 >
-                                  {chat.msg}
+                                  <Markdown>
+                                    { chat.msg }
+                                  </Markdown>
                                 </Box>
                               ) : null}
                               {chat.type === 'image' ? (
