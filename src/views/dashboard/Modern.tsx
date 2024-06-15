@@ -15,7 +15,8 @@ import LongTermExpenseCard from 'src/components/goal-tracker/LongTermExpenseCard
 // import SellingProducts from 'src/components/dashboards/modern/SellingProducts';
 // import WeeklyStats from 'src/components/dashboards/modern/WeeklyStats';
 // import TopPerformers from 'src/components/dashboards/modern/TopPerformers';
-import BudgetingChart from 'src/components/smart-budgeting/BudgetingChart';
+// import BudgetingChart from 'src/components/smart-budgeting/BudgetingChart';
+import BudgetingCard from 'src/components/dashboards/modern/BudgetingCard';
 import CapitalBuildingGoalCard from '../goal-tracker/CapitalBuildingGoalCard';
 import DebtPaymentGoalCard from '../goal-tracker/DebtPaymentGoalCard';
 import LongTermExpenseGoalCard from 'src/views/goal-tracker/LongTermExpenseGoalCard';
@@ -40,7 +41,7 @@ const Modern = () => {
             <RevenueUpdates />
           </Grid>
           <Grid item xs={12} lg={5}>
-            <BudgetingChart/>
+            <BudgetingCard />
           </Grid>
 
           {/* column */}
