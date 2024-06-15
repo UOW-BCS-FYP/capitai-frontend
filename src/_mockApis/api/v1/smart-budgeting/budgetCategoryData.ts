@@ -7,6 +7,8 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         title:
             'rent',
         amount: 10000,
+        isBill: true,
+        intervalMonth: 1,
         isActivated: true
     },
     {
@@ -14,6 +16,8 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         title:
             'transportation',
         amount: 200,
+        isBill: true,
+        intervalMonth: 1,
         isActivated: true
     },
     {
@@ -21,6 +25,8 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         title:
             'food',
         amount: 3000,
+        isBill: true,
+        intervalMonth: 1,
         isActivated: true
     },
     {
@@ -28,31 +34,56 @@ const BudgetCategoryData: BudgetCategoryType[] = [
         title:
             'water bill',
         amount: 300,
-        isActivated: true
+        isBill: true,
+        intervalMonth: 3,
+        isActivated: false
     },
     {
         id: 5,
         title:
             'other',
         amount: 500,
+        isBill: false,
+        intervalMonth: 0,
         isActivated: true
     },
 ];
 
 // GET : Fetch all budget category
 mock.onGet('/api/v1/smart-budgeting/budget-category').reply((request) => {
-    const { query, sortBy, sortOrder, page, rowsPerPage }: FetchBudgetCategoryRequestType = {
+    const { query, sortBy, sortOrder, page, rowsPerPage, isRegular, isActivated, min, max }: FetchBudgetCategoryRequestType = {
         query: "",
         sortBy: undefined,
         sortOrder: "asc",
         page: 0,
         rowsPerPage: 10,
+        isBill: undefined,
+        isActivated: undefined,
+        min: undefined,
+        max: undefined,
         ...request.params,
     };
     let temp = BudgetCategoryData;
     if (query) {
         temp = temp.filter((budgetCategory) => budgetCategory.title.toLowerCase().includes(query.toLowerCase()));
     }
+
+    if (isRegular === 'true')
+        temp = temp.filter((budgetCategory) => budgetCategory.isBill);
+    else if (isRegular === 'false')
+        temp = temp.filter((budgetCategory) => !budgetCategory.isBill);
+
+    if (isActivated === 'true')
+        temp = temp.filter((budgetCategory) => budgetCategory.isActivated);
+    else if (isActivated === 'false')
+        temp = temp.filter((budgetCategory) => !budgetCategory.isActivated);
+
+    if (min)
+        temp = temp.filter((budgetCategory) => budgetCategory.amount >= min);
+
+    if (max)
+        temp = temp.filter((budgetCategory) => budgetCategory.amount <= max);
+
     if (sortBy) {
         temp = temp.sort((a, b) => {
             const aVal = a[sortBy] ?? 0;
@@ -69,12 +100,14 @@ mock.onGet('/api/v1/smart-budgeting/budget-category').reply((request) => {
 
 // POST : Add new budget category
 mock.onPost('/api/v1/smart-budgeting/budget-category').reply((request) => {
-    const { title, amount, isActivated } = JSON.parse(request.data);
+    const { title, amount, isBill, intervalMonth, isActivated } = JSON.parse(request.data);
     const id = BudgetCategoryData.length + 1;
     const newBudgetCategory = {
         id,
         title,
         amount,
+        isBill,
+        intervalMonth,
         isActivated
     };
     BudgetCategoryData.push(newBudgetCategory);
@@ -82,18 +115,21 @@ mock.onPost('/api/v1/smart-budgeting/budget-category').reply((request) => {
 });
 
 // PUT : Update budget category
-mock.onPut('/api/v1/smart-budgeting/budget-category').reply((request) => {
-    const { id, title, amount, isActivated } = JSON.parse(request.data);
-    const index = BudgetCategoryData.findIndex((budgetCategory) => budgetCategory.id === id);
+mock.onPut(new RegExp(`/api/v1/smart-budgeting/budget-category/*`)).reply((request) => {
+    const match = request.url?.match(/\/api\/v1\/smart-budgeting\/budget-category\/([^\/]*)/);
+    const idToEdit = match ? parseInt(match[1]) : 0;
+    const index = BudgetCategoryData.findIndex((budgetCategory) => budgetCategory.id === idToEdit);
     if (index > -1) {
-        BudgetCategoryData[index] = { id, title, amount, isActivated };
+        const { id, title, amount, isBill, intervalMonth, isActivated } = JSON.parse(request.data);
+        const index = BudgetCategoryData.findIndex((budgetCategory) => budgetCategory.id === id);
+        BudgetCategoryData[index] = { id, title, amount, isBill, intervalMonth, isActivated };
         return [200, BudgetCategoryData[index]];
     }
     return [400];
 });
 
 // DELETE : Delete budget category
-mock.onDelete('/api/v1/smart-budgeting/budget-category/*').reply((request) => {
+mock.onDelete(new RegExp(`/api/v1/smart-budgeting/budget-category/*`)).reply((request) => {
     const match = request.url?.match(/\/api\/v1\/smart-budgeting\/budget-category\/([^\/]*)/);
     const id = match ? parseInt(match[1]) : 0;
     const index = BudgetCategoryData.findIndex((budgetCategory) => budgetCategory.id === id);

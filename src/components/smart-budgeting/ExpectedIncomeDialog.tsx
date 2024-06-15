@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -6,101 +5,148 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { Checkbox, DialogActions, FormControlLabel, Grid, TextField } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { ExpectedIncomeType } from '../../types/smart-budgeting';
+import { useFormik } from 'formik';
 
-export default function ExpectedIncomeDialog(props: { open: boolean, onClose: () => void }) {
-    
+interface FormValues {
+    id?: number;
+    title: string;
+    amount: number;
+    isRegular: boolean;
+    isActivated: boolean;
+    intervalMonth?: number;
+}
+interface ExpectedIncomeDialogProps {
+    editExpInc?: ExpectedIncomeType;
+    open: boolean;
+    onSubmit: (values: FormValues) => void;
+    onClose: () => void;
+}
+
+export default function ExpectedIncomeDialog(props: ExpectedIncomeDialogProps) {
+    const formik = useFormik({
+        initialValues: {
+            title: '',
+            amount: 0,
+            isRegular: false,
+            isActivated: true,
+            intervalMonth: 0,
+            ...props.editExpInc
+        },
+        //validationSchema: validationSchema,
+        onSubmit: (values) => {
+            props.onSubmit(values);
+        },
+    });
+
     const handleClose = () => {
         props.onClose();
     };
 
-    const [checked, setChecked] = React.useState(true);
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setChecked(event.target.checked);
-    };
-
+    const isEdit = props.editExpInc !== undefined;
     return (
         <Dialog
             open={props.open}
             onClose={handleClose}
             PaperProps={{
                 component: 'form',
-                onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                    event.preventDefault();
-                    const formData = new FormData(event.currentTarget);
-                    const formJson = Object.fromEntries((formData as any).entries());
-                    console.log(formJson);
-                    handleClose();
-                },
+                onSubmit: formik.handleSubmit,
             }}
         >
-            <DialogTitle>New Expected Income</DialogTitle>
+            {isEdit ? <DialogTitle>Edit Expected Income</DialogTitle> : <DialogTitle>New Expected Income</DialogTitle>}
             <DialogContent>
                 <Grid container style={{ width: '400px' }}>
                     {/* select date */}
                     {/* <DateRangePicker localeText={{ start: 'Check-in', end: 'Check-out' }} /> */}
                     <Grid item xs={12}>
                         <TextField
-                        autoFocus
-                        margin="dense"
-                        id="title"
-                        name="title"
-                        label="Title"
-                        type="text"
-                        variant="standard"
-                        style={{ width: '100%' }}
-                        inputProps={{
-                            maxLength: 20
-                        }}
-                        required
-                    />
+                            autoFocus
+                            margin="dense"
+                            id="title"
+                            name="title"
+                            onChange={formik.handleChange}
+                            value={formik.values.title}
+                            label="Title"
+                            type="text"
+                            variant="standard"
+                            style={{ width: '100%' }}
+                            inputProps={{
+                                maxLength: 20
+                            }}
+                            required
+                        />
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                        margin="dense"
-                        id="amount"
-                        name="amount"
-                        label="Amount"
-                        type="number"
-                        style={{ width: '100%' }}
-                        variant="standard"
-                        inputProps={{
-                            min: 1
-                        }}
-                        required
-                    />
+                            margin="dense"
+                            id="amount"
+                            name="amount"
+                            onChange={formik.handleChange}
+                            value={formik.values.amount}
+                            label="Amount"
+                            type="number"
+                            style={{ width: '100%' }}
+                            variant="standard"
+                            inputProps={{
+                                min: 1
+                            }}
+                            required
+                        />
                     </Grid>
                     <Grid item xs={6} sx={{
                         display: 'flex',
                     }}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox color="primary"
-                                    icon={<CheckBoxOutlineBlankIcon />}
-                                    checkedIcon={<CheckBoxIcon />}
-                                    name="isRegular"
-                                    checked={checked}
-                                    onChange={handleChange}
-                                />
-                            }
-                            label="Regular income"
-                        />
+                        <Grid item xs={3} sx={{
+                            display: 'flex',
+                        }}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox color="primary"
+                                        icon={<CheckBoxOutlineBlankIcon />}
+                                        checkedIcon={<CheckBoxIcon />}
+                                        name="isBill"
+                                        onChange={formik.handleChange}
+                                        defaultChecked={formik.values.isRegular}
+                                    />
+                                }
+                                label="Bill"
+                            />
+                        </Grid>
+                        <Grid item xs={2} />
+                        <Grid item xs={1} sx={{
+                            display: 'flex',
+                        }}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox color="primary"
+                                        icon={<CheckBoxOutlineBlankIcon />}
+                                        checkedIcon={<CheckBoxIcon />}
+                                        name="isActivated"
+                                        onChange={formik.handleChange}
+                                        defaultChecked={formik.values.isActivated}
+                                    />
+                                }
+                                label="Activate"
+                            />
+                        </Grid>
                     </Grid>
                     <Grid item xs={6} justifyContent="center">
                         <TextField
-                        margin="dense"
-                        id="interval"
-                        name="interval"
-                        label="Months per income"
-                        type="number"
-                        style={{ width: '100%' }}
-                        variant="standard"
-                        inputProps={{
-                            min: 2
-                        }}
-                        required = {checked ? true : false}
-                        disabled = {checked ? false : true}
-                    />
+                            margin="dense"
+                            id="intervalMonth"
+                            name="intervalMonth"
+                            onChange={formik.handleChange}
+                            label="Months per payment"
+                            type="number"
+                            style={{ width: '100%' }}
+                            variant="standard"
+                            inputProps={{
+                                min: 1
+                            }}
+                            required={formik.values.isRegular}
+                            disabled={!formik.values.isRegular}
+                            value={formik.values.intervalMonth}
+                        />
                     </Grid>
                 </Grid>
             </DialogContent>
