@@ -15,7 +15,7 @@ const WelcomeCard = () => {
           <Grid item sm={6} display="flex" alignItems="center">
             <Box>
               <Box
-                gap="16px" mb={5}
+                gap="22px" mb={5}
                 sx={{
                   display: {
                     xs: 'block',
@@ -26,14 +26,14 @@ const WelcomeCard = () => {
               >
                 <Avatar src={userImg} alt="img" sx={{ width: 40, height: 40 }} />
                 <Typography variant="h5" whiteSpace="nowrap">
-                  Welcome back Mathew Anderson!
+                  Welcome back!
                 </Typography>
               </Box>
 
               <Stack spacing={2}  direction="row" divider={<Divider orientation="vertical" flexItem />}>
                 <Box>
                 <Typography variant="h2" whiteSpace="nowrap">$2,340 <span><IconArrowUpRight width={18} color="#39B69A" /></span></Typography>
-                <Typography variant="subtitle1" whiteSpace="nowrap">Today’s Sales</Typography>
+                <Typography variant="subtitle1" whiteSpace="nowrap">Today’s Profits</Typography>
                 </Box>
                 <Box>
                 <Typography variant="h2" whiteSpace="nowrap">35%<span><IconArrowUpRight width={18} color="#39B69A" /></span></Typography>

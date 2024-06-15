@@ -39,7 +39,7 @@ import PageContainer from 'src/components/container/PageContainer';
 import { IconTrash, IconFilter, IconSearch } from '@tabler/icons-react';
 import BlankCard from '../../components/shared/BlankCard';
 import { useDispatch, useSelector } from '../../store/Store';
-import CapitialBuildCard from 'src/components/goal-tracker/CapitalBuildingCard';
+import CapitalBuildCard from 'src/components/goal-tracker/CapitalBuildingCard';
 import DebtPaymentCard from 'src/components/goal-tracker/DebtPaymentCard';
 import LongTermExpenseCard from 'src/components/goal-tracker/LongTermExpenseCard';
 import { FinancialGoalType, SortOrder } from 'src/types/goal-tracker';
@@ -205,7 +205,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
                 </InputAdornment>
               ),
             }}
-            placeholder="Search Product"
+            placeholder="Search"
             size="small"
             onChange={handleSearch}
             value={search}
@@ -484,7 +484,7 @@ const EnhanceTable = () => {
         <Grid item xs={12} lg={12}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={4}>
-              <CapitialBuildCard />
+              <CapitalBuildCard />
             </Grid>
             <Grid item xs={12} md={4}>
               <DebtPaymentCard />
