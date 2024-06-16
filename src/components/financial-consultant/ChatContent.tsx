@@ -78,7 +78,7 @@ function ChatCircularProgress(props: CircularProgressProps) {
 }
 
 const AgentToolBox: React.FC<{ tool_start?: { tool: string, input: string }[], tool_end?: string[] }> = ({ tool_start, tool_end }) => {
-  const [open, setOpen] = React.useState<{ [key: number]: boolean }>({});
+  const [open, setOpen] = React.useState<{ [key: string]: boolean }>({});
 
   function toolToStatement (tool_name: string) {
     switch (tool_name) {
@@ -108,20 +108,20 @@ const AgentToolBox: React.FC<{ tool_start?: { tool: string, input: string }[], t
       aria-labelledby="nested-list-subheader"
       subheader={
         <ListSubheader component="div" id="nested-list-subheader">
-          I performed the following tasks
+          I performed the following tasks for you 😉
         </ListSubheader>
       }
     >
       {tool_start?.map((tool, index) => (
         <>
-          <ListItemButton onClick={() => setOpen({ ...open, [index]: !open[index] })}>
+          <ListItemButton onClick={() => setOpen({ ...open, [`${tool.tool}-${tool.input}`]: !open[`${tool.tool}-${tool.input}`] })}>
             <ListItemIcon>
               <WorkIcon />
             </ListItemIcon>
             <ListItemText primary={`${toolToStatement(tool.tool)} ... ${tool.input}`} />
             {open ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
-          <Collapse in={open[index]} timeout="auto" unmountOnExit>
+          <Collapse in={open[`${tool.tool}-${tool.input}`]} timeout="auto" unmountOnExit>
             <Markdown>
               {tool_end ? tool_end[index] : 'Loading...'}
             </Markdown>
