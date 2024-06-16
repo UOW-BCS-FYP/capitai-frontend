@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 import { AppState } from 'src/store/Store';
 import Header from './vertical/header/Header';
 import Sidebar from './vertical/sidebar/Sidebar';
-import Customizer from './shared/customizer/Customizer';
+// import Customizer from './shared/customizer/Customizer';
 import Navigation from '../full/horizontal/navbar/Navigation';
 import HorizontalHeader from '../full/horizontal/header/Header';
 
@@ -70,7 +70,7 @@ const FullLayout: FC = () => {
           {/* End Page */}
           {/* ------------------------------------------- */}
         </Container>
-        <Customizer />
+        {/* <Customizer /> */}
       </PageWrapper>
     </MainWrapper>
   );
