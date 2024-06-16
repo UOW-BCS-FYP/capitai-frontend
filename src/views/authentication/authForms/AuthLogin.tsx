@@ -41,8 +41,8 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
 
   const formik = useFormik({
     initialValues: {
-      email: 'demo@capit-ai.com',
-      password: '123456',
+      email: '',
+      password: '',
       submit: null,
     },
 
