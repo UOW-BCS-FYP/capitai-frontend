@@ -43,7 +43,7 @@ const ChatMsgSent = () => {
     dispatch(sendMsg(newMsg));
     setMsg('');
     // auth.socketReconnect().then(() => {
-      auth.socket?.emit('client_message', {
+      auth.socket?.emit('chat', {
         msg: newMsg.msg,
         agent_id: consultant_id,
         message_id: `${newMsg.message_id}-r`

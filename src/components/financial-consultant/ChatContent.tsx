@@ -15,6 +15,11 @@ import {
   CircularProgress,
   CircularProgressProps,
   circularProgressClasses,
+  ListItemButton,
+  ListItemIcon,
+  Collapse,
+  List,
+  ListSubheader,
   // useMediaQuery,
   // Theme
 } from '@mui/material';
@@ -28,9 +33,11 @@ import { formatDistanceToNowStrict } from 'date-fns';
 // import ChatInsideSidebar from './ChatInsideSidebar';
 import Scrollbar from 'src/components/custom-scroll/Scrollbar';
 import useAuth from 'src/guards/authGuard/UseAuth';
-import { setConsultantNewToken, setConsultantOutput } from 'src/store/financial-consultant/ConsultSlice';
+import { setConsultantChat } from 'src/store/financial-consultant/ConsultSlice';
 import Markdown from 'marked-react';
 import { useUnmountEffect } from 'framer-motion';
+import WorkIcon from '@mui/icons-material/Work';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 interface ChatContentProps {
   toggleChatSidebar: () => void;
@@ -70,6 +77,62 @@ function ChatCircularProgress(props: CircularProgressProps) {
   );
 }
 
+const AgentToolBox: React.FC<{ tool_start?: { tool: string, input: string }[], tool_end?: string[] }> = ({ tool_start, tool_end }) => {
+  const [open, setOpen] = React.useState<{ [key: number]: boolean }>({});
+
+  function toolToStatement (tool_name: string) {
+    switch (tool_name) {
+      case 'stock_financial_statement_search':
+        return 'I searched for the financial statement of the stock';
+      case 'stock_historical_data_search':
+        return 'I searched for the historical data of the stock';
+      case 'stock_recommendation_search':
+        return 'I searched for the recommendation of the stock';
+      case 'stock_earnings_date_search':
+        return 'I searched for the earnings date of the stock';
+      case 'stock_news_search':
+        return 'I searched for the news of the stock';
+      case 'stock_ownership_insider_search':
+        return 'I searched for the ownership insider of the stock';
+      case 'cfa_level_1_knowledge':
+        return 'I searched for the knowledge of CFA Level 1';
+      default:
+        return 'I searched for the information';
+    }
+  }
+
+  return tool_start ? (
+    <List
+      sx={{ width: '100%', maxWidth: '100%', bgcolor: 'background.paper' }}
+      component="nav"
+      aria-labelledby="nested-list-subheader"
+      subheader={
+        <ListSubheader component="div" id="nested-list-subheader">
+          I performed the following tasks
+        </ListSubheader>
+      }
+    >
+      {tool_start?.map((tool, index) => (
+        <>
+          <ListItemButton onClick={() => setOpen({ ...open, [index]: !open[index] })}>
+            <ListItemIcon>
+              <WorkIcon />
+            </ListItemIcon>
+            <ListItemText primary={`${toolToStatement(tool.tool)} ... ${tool.input}`} />
+            {open ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={open[index]} timeout="auto" unmountOnExit>
+            <Markdown>
+              {tool_end ? tool_end[index] : 'Loading...'}
+            </Markdown>
+          </Collapse>
+        </>
+      ))}
+    </List>
+  ) : null;
+
+}
+
 const ChatContent: React.FC<ChatContentProps> = ({ toggleChatSidebar }) => {
   const dispatch = useDispatch();
   const auth = useAuth();
@@ -93,50 +156,16 @@ const ChatContent: React.FC<ChatContentProps> = ({ toggleChatSidebar }) => {
     scrollToBottom();
   }, [chatDetails]);
 
-  function onLLMNewToken (new_token: { data: string, agent_id: string, message_id: string }) {
-    dispatch(setConsultantNewToken({
-      token: new_token.data,
-      consultant_id: new_token.agent_id,
-      message_id: new_token.message_id
-    }));
-  }
-
-  function onChainEnd (response: any) {
-    console.log('chain_end', response);
-    const { agent_id, message_id, intermediate_steps, data } = response;
-    if (intermediate_steps) {
-      intermediate_steps.forEach((step: any) => {
-        console.log('step', step);
-      });
-    }
-    dispatch(setConsultantOutput({
-      consultant_id: agent_id,
-      message_id,
-      output: data,
-      intermediate_steps
-    }))
-  }
-
-  function onToolStart (data: any) {
-    console.log('tool_start', data);
-  }
-
-  function onAgentAction (data: any) {
-    console.log('agent_action', data);
+  function onChat(data: any) {
+    dispatch(setConsultantChat(data));
   }
 
   useEffect(() => {
-    auth.socket?.on('llm_new_token', onLLMNewToken);
-    auth.socket?.on('chain_end', onChainEnd);
-    auth.socket?.on('tool_start', onToolStart);
-    auth.socket?.on('agent_action', onAgentAction);
+    auth.socket?.on('chat', onChat);
   }, []);
 
   useUnmountEffect(() => {
-    auth.socket?.off('llm_new_token', onLLMNewToken);
-    auth.socket?.off('chain_end', onChainEnd);
-    auth.socket?.off('tool_start', onToolStart);
-    auth.socket?.off('agent_action', onAgentAction);
+    auth.socket?.off('chat', onChat);
   })
 
   return (
@@ -233,19 +262,22 @@ const ChatContent: React.FC<ChatContentProps> = ({ toggleChatSidebar }) => {
                                   </Typography>
                                 ) : null}
                                 {chat.type === 'text' && chat.msg ? (
-                                  <Box
-                                    mb={1}
-                                    sx={{
-                                      p: 2,
-                                      backgroundColor: 'grey',
-                                      color: '#e8e8e8',
-                                      mr: 'auto'
-                                    }}
-                                  >
-                                    <Markdown>
-                                      { chat.msg }
-                                    </Markdown>
-                                  </Box>
+                                  <>
+                                    <AgentToolBox tool_start={chat.llm?.tool_start} tool_end={chat.llm?.tool_end} />
+                                    <Box
+                                      mb={1}
+                                      sx={{
+                                        p: 2,
+                                        backgroundColor: '#e8e8e8',
+                                        color: 'text.primary',
+                                        mr: 'auto'
+                                      }}
+                                    >
+                                      <Markdown>
+                                        { chat.llm?.chain_end?.data ?? chat.msg }
+                                      </Markdown>
+                                    </Box>
+                                  </>
                                 ) : <ChatCircularProgress /> }
                                 {chat.type === 'image' ? (
                                   <Box mb={1} sx={{ overflow: 'hidden', lineHeight: '0px' }}>
@@ -325,3 +357,4 @@ const ChatContent: React.FC<ChatContentProps> = ({ toggleChatSidebar }) => {
 };
 
 export default ChatContent;
+

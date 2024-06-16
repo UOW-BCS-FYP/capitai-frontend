@@ -11,6 +11,7 @@ export type ConsultantMessage = {
   type: string;
   attachments: ConsultantAttachement[];
   id: string;
+  llm?: SocketChatType;
 };
 
 export interface FinancialConsultant {
@@ -38,3 +39,40 @@ export type FetchFinancialConsultantResponseType = {
   data: FinancialConsultant[];
   total: number;
 };
+
+export interface SocketChatType {
+  chain_start: {
+    data: {
+      input: string;
+    }
+  },
+  chat_model_start: {
+    data: string;
+  },
+  llm_new_token: string,
+  llm_end: {
+    data: {
+      output: string | null;
+    }
+  },
+  agent_finish: {
+    output: string;
+  }[],
+  chain_end: {
+    data: string;
+    intermediate_steps: string[];
+  },
+  agent_id: string;
+  message_id: string;
+  agent_action: {
+    tool: string;
+    input: {
+      symbol: string;
+    }
+  }[];
+  tool_start: {
+    tool: string;
+    input: string;
+  }[];
+  tool_end: string[];
+}

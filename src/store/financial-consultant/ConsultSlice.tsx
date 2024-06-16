@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AppDispatch, AppState } from 'src/store/Store';
 import { uniqueId } from 'lodash';
 // import { sub } from 'date-fns';
-import { ConsultantAttachement, ConsultantMessage, FetchFinancialConsultantRequestType, FetchFinancialConsultantResponseType, FinancialConsultant } from 'src/types/financial-consultant';
+import { ConsultantAttachement, ConsultantMessage, FetchFinancialConsultantRequestType, FetchFinancialConsultantResponseType, FinancialConsultant, SocketChatType } from 'src/types/financial-consultant';
 // import useAuth from 'src/guards/authGuard/UseAuth';
 // import { useContext } from 'react';
 // import AuthContext from 'src/guards/firebase/FirebaseContext';
@@ -126,6 +126,24 @@ export const ConsultantSlice = createSlice({
         }
         return consultant;
       });
+    },
+    setConsultantChat(state, action: { payload: SocketChatType }) {
+      const { agent_id, message_id } = action.payload;
+      const { chain_start, llm_new_token } = action.payload;
+      if (chain_start) {
+        state.consultants = state.consultants.map((consultant) => {
+          if (consultant.id === agent_id) {
+            consultant.messages = consultant.messages.map((message) => {
+              if (message.id === message_id) {
+                message.msg = llm_new_token;
+                message.llm = action.payload;
+              }
+              return message;
+            });
+          }
+          return consultant;
+        });
+      }
     }
   },
   extraReducers: (builder) => {
@@ -173,7 +191,7 @@ export const fetchConsultant = createAsyncThunk<
   }
 })
 
-export const { selectConsultant, setFilter, sendMsg, setAgentStatus, setConsultantNewToken, setConsultantOutput } = ConsultantSlice.actions;
+export const { selectConsultant, setFilter, sendMsg, setAgentStatus, setConsultantNewToken, setConsultantOutput, setConsultantChat } = ConsultantSlice.actions;
 
 // auth.socket?.on('server_response', (response: any) => {
 //   console.log('server_response', response);
