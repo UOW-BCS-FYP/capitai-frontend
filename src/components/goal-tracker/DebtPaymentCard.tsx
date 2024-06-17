@@ -80,7 +80,7 @@ const DebtPaymentCard = () => {
             <IconArrowDownRight width={20} color="#FA896B" />
           </Avatar>
           <Typography variant="subtitle2" fontWeight="600">
-            +9%
+            -9%
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
             last year
