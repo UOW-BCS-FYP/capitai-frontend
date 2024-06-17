@@ -373,13 +373,6 @@ const EnhanceTable = () => {
     goals && setRecords(goals);
   }, [fetchStatus, dispatch]);
 
-  useEffect(() => {
-    if (fetchStatus === 'idle') {
-      dispatch(fetchGoals({}));
-    }
-    goals && setRecords(goals);
-  }, [fetchStatus, dispatch]);
-
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [dense, setDense] = React.useState(false);
 
