@@ -91,7 +91,7 @@ const LongTermExpenseCard = () => {
               <IconArrowDownRight width={16} color="#FA896B" />
             </Avatar>
             <Typography variant="subtitle2" color="textSecondary">
-              +9%
+              -9%
             </Typography>
           </Stack>
         </Grid>
