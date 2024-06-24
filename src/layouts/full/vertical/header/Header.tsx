@@ -13,6 +13,7 @@ import Navigation from './Navigation';
 // import MobileRightSidebar from './MobileRightSidebar';
 import WbSunnyTwoToneIcon from '@mui/icons-material/WbSunnyTwoTone';
 import DarkModeTwoToneIcon from '@mui/icons-material/DarkModeTwoTone';
+import Notifications from './Notification';
 
 const Header = () => {
   const lgUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('lg'));
@@ -75,6 +76,7 @@ const Header = () => {
           {/* Toggle Right Sidebar for mobile */}
           {/* ------------------------------------------- */}
           {/* {lgDown ? <MobileRightSidebar /> : null} */}
+          <Notifications />
           <IconButton aria-label="fingerprint" color="secondary" onClick={() => customizer.activeMode === 'dark' ? dispatch(setDarkMode('light')) : dispatch(setDarkMode('dark'))}>
             {
               customizer.activeMode === 'dark' ? (

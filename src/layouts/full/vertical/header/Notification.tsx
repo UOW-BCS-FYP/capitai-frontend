@@ -16,7 +16,7 @@ import {
 import * as dropdownData from './data';
 import Scrollbar from 'src/components/custom-scroll/Scrollbar';
 
-import { IconBellRinging } from '@tabler/icons-react';
+import { IconBellRinging, IconAdjustmentsDollar, IconConfetti, IconReportMoney, IconBus } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 
 const Notifications = () => {
@@ -60,7 +60,7 @@ const Notifications = () => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         sx={{
           '& .MuiMenu-paper': {
-            width: '360px',
+            width: '560px',
           },
         }}
       >
@@ -71,16 +71,14 @@ const Notifications = () => {
         <Scrollbar sx={{ height: '385px' }}>
           {dropdownData.notifications.map((notification, index) => (
             <Box key={index}>
-              <MenuItem sx={{ py: 2, px: 4 }}>
+              <MenuItem sx={{ py: 2, px: 4 }} component={Link} to={notification.url}>
                 <Stack direction="row" spacing={2}>
-                  <Avatar
-                    src={notification.avatar}
-                    alt={notification.avatar}
-                    sx={{
-                      width: 48,
-                      height: 48,
-                    }}
-                  />
+                  {
+                   notification.type === 'spending' ? <IconReportMoney size="21" stroke="1.5" /> :
+                   notification.type === 'endOfMonth' ? <IconAdjustmentsDollar size="21" stroke="1.5" /> :
+                   notification.type === 'goalReached' ? <IconConfetti size="21" stroke="1.5" /> :
+                   <IconBus size="21" stroke="1.5" />
+                  }
                   <Box>
                     <Typography
                       variant="subtitle2"
@@ -88,7 +86,7 @@ const Notifications = () => {
                       fontWeight={600}
                       noWrap
                       sx={{
-                        width: '240px',
+                        width: '500px',
                       }}
                     >
                       {notification.title}
@@ -97,7 +95,7 @@ const Notifications = () => {
                       color="textSecondary"
                       variant="subtitle2"
                       sx={{
-                        width: '240px',
+                        width: '500px',
                       }}
                       noWrap
                     >
@@ -109,11 +107,6 @@ const Notifications = () => {
             </Box>
           ))}
         </Scrollbar>
-        <Box p={3} pb={1}>
-          <Button to="/apps/email" variant="outlined" component={Link} color="primary" fullWidth>
-            See all Notifications
-          </Button>
-        </Box>
       </Menu>
     </Box>
   );

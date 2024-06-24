@@ -19,51 +19,54 @@ import ddIcon8 from 'src/assets/images/svgs/icon-dd-application.svg'
 // Notifications dropdown
 
 interface notificationType {
-  avatar: string;
   title: string;
   subtitle: string;
+  type: string;
+  url: string;
 }
 
 const notifications: notificationType[] = [
   {
-    avatar: img1,
-    title: 'Roman Joined the Team!',
-    subtitle: 'Congratulate him',
+    title: 'Lunch time is now, warm reminder to record food spending today.',
+    subtitle: 'Click to open I&S page',
+    type: 'spending',
+    url: '/smart-budgeting/income-n-spending'
   },
   {
-    avatar: img2,
-    title: 'New message received',
-    subtitle: 'Salma sent you new message',
+    title: 'A month has passed, warm reminder to review your budget plan.',
+    subtitle: 'Click to open Budget Plan page',
+    type: 'endOfMonth',
+    url: '/smart-budgeting'
   },
   {
-    avatar: img3,
-    title: 'New Payment received',
-    subtitle: 'Check your earnings',
+    title: 'You have enough money for goal Tuition Fee, Congratutations!',
+    subtitle: 'Click to open Goal Tracker page',
+    type: 'goalReached',
+    url: '/goal-tracker/stat'
   },
   {
-    avatar: img4,
-    title: 'Jolly completed tasks',
-    subtitle: 'Assign her new tasks',
+    title: 'Good morning, warm reminder to record your commute spending.',
+    subtitle: 'Click to open I&S page',
+    type: 'commute',
+    url: '/smart-budgeting/income-n-spending'
   },
   {
-    avatar: img1,
-    title: 'Roman Joined the Team!',
-    subtitle: 'Congratulate him',
+    title: 'Dinner time is now, warm reminder to record food spending today.',
+    subtitle: 'Click to open I&S page',
+    type: 'spending',
+    url: '/smart-budgeting/income-n-spending'
   },
   {
-    avatar: img2,
-    title: 'New message received',
-    subtitle: 'Salma sent you new message',
+    title: 'You have enough money for goal Capital Building, Congratutations!',
+    subtitle: 'Click to open Goal Tracker page',
+    type: 'goalReached',
+    url: '/goal-tracker/stat'
   },
   {
-    avatar: img3,
-    title: 'New Payment received',
-    subtitle: 'Check your earnings',
-  },
-  {
-    avatar: img4,
-    title: 'Jolly completed tasks',
-    subtitle: 'Assign her new tasks',
+    title: 'Good evening, warm reminder to record your commute spending.',
+    subtitle: 'Click to open I&S page',
+    type: 'commute',
+    url: '/smart-budgeting/income-n-spending'
   },
 ];
 
