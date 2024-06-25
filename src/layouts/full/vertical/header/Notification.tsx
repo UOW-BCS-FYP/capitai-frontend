@@ -3,21 +3,20 @@
 import React, { useState } from 'react';
 import {
   IconButton,
-  Box,
   Badge,
   Menu,
   MenuItem,
-  Avatar,
   Typography,
-  Button,
   Chip,
-  Stack
+  Stack,
+  Box
 } from '@mui/material';
-import * as dropdownData from './data';
 import Scrollbar from 'src/components/custom-scroll/Scrollbar';
 
-import { IconBellRinging, IconAdjustmentsDollar, IconConfetti, IconReportMoney, IconBus } from '@tabler/icons-react';
-import { Link } from 'react-router-dom';
+import { IconBellRinging, IconAdjustmentsDollar, IconConfetti, IconReportMoney, IconBus, IconTrash } from '@tabler/icons-react';
+import { useDispatch, useSelector } from 'src/store/Store';
+import { deleteNotification, fetchNotification } from 'src/store/notification/notificationSlice';
+import { useNavigate } from 'react-router';
 
 const Notifications = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
@@ -29,6 +28,18 @@ const Notifications = () => {
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
+
+  const dispatch = useDispatch();
+  const records = useSelector((state) => state.notificationReducer.notifications);
+  const navigate = useNavigate();
+  const fetchStatus = useSelector((state) => state.notificationReducer.fetchNotificationStatus);
+
+  React.useEffect(() => {
+    // dispatch(fetchExpInc());
+    if (fetchStatus === 'idle') {
+        dispatch(fetchNotification());
+    }
+  }, [dispatch]);
 
   return (
     <Box>
@@ -60,18 +71,28 @@ const Notifications = () => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         sx={{
           '& .MuiMenu-paper': {
-            width: '560px',
+            width: '540px',
           },
         }}
       >
-        <Stack direction="row" py={2} px={4} justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">Notifications</Typography>
-          <Chip label="5 new" color="primary" size="small" />
+        <Stack direction="row" py={2} px={4} alignItems="center">
+          <Typography variant="h6" paddingRight={2}>Notifications</Typography>
+          <Chip label={records.length + " new"} color="primary" size="small" />
+          <IconButton sx={{ marginLeft: "auto" }} onClick={() => {
+            records.forEach((notification) => dispatch(deleteNotification(notification)) )
+            dispatch(fetchNotification());
+          }}>
+            <IconTrash width="18" />
+          </IconButton>
         </Stack>
         <Scrollbar sx={{ height: '385px' }}>
-          {dropdownData.notifications.map((notification, index) => (
+          {records.map((notification, index) => (
             <Box key={index}>
-              <MenuItem sx={{ py: 2, px: 4 }} component={Link} to={notification.url}>
+              <MenuItem sx={{ py: 2, px: 4 }} onClick={ () => {
+                  dispatch(deleteNotification(notification));
+                  navigate(notification.url);
+                  dispatch(fetchNotification());
+                } }>
                 <Stack direction="row" spacing={2}>
                   {
                    notification.type === 'spending' ? <IconReportMoney size="21" stroke="1.5" /> :
@@ -86,7 +107,7 @@ const Notifications = () => {
                       fontWeight={600}
                       noWrap
                       sx={{
-                        width: '500px',
+                        width: '450px',
                       }}
                     >
                       {notification.title}
@@ -95,7 +116,7 @@ const Notifications = () => {
                       color="textSecondary"
                       variant="subtitle2"
                       sx={{
-                        width: '500px',
+                        width: '450px',
                       }}
                       noWrap
                     >

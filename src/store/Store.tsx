@@ -14,6 +14,7 @@ import InSRecordRecuder from './smart-budgeting/InSRecordSlice'
 import GoalTrackerReducer from './goal-tracker/GoalTrackerSlice';
 import FinancialStatementReducer from './financial-statement/FinancialStatementSlice';
 import FinancialConsultantReducer from './financial-consultant/ConsultSlice';
+import NotificationReducer from './notification/notificationSlice'
 
 import { combineReducers } from 'redux';
 import {
@@ -39,6 +40,7 @@ export const store = configureStore({
     goalTrackerReducer: GoalTrackerReducer,
     statementReducer: FinancialStatementReducer,
     financialConsultantReducer: FinancialConsultantReducer,
+    notificationReducer: NotificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -64,6 +66,7 @@ const rootReducer = combineReducers({
   goalTrackerReducer: GoalTrackerReducer,
   statementReducer: FinancialStatementReducer,
   financialConsultantReducer: FinancialConsultantReducer,
+  notificationReducer: NotificationReducer,
 });
 
 export type AppState = ReturnType<typeof rootReducer>;
