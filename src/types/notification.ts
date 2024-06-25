@@ -1,4 +1,4 @@
-import { FetchRequestType, FetchResponseType } from "./common";
+import { FetchRequestType } from "./common";
 
 export type notificationType = {
   id?: number;

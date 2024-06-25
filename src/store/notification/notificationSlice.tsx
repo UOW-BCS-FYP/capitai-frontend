@@ -1,7 +1,7 @@
 import axios from '../../utils/axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AppDispatch, AppState } from 'src/store/Store';
-import { FetchRequestType, FetchResponseType } from 'src/types/common';
+import { AppDispatch } from 'src/store/Store';
+import { FetchRequestType } from 'src/types/common';
 import { notificationType } from 'src/types/notification';
 
 const API_URL = '/api/v1/notif';

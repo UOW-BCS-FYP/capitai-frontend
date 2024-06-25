@@ -1,5 +1,5 @@
 import mock from '../../../mock';
-import { FetchNotificationRequestType, notificationType } from 'src/types/notification';
+import { notificationType } from 'src/types/notification';
 
 const NotificationData: notificationType[] = [
     {
