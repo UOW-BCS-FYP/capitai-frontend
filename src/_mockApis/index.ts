@@ -15,5 +15,6 @@ import './api/v1/smart-budgeting/InSRecordData'
 import './api/v1/financial-consultant/ConsultantData';
 import './api/v1/goal-tracker/GoalTrackerData';
 import './api/v1/financial-statement/FinancialStatementData';
+import './api/v1/notification/notificationData';
 
 mock.onAny().passThrough();
