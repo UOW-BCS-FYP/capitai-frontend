@@ -149,33 +149,31 @@ const GoalTrackerForm = (props: GoalTrackerFormProps) => {
             onChange={formik.handleChange}
           />
         </Box>
-        {formik.values.type === 'capital building' && (
-          <Box>
-            <CustomFormLabel>Deadline</CustomFormLabel>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <MobileDatePicker
-                onChange={(newValue) => {
-                  console.log(newValue)
-                  formik.setFieldValue('deadline', newValue)
-                }}
-                renderInput={(inputProps) => (
-                  <CustomTextField
-                    fullWidth
-                    id="deadline"
-                    name="deadline"
-                    variant="outlined"
-                    size="small"
-                    inputProps={{ 'aria-label': 'basic date picker' }}
-                    {...inputProps}
-                    error={formik.touched.deadline && Boolean(formik.errors.deadline)}
-                    helperText={formik.touched.deadline && formik.errors.deadline}
-                  />
-                )}
-                value={formik.values.deadline}
-              />
-            </LocalizationProvider>
-          </Box>
-        )}
+        <Box>
+          <CustomFormLabel>Deadline</CustomFormLabel>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <MobileDatePicker
+              onChange={(newValue) => {
+                console.log(newValue)
+                formik.setFieldValue('deadline', newValue)
+              }}
+              renderInput={(inputProps) => (
+                <CustomTextField
+                  fullWidth
+                  id="deadline"
+                  name="deadline"
+                  variant="outlined"
+                  size="small"
+                  inputProps={{ 'aria-label': 'basic date picker' }}
+                  {...inputProps}
+                  error={formik.touched.deadline && Boolean(formik.errors.deadline)}
+                  helperText={formik.touched.deadline && formik.errors.deadline}
+                />
+              )}
+              value={formik.values.deadline}
+            />
+          </LocalizationProvider>
+        </Box>
         {formik.values.type === 'debt payment' && (
           <>
             <Box>

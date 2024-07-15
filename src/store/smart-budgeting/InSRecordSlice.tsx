@@ -2,7 +2,7 @@ import axios from '../../utils/axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AppDispatch, AppState } from 'src/store/Store';
 import { FetchRequestType, FetchResponseType } from 'src/types/common';
-import { InSRecordType } from 'src/types/smart-budgeting';
+import { InSRecordStatChartDataResponseType, InSRecordType } from 'src/types/smart-budgeting';
 
 const API_URL = '/api/v1/smart-budgeting/income-spending-record';
 
@@ -12,6 +12,9 @@ interface StateType {
     fetchFilter: FetchRequestType<InSRecordType>;
     fetchStatus: string;
     fetchError: string | undefined;
+    fetchStatChartDataStatus: string;
+    fetchStatChartDataError: string | undefined;
+    fetchStatChartData: InSRecordStatChartDataResponseType | undefined;
 }
 
 const initialState: StateType = {
@@ -26,6 +29,9 @@ const initialState: StateType = {
     },
     fetchStatus: 'idle',
     fetchError: '',
+    fetchStatChartDataStatus: 'idle',
+    fetchStatChartDataError: '',
+    fetchStatChartData: undefined,
 };
 
 export const InSRecordSlice = createSlice({
@@ -45,6 +51,7 @@ export const InSRecordSlice = createSlice({
         });
         builder.addCase(fetchInS.fulfilled, (state, action) => {
             state.fetchStatus = 'succeeded';
+            console.log(action.payload);
             state.InSRecords = action.payload.data;
             state.totalInSRecords = action.payload.total;
         });
@@ -52,6 +59,19 @@ export const InSRecordSlice = createSlice({
             state.fetchStatus = 'failed';
             state.fetchError = action.error.message;
         });
+        builder
+            .addCase(getStatChartData.pending, (state) => {
+                state.fetchStatChartDataStatus = 'loading';
+            })
+            .addCase(getStatChartData.fulfilled, (state, action) => {
+                state.fetchStatChartDataStatus = 'succeeded';
+                console.log(action.payload)
+                state.fetchStatChartData = action.payload;
+            })
+            .addCase(getStatChartData.rejected, (state, action) => {
+                state.fetchStatChartDataStatus = 'failed';
+                state.fetchStatChartDataError = action.error.message;
+            });
     }
 });
 
@@ -97,6 +117,15 @@ export const updateInS = createAsyncThunk<
     { dispatch: AppDispatch }
 >('InSRecord/updateInS', async (InSReq) => {
     const response = await axios.put(`${API_URL}/${InSReq.id}`, InSReq);
+    return response.data;
+});
+
+export const getStatChartData = createAsyncThunk<
+    InSRecordStatChartDataResponseType,
+    {},
+    { dispatch: AppDispatch }
+>('InSRecord/statChartData', async () => {
+    const response = await axios.get(`${API_URL}/stat-chart`);
     return response.data;
 });
 

@@ -5,7 +5,6 @@ import { Box, Grid } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 
 // import TopCards from 'src/components/dashboards/modern/TopCards';
-import RevenueUpdates from 'src/components/dashboards/modern/RevenueUpdates';
 import CapitalBuildCard from 'src/components/goal-tracker/CapitalBuildingCard';
 import LongTermExpenseCard from 'src/components/goal-tracker/LongTermExpenseCard';
 // import EmployeeSalary from 'src/components/dashboards/modern/EmployeeSalary';
@@ -17,12 +16,13 @@ import LongTermExpenseCard from 'src/components/goal-tracker/LongTermExpenseCard
 // import TopPerformers from 'src/components/dashboards/modern/TopPerformers';
 // import BudgetingChart from 'src/components/smart-budgeting/BudgetingChart';
 import BudgetingCard from 'src/components/dashboards/modern/BudgetingCard';
-import CapitalBuildingGoalCard from '../goal-tracker/CapitalBuildingGoalCard';
-import DebtPaymentGoalCard from '../goal-tracker/DebtPaymentGoalCard';
-import LongTermExpenseGoalCard from 'src/views/goal-tracker/LongTermExpenseGoalCard';
-import AddNewGoalCard from 'src/views/goal-tracker/AddNewGoalCard';
+import CapitalBuildingGoalCard from '../../components/finacial-dashboard/CapitalBuildingGoalCard';
+import DebtPaymentGoalCard from '../../components/finacial-dashboard/DebtPaymentGoalCard';
+import LongTermExpenseGoalCard from 'src/components/finacial-dashboard/LongTermExpenseGoalCard';
+import AddNewGoalCard from 'src/components/finacial-dashboard/AddNewGoalCard';
 // import Welcome from 'src/layouts/full/shared/welcome/Welcome';
-import WelcomeCard from 'src/components/dashboards/ecommerce/WelcomeCard';
+import WelcomeCard from 'src/components/finacial-dashboard/WelcomeCard';
+import InSUpdates from 'src/components/finacial-dashboard/InSUpdates';
 
 const Modern = () => {
   return (
@@ -33,7 +33,7 @@ const Modern = () => {
             <WelcomeCard/>
           </Grid>
           <Grid item xs={12} lg={7}>
-            <RevenueUpdates />
+            <InSUpdates />
           </Grid>
           <Grid item xs={12} lg={5}>
             <BudgetingCard />

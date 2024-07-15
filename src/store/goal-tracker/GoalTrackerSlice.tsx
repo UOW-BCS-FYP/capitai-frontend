@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axios';
-import { FetchFinancialGoalsRequestType, FetchFinancialGoalsResponseType, FinancialGoalType } from "src/types/goal-tracker";
+import { FetchFinancialGoalsRequestType, FetchFinancialGoalsResponseType, FetchFinancialGoalsStatChartDataRequestType, FetchFinancialGoalsStatChartDataResponseType, FinancialGoalType } from "src/types/goal-tracker";
 import { AppDispatch, AppState } from "../Store";
 // import { AppDispatch } from "../Store";
 
@@ -9,8 +9,6 @@ const API_URL = '/api/v1/goal-tracker';
 interface StateType {
   total: number;
   goals: FinancialGoalType[];
-  // goalContent: number;
-  // goalSearch: string;
   fetchGoalsStatus: string;
   fetchGoalsError: string | undefined;
   fetchGoalsFilter: FetchFinancialGoalsRequestType;
@@ -18,8 +16,13 @@ interface StateType {
   arrangeGoalsError: string | undefined;
   addGoalStatus: string;
   addGoalError: string | undefined;
+  deleteGoalStatus: string;
+  deleteGoalError: string | undefined;
   updateGoalStatus: string;
   updateGoalError: string | undefined;
+  statChartData: FetchFinancialGoalsStatChartDataResponseType | undefined;
+  fetchStatChartDataStatus: string;
+  fetchStatChartDataError: string | undefined;
 }
 
 const initialState : StateType = {
@@ -42,6 +45,11 @@ const initialState : StateType = {
   addGoalError: '',
   updateGoalStatus: 'idle',
   updateGoalError: '',
+  deleteGoalStatus: 'idle',
+  deleteGoalError: '',
+  statChartData: undefined,
+  fetchStatChartDataStatus: 'idle',
+  fetchStatChartDataError: ''
 };
 
 export const GoalTrackerSlice = createSlice({
@@ -64,7 +72,6 @@ export const GoalTrackerSlice = createSlice({
       })
       .addCase(fetchGoals.fulfilled, (state, action) => {
         state.fetchGoalsStatus = 'succeeded';
-        console.log(action.payload.data)
         state.goals = action.payload.data;
         state.total = action.payload.total;
       })
@@ -94,6 +101,7 @@ export const GoalTrackerSlice = createSlice({
         state.updateGoalStatus = 'failed';
         state.updateGoalError = action.error.message ?? 'failed to update goal';
       })
+      // Rearrange Goal
       .addCase(rearrangeGoal.pending, (state) => {
         state.arrangeGoalsStatus = 'loading';
       })
@@ -104,8 +112,20 @@ export const GoalTrackerSlice = createSlice({
       })
       .addCase(rearrangeGoal.rejected, (state, action) => {
         state.arrangeGoalsStatus = 'failed';
-        state.fetchGoalsError = action.error.message ?? 'failed to rearrange goals';
-      });
+        state.arrangeGoalsError = action.error.message ?? 'failed to rearrange goals';
+      })
+      // stat chart data
+      .addCase(getStatChartData.pending, (state) => {
+        state.fetchStatChartDataStatus = 'loading';
+      })
+      .addCase(getStatChartData.fulfilled, (state, action) => {
+        state.fetchStatChartDataStatus = 'succeeded';
+        state.statChartData = action.payload;
+      })
+      .addCase(getStatChartData.rejected, (state, action) => {
+        state.fetchStatChartDataStatus = 'failed';
+        state.fetchStatChartDataError = action.error.message ?? 'failed to fetch stat chart data';
+      })
   }
 });
 
@@ -130,6 +150,10 @@ export const fetchGoals = createAsyncThunk<
         rowsPerPage: fetchGoalsFilter.rowsPerPage
       }
     });
+    // return {
+    //   data: response.data.content,
+    //   total: response.data.totalElements
+    // };
     return response.data;
   } catch (err) {
     throw new Error();
@@ -154,14 +178,6 @@ export const addGoal = createAsyncThunk<
   }
 })
 
-// export const updateGoal = (goal: FinancialGoalType) => async () => {
-//   try {
-//     await axios.put(`${API_URL}/${goal.id}`, goal);
-//     fetchGoals({});
-//   } catch (err) {
-//     throw err as Error;
-//   }
-// }
 export const updateGoal = createAsyncThunk<
   FinancialGoalType,
   FinancialGoalType,
@@ -211,6 +227,26 @@ export const rearrangeGoal = createAsyncThunk<
     });
     return resutls.data;
     // dispatch(fetchGoals({}));
+    // return {
+    //   data: resutls.data.content,
+    //   total: resutls.data.totalElements
+    // };
+  } catch (err) {
+    throw err as Error;
+  }
+})
+
+export const getStatChartData = createAsyncThunk<
+  FetchFinancialGoalsStatChartDataResponseType,
+  FetchFinancialGoalsStatChartDataRequestType,
+  {
+    state: AppState,
+    dispatch: AppDispatch
+  }
+>('goal-tracker/getStatChartData', async () => {
+  try {
+    const response = await axios.get(`${API_URL}/stat-chart`);
+    return response.data;
   } catch (err) {
     throw err as Error;
   }

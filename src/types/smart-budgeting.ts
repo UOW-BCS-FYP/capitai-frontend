@@ -36,3 +36,16 @@ export type InSRecordType = {
 }
 
 export type FetchInSRecordRequestType = FetchRequestType<InSRecordType>;
+
+export type InSRecordStatChartDataResponseType = {
+  incomes: Array<{
+    year: number;
+    month: number;
+    amount: number;
+  }>
+  expenses: Array<{
+    year: number;
+    month: number;
+    amount: number;
+  }>
+}

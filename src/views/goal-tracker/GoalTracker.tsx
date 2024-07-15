@@ -43,7 +43,7 @@ import CapitalBuildCard from 'src/components/goal-tracker/CapitalBuildingCard';
 import DebtPaymentCard from 'src/components/goal-tracker/DebtPaymentCard';
 import LongTermExpenseCard from 'src/components/goal-tracker/LongTermExpenseCard';
 import { FinancialGoalType, SortOrder } from 'src/types/goal-tracker';
-import { fetchGoals, rearrangeGoal } from 'src/store/goal-tracker/GoalTrackerSlice';
+import { deleteGoal, fetchGoals, rearrangeGoal } from 'src/store/goal-tracker/GoalTrackerSlice';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 const BCrumb = [
@@ -171,10 +171,12 @@ interface EnhancedTableToolbarProps {
   numSelected: number;
   handleSearch: React.ChangeEvent<HTMLInputElement> | any;
   search: string;
+  handleDelMultiple: () => void;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, search, handleSearch } = props;
+  const { numSelected, search, handleSearch, handleDelMultiple } = props;
+  const [openDel, setDelDialog] = useState(false);
 
   return (
     <Toolbar
@@ -214,7 +216,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       )}
 
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
+        <Tooltip title="Delete" onClick={() => setDelDialog(true)}>
           <IconButton>
             <IconTrash width={18} />
           </IconButton>
@@ -226,6 +228,11 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           </IconButton>
         </Tooltip>
       )}
+      <DeleteConfirmDialog
+        open={openDel}
+        onClose={() => setDelDialog(false)}
+        onSubmit={handleDelMultiple}
+      />
     </Toolbar>
   );
 }
@@ -350,6 +357,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Link, useNavigate } from 'react-router-dom';
+import DeleteConfirmDialog from 'src/components/shared/DeleteConfirmDialog';
 const EnhanceTable = () => {
   const dispatch = useDispatch();
   const totalCount = useSelector((state) => state.goalTrackerReducer.total);
@@ -469,6 +477,21 @@ const EnhanceTable = () => {
     }
   }
 
+  function handleDeleteMultiple() {
+    // console.log('delete multiple', selected);
+    Promise
+      .all(selected.map((id) => dispatch(deleteGoal(id))))
+      .then(() => {
+        setSelected([]);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        dispatch(fetchGoals({}));
+      })
+  }
+
   return (
     <PageContainer title="Goal Tracker" description="this is Goal Tracker page">
       {/* breadcrumb */}
@@ -490,7 +513,12 @@ const EnhanceTable = () => {
         <Grid item xs={12} lg={12}>
           <BlankCard>
             <Box mb={2} sx={{ mb: 2 }}>
-              <EnhancedTableToolbar numSelected={selected.length} search={fetchFilter.query ?? ''} handleSearch={(e: any) => handleSearch(e)} />
+              <EnhancedTableToolbar
+                numSelected={selected.length}
+                search={fetchFilter.query ?? ''}
+                handleSearch={(e: any) => handleSearch(e)}
+                handleDelMultiple={() => handleDeleteMultiple()}
+              />
               <TableContainer>
                 <DndContext 
                   sensors={sensors}

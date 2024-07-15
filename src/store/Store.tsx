@@ -15,6 +15,7 @@ import GoalTrackerReducer from './goal-tracker/GoalTrackerSlice';
 import FinancialStatementReducer from './financial-statement/FinancialStatementSlice';
 import FinancialConsultantReducer from './financial-consultant/ConsultSlice';
 import NotificationReducer from './notification/notificationSlice'
+import MockDataReducer from './mockdata/MockDataSlice'
 
 import { combineReducers } from 'redux';
 import {
@@ -41,6 +42,7 @@ export const store = configureStore({
     statementReducer: FinancialStatementReducer,
     financialConsultantReducer: FinancialConsultantReducer,
     notificationReducer: NotificationReducer,
+    mockDataReducer: MockDataReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -67,6 +69,7 @@ const rootReducer = combineReducers({
   statementReducer: FinancialStatementReducer,
   financialConsultantReducer: FinancialConsultantReducer,
   notificationReducer: NotificationReducer,
+  mockDataReducer: MockDataReducer,
 });
 
 export type AppState = ReturnType<typeof rootReducer>;

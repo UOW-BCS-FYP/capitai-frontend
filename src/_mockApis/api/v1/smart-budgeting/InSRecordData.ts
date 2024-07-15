@@ -1,4 +1,4 @@
-import { FetchInSRecordRequestType, InSRecordType } from 'src/types/smart-budgeting';
+import { FetchInSRecordRequestType, InSRecordStatChartDataResponseType, InSRecordType } from 'src/types/smart-budgeting';
 import mock from '../../../mock';
 
 const InSRecordData: InSRecordType[] = [
@@ -152,6 +152,41 @@ mock.onPut(new RegExp(`/api/v1/smart-budgeting/income-spending-record/*`)).reply
         return [200, InSRecordData[index]];
     }
     return [400];
+});
+
+mock.onGet('/api/v1/smart-budgeting/income-spending-record/stat-chart').reply(() => {
+    const year = new Date().getFullYear()
+    const statChartDAta: InSRecordStatChartDataResponseType = {
+        incomes: [
+            { year, month: 1, amount: 10000 },
+            { year, month: 2, amount: 10000 },
+            { year, month: 3, amount: 10000 },
+            { year, month: 4, amount: 30000 },
+            { year, month: 5, amount: 10000 },
+            { year, month: 6, amount: 11000 },
+            { year, month: 7, amount: 10000 },
+            { year, month: 8, amount: 10000 },
+            { year, month: 9, amount: 50000 },
+            { year, month: 10, amount: 10000 },
+            { year, month: 11, amount: 10000 },
+            { year, month: 12, amount: 10000 },
+        ],
+        expenses: [
+            { year, month: 1, amount: 4000 },
+            { year, month: 2, amount: 5000 },
+            { year, month: 3, amount: 5000 },
+            { year, month: 4, amount: 5000 },
+            { year, month: 5, amount: 5000 },
+            { year, month: 6, amount: 4000 },
+            { year, month: 7, amount: 4000 },
+            { year, month: 8, amount: 4000 },
+            { year, month: 9, amount: 4000 },
+            { year, month: 10, amount: 3900 },
+            { year, month: 11, amount: 5000 },
+            { year, month: 12, amount: 5000 },
+        ],
+    };
+    return [200, statChartDAta];
 });
 
 export default InSRecordData;

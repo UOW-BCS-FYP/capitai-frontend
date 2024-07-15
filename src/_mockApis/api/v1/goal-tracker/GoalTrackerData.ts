@@ -217,5 +217,45 @@ mock.onPut("/api/v1/goal-tracker/rearrange").reply((request) => {
 
 // stat for financial goals
 // can be used to show the total number of goals, completed goals, and total amount of goals
+mock.onGet('/api/v1/goal-tracker/stat-chart').reply(200, {
+  capitalBuilding: {
+    thisYear: 5000,
+    lastYear: 3000,
+  },
+  debtPayment: {
+    thisYear: 3000,
+    lastYear: 2000,
+    repayment: [
+      { month: 'Jan', amount: 100 },
+      { month: 'Feb', amount: 200 },
+      { month: 'Mar', amount: 300 },
+      { month: 'Apr', amount: 400 },
+      { month: 'May', amount: 500 },
+      { month: 'Jun', amount: 600 },
+      { month: 'Jul', amount: 700 },
+      { month: 'Aug', amount: 800 },
+      { month: 'Sep', amount: 900 },
+      { month: 'Oct', amount: 1000 },
+      { month: 'Nov', amount: 1100 },
+      { month: 'Dec', amount: 1200 },
+    ]
+  },
+  longTermExpense: {
+    expenses: [
+      { month: 'Jan', amount: 1000 },
+      { month: 'Feb', amount: 500 },
+      { month: 'Mar', amount: 200 },
+      { month: 'Apr', amount: 300 },
+      { month: 'May', amount: 400 },
+      { month: 'Jun', amount: 500 },
+      { month: 'Jul', amount: 600 },
+      { month: 'Aug', amount: 700 },
+      { month: 'Sep', amount: 800 },
+      { month: 'Oct', amount: 900 },
+      { month: 'Nov', amount: 1000 },
+      { month: 'Dec', amount: 1100 },
+    ]
+  }
+});
 
 export default FinancialGoalData;

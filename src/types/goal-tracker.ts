@@ -34,6 +34,15 @@ export type FinancialGoalType = {
   completedDates?: string[];
 };
 
+export type FinancialGoalTaskType = {
+  id: number;
+  title: string;
+  amount: number;
+  deadline: string;
+  completed: boolean;
+  completedDate: string;
+};
+
 export type FinancialGoalProgressType = {
   id: number; // progress id
   goalId: number;
@@ -59,4 +68,28 @@ export type FetchFinancialGoalsRequestType = {
 export type FetchFinancialGoalsResponseType = {
   data: FinancialGoalType[];
   total: number;
+};
+
+export type FetchFinancialGoalsStatChartDataRequestType = {
+};
+
+export type FetchFinancialGoalsStatChartDataResponseType = {
+  capitalBuilding: {
+    thisYear: number;
+    lastYear: number;
+  };
+  debtPayment: {
+    thisYear: number;
+    lastYear: number;
+    repayment: Array<{
+      month: string;
+      amount: number;
+    }>;
+  };
+  longTermExpense: {
+    expenses: Array<{
+      month: string;
+      amount: number;
+    }>;
+  }
 };
