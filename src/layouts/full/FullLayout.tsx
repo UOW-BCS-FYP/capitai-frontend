@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { styled, Container, Box, useTheme } from '@mui/material';
+import { styled, Container, Box, useTheme, Alert } from '@mui/material';
 import { useSelector } from 'src/store/Store';
 import { Outlet } from 'react-router-dom';
 import { AppState } from 'src/store/Store';
@@ -47,6 +47,10 @@ const FullLayout: FC = () => {
           }),
         }}
       >
+        {/* Alert for Capstone Project of Bachelor of Computer Science at University of Wollongong */}
+        <Alert severity="warning" sx={{ m: 2 }}>
+          This is a Capstone Project of Bachelor of Computer Science at University of Wollongong. This project is not intended for commercial use. The project is developed by a group of students for educational purposes only.
+        </Alert>
         {/* ------------------------------------------- */}
         {/* Header */}
         {/* ------------------------------------------- */}

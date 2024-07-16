@@ -3,6 +3,7 @@
 import React from 'react';
 import { Box, CardContent, Chip, Paper, Stack, Typography, LinearProgress } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+// import { useSelector } from 'src/store/Store';
 
 interface capitalBuildingData {
   title: string;
@@ -34,6 +35,9 @@ const CapitalBuildingGoalCard = () => {
   const primary = theme.palette.primary.main;
   const borderColor = theme.palette.divider;
 
+  // const goals = useSelector((state) => state.goalTrackerReducer.goals);
+  
+
   return (
     <Paper sx={{ bgcolor: 'primary.main', border: `1px solid ${borderColor}` }} variant="outlined">
       <CardContent>
@@ -43,7 +47,6 @@ const CapitalBuildingGoalCard = () => {
         <Typography variant="subtitle1" color="white" mb={-3}>
           Capital Building
          </Typography>
-
       </CardContent>
       <Paper sx={{ overflow: 'hidden', zIndex: '1', position: 'relative', margin: '10px' }}>
         <Box p={3}>

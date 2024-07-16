@@ -67,6 +67,10 @@ const AuthRegister = ({ title, subtitle, subtext }: registerType) => {
 
   return (
     <>
+      {/* Alert for Capstone Project of Bachelor of Computer Science at University of Wollongong */}
+      <Alert severity="warning" sx={{ mb: 2, width: '395px' }}>
+        This is a Capstone Project of Bachelor of Computer Science at University of Wollongong. This project is not intended for commercial use. The project is developed by a group of students for educational purposes only.
+      </Alert>
       {title ? (
         <Typography fontWeight="700" variant="h3" mb={1}>
           {title}
