@@ -1,4 +1,24 @@
-# React + TypeScript + Vite
+# Capit-AI Frontend Repository
+
+## **Project Overview**
+Capit-AI is an AI-powered personal finance platform designed to help individuals manage their finances more effectively through features like smart budgeting, goal tracking, notifications, and AI-driven financial advice.  
+This project is a **capstone project developed by Bachelor of Computer Science students from the University of Wollongong**.
+
+## **Project Structure**
+This repository contains the frontend codebase for Capit-AI, built using modern web technologies to ensure scalability and a seamless user experience.
+
+### **Features**
+- **Smart Budgeting System**: Intuitive interface for income and spending records and budgeting categories.
+- **Goal Tracking**: Helps users define, prioritize, and monitor financial goals.
+- **AI Financial Services**: Provides personalized financial advice based on user data.
+- **Notifications**: Alerts for spending, goals, budget reviews, and financial news.
+
+### **Getting Started**
+#### Prerequisites
+- Node.js: Ensure you have the latest version installed.
+- npm or yarn: A package manager for JavaScript.
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
